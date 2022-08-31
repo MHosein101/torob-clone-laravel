@@ -17,10 +17,10 @@ class CreateProductsTable extends Migration
             $table->id();
             
             $table->string("title");
-            $table->string("image_url");
+            $table->string("image_url")->nullable();
 
-            $table->longText("technical_specs");
-            $table->longText("physical_specs");
+            $table->longText("technical_specs")->nullable();
+            $table->longText("physical_specs")->nullable();
 
             $table->timestamps();
         });

@@ -35,9 +35,8 @@ class AddForeignToOffersTable extends Migration
     public function down()
     {
         Schema::table('offers', function (Blueprint $table) {
-            $table->dropForeign([
-                'shop_id', 'product_id'
-            ]);
+            $table->dropForeign(['shop_id']);
+            $table->dropForeign(['product_id']);
         });
     }
 }

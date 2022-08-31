@@ -17,7 +17,7 @@ class SearchController extends Controller
     {
         // dd($term, $sort, $available, $priceMin, $priceMax);
 
-
+        
         
     }
 }
