@@ -23,7 +23,8 @@ class AuthController extends Controller
             return response()->json([
                 'code' => 201 ,
                 'message' => 'User created , waiting for validation.' ,
-                'isSignup' => true
+                'isSignup' => true ,
+                'code' => $validationCode , // FOR DEBUG
             ], 201); 
         }
 
@@ -37,10 +38,12 @@ class AuthController extends Controller
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok , Waiting for validation.' ,
-            'isSignup' => false
+            'isSignup' => false ,
+            'code' => $validationCode , // FOR DEBUG
         ], 200);
 
         // SEND EMAIL HERE
+        // Mail::to($request->input('email'))->send(new UserLoginValidation($validationCode));
 
     }
 
