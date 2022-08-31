@@ -22,7 +22,6 @@ class ProductSeeder extends Seeder
         Product::create([ 'title' => 'برد نوکیا' , 'category_id' => 25 , 'brand_id' => 1 ]);
         Product::create([ 'title' => 'لباس زیر مردانه' , 'category_id' => 2 , 'brand_id' => 2 ]);
         Product::create([ 'title' => 'جوراب مردانه' , 'category_id' => 2 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'جوراب مردانه' , 'category_id' => 2 , 'brand_id' => 2 ]);
         Product::create([ 'title' => 'تیشرت مردانه' , 'category_id' => 4 , 'brand_id' => 1 ]);
         Product::create([ 'title' => 'شلوارک مردانه' , 'category_id' => 5 , 'brand_id' => 3 ]);
         Product::create([ 'title' => 'کفش آدیداس مردانه' , 'category_id' => 3 , 'brand_id' => 3 ]);
