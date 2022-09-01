@@ -26,6 +26,8 @@ Route::get('categories',[CategoryController::class,'getAll']);
 
 Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
 
+// Route::get('search/{text}',[SearchController::class,'search']);
+
 // Route::get('search/{term?}/{sort?}/{available?}/{priceMin?}/{priceMax?}',[SearchController::class,'search']);
     // ->whereIn('sort', ['newest', 'cheap', 'expensive', 'favorite'])
     // ->whereIn('available', ['yes', 'no'])

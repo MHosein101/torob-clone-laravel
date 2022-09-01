@@ -33,4 +33,15 @@ class SearchController extends Controller
         ], 200);
         
     }
+    
+    public function search(Request $request, $text) 
+    {
+        
+        return response()->json([
+            'code' => 200 ,
+            'message' => 'Ok' ,
+            'data' => $text
+        ], 200);
+        
+    }
 }
