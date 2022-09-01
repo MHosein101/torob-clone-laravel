@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Brand;
+use App\Models\Offer;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Offer;
+use App\Models\Favorite;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
@@ -53,6 +55,30 @@ class SearchController extends Controller
         $sp = $this->parseParams( $request->query() );
 
         $products = Product::where('title','LIKE', "%$text%");
+        
+        // join with favorites sub sql
+        $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
+        ->groupBy('product_id');
+
+        $products = $products->leftJoinSub($favorites, 'product_favorites', function ($join) {
+            $join->on('products.id', '=', 'product_favorites.product_id');
+        });
+
+        // join with offers sub sql
+        $priceFunc = 'MIN';
+        if($sp['sort'] == 'priceMax') 
+            $priceFunc = 'MAX';
+
+        $offers = Offer::selectRaw("product_id, is_available, $priceFunc(price) as price_start, COUNT(shop_id) as shops_count");
+        
+        if( isset( $request->query()['available'] ) )
+            $offers = $offers->where('is_available', '=', true);
+
+        $offers = $offers->groupBy('product_id', 'is_available');
+
+        $products = $products->leftJoinSub($offers, 'product_shops', function ($join) {
+            $join->on('products.id', '=', 'product_shops.product_id');
+        });
 
         // category
         if( $sp["category"] ) {
@@ -63,54 +89,41 @@ class SearchController extends Controller
             $products = $products->where('category_id', '=', $cid);
         }
 
+        // brand
+        if( $sp["brand"] ) {
+            $cid = Brand::where('name', '=',  $sp["brand"]  )->get('id');
+            if($cid) {
+                $cid = $cid[0]->id;
+            }
+            $products = $products->where('brand_id', '=', $cid);
+        }
+
+        // date filter
+        if(  $sp['sort'] == 'dateNew' ) {
+            $products = $products->orderBy('id', 'desc');
+        }
+
+        // favorite filter
+        if(  $sp['sort'] == 'mostFavorite' ) {
+            $products = $products->orderBy('favorites_count', 'desc');
+        }
+
+        // price filter
+        if(  isset( $request->query()['priceMin'] ) || isset( $request->query()['priceMax'] ) ) {
+            $products = $products->where('price_start', '>=', $sp['priceMin'])->where('price_start', '<=', $sp['priceMax']);
+        }
+
         // pagination
         $products = $products
             ->skip( ($sp["page"] - 1) * $sp["perPage"] )
             ->take( $sp["perPage"] );
-        
-        
-        // get each product shops count
-        $shopsCount = DB::table('offers')
-        ->selectRaw('product_id, COUNT(shop_id) as shops_count')
-        ->groupBy('product_id');
 
-        $products = $products->leftJoinSub($shopsCount, 'product_shops_count', function ($join) {
-            $join->on('products.id', '=', 'product_shops_count.product_id');
-        });
-
-        // sort
-        switch( $sp["sort"] ) {
-            case 'mostFavorite':
-                $products = $products->orderBy('marked_as_favorite', 'desc'); break;
-            
-            case 'dateNew':
-                $products = $products->orderBy('id', 'desc'); break;
-                
-            case 'priceMin':
-                $products = $this->sortByPrice(true, $products); break;
-
-            case 'priceMax':
-                $products = $this->sortByPrice(false, $products); break;
-        }
-
-        // for($i = 0 ; $i < count($products); $i++) {
-        //     $p = $products[$i];
-
-        //     $poffers = Offer::where('product_id', '=', $p->id)->orderBy('price')->get();
-
-        //     $products[$i]["shops_count"] = count($poffers);
-        //     $products[$i]["price_start"] = $poffers[0]->price;
-            
-        //     $pav = Offer::where('product_id', '=', $p->id)->where('is_available', '=', 1)->get();
-        //     if( count($pav) == 0 ) 
-        //         $products[$i]["price_start"] = -1;
-
-        // }
+        $products = $products->get(['title','image_url', 'technical_specs', 'physical_specs', 'favorites_count', 'is_available', 'price_start', 'shops_count']);
 
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok' ,
-            'data' =>  $products->get()
+            'data' => $products
         ], 200);
         
     }
@@ -123,12 +136,6 @@ class SearchController extends Controller
             $params[$key] = isset($query[$key]) ? $query[$key] : $val;
 
         return $params;
-    }
-
-    private function sortByPrice($isMinPrice, $products) 
-    {
-
-        return $products;
     }
 
 

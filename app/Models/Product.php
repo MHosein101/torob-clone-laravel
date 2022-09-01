@@ -10,8 +10,6 @@ class Product extends Model
     use HasFactory;
     
     protected $hidden = [
-        // 'category_id' ,
-        'brand_id' ,
         'created_at',
         'updated_at',
     ];

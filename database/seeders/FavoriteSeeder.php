@@ -14,19 +14,19 @@ class FavoriteSeeder extends Seeder
      */
     public function run()
     {
-        Favorite::createWithProductUpdate([ 'user_id' => 1 , 'product_id' => 1 ]);
-        Favorite::createWithProductUpdate([ 'user_id' => 2 , 'product_id' => 1 ]);
-        Favorite::createWithProductUpdate([ 'user_id' => 3 , 'product_id' => 1 ]);
-        Favorite::createWithProductUpdate([ 'user_id' => 4 , 'product_id' => 1 ]);
+        Favorite::create([ 'user_id' => 1 , 'product_id' => 1 ]);
+        Favorite::create([ 'user_id' => 2 , 'product_id' => 1 ]);
+        Favorite::create([ 'user_id' => 3 , 'product_id' => 1 ]);
+        Favorite::create([ 'user_id' => 4 , 'product_id' => 1 ]);
 
-        Favorite::createWithProductUpdate([ 'user_id' => 1 , 'product_id' => 2 ]);
-        Favorite::createWithProductUpdate([ 'user_id' => 2 , 'product_id' => 2 ]);
-        Favorite::createWithProductUpdate([ 'user_id' => 3 , 'product_id' => 2 ]);
+        Favorite::create([ 'user_id' => 1 , 'product_id' => 2 ]);
+        Favorite::create([ 'user_id' => 2 , 'product_id' => 2 ]);
+        Favorite::create([ 'user_id' => 3 , 'product_id' => 2 ]);
 
-        Favorite::createWithProductUpdate([ 'user_id' => 1 , 'product_id' => 3 ]);
-        Favorite::createWithProductUpdate([ 'user_id' => 2 , 'product_id' => 3 ]);
+        Favorite::create([ 'user_id' => 1 , 'product_id' => 3 ]);
+        Favorite::create([ 'user_id' => 2 , 'product_id' => 3 ]);
         
-        Favorite::createWithProductUpdate([ 'user_id' => 1 , 'product_id' => 4 ]);
+        Favorite::create([ 'user_id' => 1 , 'product_id' => 4 ]);
 
         // Favorite::create([ 'user_id' => 1 , 'product_id' => 2 ]);
     }
