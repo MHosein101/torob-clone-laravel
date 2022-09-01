@@ -21,6 +21,8 @@ class CreateProductsTable extends Migration
 
             $table->longText("technical_specs")->nullable();
             $table->longText("physical_specs")->nullable();
+            
+            $table->unsignedInteger("marked_as_favorite")->default(0);
 
             $table->timestamps();
         });

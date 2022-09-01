@@ -14,10 +14,10 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        Product::create([ 'title' => 'مسواک قرمز' , 'category_id' => 12 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'مسواک جدید' , 'category_id' => 12 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'مسواک خارجی' , 'category_id' => 12 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'مسواک بچگانه' , 'category_id' => 12 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'مسواک قرمز' , 'category_id' => 23 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'مسواک جدید' , 'category_id' => 23 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'مسواک خارجی' , 'category_id' => 23 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'مسواک بچگانه' , 'category_id' => 23 , 'brand_id' => 1 ]);
         Product::create([ 'title' => 'کابل usb' , 'category_id' => 18 , 'brand_id' => 2 ]);
         Product::create([ 'title' => 'کابل تایپ سی type c' , 'category_id' => 17 , 'brand_id' => 3 ]);
         Product::create([ 'title' => 'ویبره گوشی نوکیا' , 'category_id' => 23 , 'brand_id' => 2 ]);
