@@ -37,6 +37,8 @@ class SearchController extends Controller
     public function search(Request $request, $text) 
     {
         
+        
+
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok' ,
