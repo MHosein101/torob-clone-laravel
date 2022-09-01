@@ -11,27 +11,27 @@ class CategoryController extends Controller
     public function getAll(Request $request)
     {
         $data = [];
-        $topsCategories = Category::where('is_top', '=', true)->where('parent_id', '=', null)->get();
+        $topParentCategories = Category::where('is_parent', '=', true)->where('parent_id', '=', null)->get();
 
-        for($i = 0; $i < count($topsCategories); $i++) {
+        for($i = 0; $i < count($topParentCategories); $i++) {
 
-            $currentTop = $topsCategories[$i];
+            $currentTopParent = $topParentCategories[$i];
 
-            $secondCategoriesList = Category::where('parent_id', '=', $currentTop->id)->get();
+            $secondParentsCategoriesList = Category::where('parent_id', '=', $currentTopParent->id)->get();
             $subCategories = [];
 
-            for($j = 0; $j < count($secondCategoriesList); $j++) {
-                $currentSecond = $secondCategoriesList[$j];
-                $childCategories = Category::where('parent_id', '=', $currentSecond->id)->get();
+            for($j = 0; $j < count($secondParentsCategoriesList); $j++) {
+                $currentSecondParent = $secondParentsCategoriesList[$j];
+                $childCategories = Category::where('parent_id', '=', $currentSecondParent->id)->get();
 
-                $currentSecond["sub_categories"] = $childCategories;
-                $subCategories[] = $currentSecond;
+                $currentSecondParent["sub_categories"] = $childCategories;
+                $subCategories[] = $currentSecondParent;
             }
             
-            $currentTop["status"] = false;
-            $currentTop["is_sub_category"] = (boolean)$currentTop->is_top;
-            $currentTop["sub_categories"] = $subCategories;
-            $data[$i] = $currentTop;
+            $currentTopParent["status"] = false;
+            $currentTopParent["is_sub_category"] = (boolean)$currentTopParent->is_parent;
+            $currentTopParent["sub_categories"] = $subCategories;
+            $data[$i] = $currentTopParent;
         }
 
         return response()->json([

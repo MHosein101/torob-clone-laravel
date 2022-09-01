@@ -11,50 +11,49 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $user = User::where('email', '=', $request->input('email'))->first();
-        $validationCode = Str::random(5);
+        $user = User::where('email_or_number', '=', $request->input('email_or_number'))->first();
+        $verificationCode = Str::random(5);
+        $isSignUp = false;
+        $code = 200;
+        $message = 'Ok , Waiting for verification.';
 
         if ($user === null) { // user not exists
-           $newUser = new User;
-           $newUser->email = $request->input('email');
-           $newUser->validatoin_code = $validationCode;
-           $newUser->save();
-
-            return response()->json([
-                'code' => 201 ,
-                'message' => 'User created , waiting for validation.' ,
-                'isSignup' => true ,
-                'code' => $validationCode , // FOR DEBUG
-            ], 201); 
+            $code = 201;
+            $message = 'New account created , Waiting for verification.';
+            $isSignUp = true;
+            $user = User::create([ 'email_or_number' => $request->input('email_or_number') ]);
         }
 
         // user already have api token
         if($user->api_token != '') return;
 
         // user exists
-        $user->validatoin_code = $validationCode;
+        $user->verification_code = $verificationCode;
         $user->save();
 
         return response()->json([
-            'code' => 200 ,
-            'message' => 'Ok , Waiting for validation.' ,
-            'isSignup' => false ,
-            'code' => $validationCode , // FOR DEBUG
-        ], 200);
+            'code' => $code ,
+            'message' => $message ,
+            'is_signup' => $isSignUp ,
+            'verification_code' => $verificationCode , // FOR DEBUG
+        ], $code);
 
         // SEND EMAIL HERE
-        // Mail::to($request->input('email'))->send(new UserLoginValidation($validationCode));
+        // Mail::to($request->input('email_or_number'))->send(new UserVerification($verificationCode));
 
     }
 
-    public function validation(Request $request)
+    public function verification(Request $request)
     {
-        $user = User::where('email', '=', $request->input('email'))->first();
+        $user = User::where('email_or_number', '=', $request->input('email_or_number'))->first();
         
-        if( $user->validatoin_code == $request->input('validation_code') ) { // validation ok
+        // user already have api token
+        if($user->api_token != '') return;
+
+        if( $user->verification_code == $request->input('verification_code') ) { // verification ok
             
             $user->generateAuthToken();
-            $user->validatoin_code = "";
+            $user->verification_code = "";
             $user->save();
 
             return response()->json([
@@ -63,7 +62,7 @@ class AuthController extends Controller
                 'API_TOKEN' => $user->api_token
             ], 200);
         }
-        else { // validation not ok
+        else { // verification not ok
             return response()->json([
                 'code' => 401 ,
                 'message' => 'Login failed.'
@@ -74,8 +73,9 @@ class AuthController extends Controller
     
     public function cancel(Request $request)
     {
-        if($request->input('isSignup') == true) {
-            User::where('email', '=', $request->input('email'))->delete();
+        if($request->input('is_signup') == true) {
+            User::where('email_or_number', '=', $request->input('email_or_number'))->delete();
+            
             return response()->json([
                 'code' => 200 ,
                 'message' => 'Record removed.'
