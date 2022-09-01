@@ -18,17 +18,17 @@ class ProductSeeder extends Seeder
         Product::create([ 'title' => 'مسواک جدید' , 'category_id' => 23 , 'brand_id' => 1 ]);
         Product::create([ 'title' => 'مسواک خارجی' , 'category_id' => 23 , 'brand_id' => 1 ]);
         Product::create([ 'title' => 'مسواک بچگانه' , 'category_id' => 23 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'کابل usb' , 'category_id' => 18 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'کابل تایپ سی type c' , 'category_id' => 17 , 'brand_id' => 3 ]);
-        Product::create([ 'title' => 'ویبره گوشی نوکیا' , 'category_id' => 23 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'برد نوکیا' , 'category_id' => 25 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'لباس زیر مردانه' , 'category_id' => 2 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'جوراب مردانه' , 'category_id' => 2 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'تیشرت مردانه' , 'category_id' => 4 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'شلوارک مردانه' , 'category_id' => 5 , 'brand_id' => 3 ]);
-        Product::create([ 'title' => 'کفش آدیداس مردانه' , 'category_id' => 3 , 'brand_id' => 3 ]);
-        Product::create([ 'title' => 'برچسب موبایل' , 'category_id' => 15 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'دوربین موبایل' , 'category_id' => 15 , 'brand_id' => 3 ]);
+        Product::create([ 'title' => 'کابل موبایل usb' , 'category_id' => 7 , 'brand_id' => 2 ]);
+        Product::create([ 'title' => 'کابل  موبایل تایپ سی type c' , 'category_id' => 7 , 'brand_id' => 3 ]);
+        Product::create([ 'title' => 'ویبره گوشی موبایل نوکیا' , 'category_id' => 7 , 'brand_id' => 2 ]);
+        Product::create([ 'title' => 'برد  موبایل نوکیا' , 'category_id' => 7 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'لباس زیر مردانه' , 'category_id' => 14 , 'brand_id' => 2 ]);
+        Product::create([ 'title' => 'جوراب مردانه' , 'category_id' => 14 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'تیشرت مردانه' , 'category_id' => 14 , 'brand_id' => 1 ]);
+        Product::create([ 'title' => 'شلوارک مردانه' , 'category_id' => 14 , 'brand_id' => 3 ]);
+        Product::create([ 'title' => 'کفش آدیداس مردانه' , 'category_id' => 14 , 'brand_id' => 3 ]);
+        Product::create([ 'title' => 'برچسب موبایل' , 'category_id' => 6 , 'brand_id' => 2 ]);
+        Product::create([ 'title' => 'دوربین موبایل' , 'category_id' => 6 , 'brand_id' => 3 ]);
 
         // Product::create([ 'title' => '' , 'category_id' => 1 , 'brand_id' => 1 ]);
 

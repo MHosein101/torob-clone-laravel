@@ -10,17 +10,7 @@ use App\Models\Offer;
 
 class SearchController extends Controller
 {
-    public $defaultQueryParams = [
-        'category' => null ,
-        'brand' => null ,
-        'sort' => 'dateNew' , // priceMin , priceMax , dateNew , mostFavorite
-        'priceMin' => 0 ,
-        'priceMax' => 10000000000 ,
-        'available' => false ,
-        'page' => 1 ,
-        'perPage' => 20
-    ];
-    
+
     public function suggestion(Request $request, $text)
     {
         $matchedTitles = Product::where('title','LIKE', "%$text%")->take(6)->get('title');
@@ -46,24 +36,62 @@ class SearchController extends Controller
         
     }
     
+    private $defaultQueryParams = [
+        'category' => null ,
+        'brand' => null ,
+        'sort' => 'dateNew' , // priceMin , priceMax , dateNew , mostFavorite
+        'priceMin' => 0 ,
+        'priceMax' => 10000000000 ,
+        'available' => false ,
+        'page' => 1 ,
+        'perPage' => 20
+    ];
+    
+
     public function search(Request $request, $text) 
     {
-        $searchParams = $this->parseParams( $request->query() );
+        $sp = $this->parseParams( $request->query() );
 
-        // $products = Product::where('title','LIKE', "%$text%");
+        $products = Product::where('title','LIKE', "%$text%");
 
-        // if($searchParams["category"]) {
-        //     $cid = Category::where('name', '=', $searchParams["category"])->get('id');
-        //     if($cid) {
-        //         $cid = $cid[0]->id;
-        //     }
-        //     $products = $products->where('category_id', '=', $cid);
-        // }
+        // category
+        if( $sp["category"] ) {
+            $cid = Category::where('name', '=',  $sp["category"]  )->get('id');
+            if($cid) {
+                $cid = $cid[0]->id;
+            }
+            $products = $products->where('category_id', '=', $cid);
+        }
 
-        // $products = $products
-        //     ->skip( ($searchParams['page'] - 1) * $searchParams['perPage'] )
-        //     ->take($searchParams['perPage'])
-        //     ->get();
+        // pagination
+        $products = $products
+            ->skip( ($sp["page"] - 1) * $sp["perPage"] )
+            ->take( $sp["perPage"] );
+        
+        
+        // get each product shops count
+        $shopsCount = DB::table('offers')
+        ->selectRaw('product_id, COUNT(shop_id) as shops_count')
+        ->groupBy('product_id');
+
+        $products = $products->leftJoinSub($shopsCount, 'product_shops_count', function ($join) {
+            $join->on('products.id', '=', 'product_shops_count.product_id');
+        });
+
+        // sort
+        switch( $sp["sort"] ) {
+            case 'mostFavorite':
+                $products = $products->orderBy('marked_as_favorite', 'desc'); break;
+            
+            case 'dateNew':
+                $products = $products->orderBy('id', 'desc'); break;
+                
+            case 'priceMin':
+                $products = $this->sortByPrice(true, $products); break;
+
+            case 'priceMax':
+                $products = $this->sortByPrice(false, $products); break;
+        }
 
         // for($i = 0 ; $i < count($products); $i++) {
         //     $p = $products[$i];
@@ -79,19 +107,10 @@ class SearchController extends Controller
 
         // }
 
-        $p1 = Product::where('title','LIKE', "%$text%")->get();
-
-        // $p2 = DB::table('products')
-        // ->leftJoin('offers', 'products.id', '=', 'offers.product_id')
-        // ->where('products.title','LIKE', "%$text%")
-        // ->selectRaw('products.title , offers.price, offers.is_available, COUNT(shop_id) as shops_count')
-        // ->groupBy('shop_id', 'products.title' , 'offers.price', 'offers.is_available')
-        // ->get();
-
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok' ,
-            'data' =>  $p1
+            'data' =>  $products->get()
         ], 200);
         
     }
@@ -105,5 +124,12 @@ class SearchController extends Controller
 
         return $params;
     }
+
+    private function sortByPrice($isMinPrice, $products) 
+    {
+
+        return $products;
+    }
+
 
 }
