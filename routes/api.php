@@ -23,6 +23,8 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 
 Route::get('categories',[CategoryController::class,'getAll']);
+Route::get('categories/{name}/brands',[CategoryController::class,'getBrands']);
+Route::get('categories/{name}/path',[CategoryController::class,'getPath']);
 
 Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
 

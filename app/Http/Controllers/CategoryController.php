@@ -14,15 +14,12 @@ class CategoryController extends Controller
         $data = [];
         $topParentCategories = Category::where('is_parent', '=', true)->where('parent_id', '=', null)->get();
 
-        for($i = 0; $i < count($topParentCategories); $i++) { // get second level categories
-
-            $currentTopParent = $topParentCategories[$i];
+        foreach($topParentCategories as $currentTopParent) { // get second level categories
 
             $secondParentsCategoriesList = Category::where('parent_id', '=', $currentTopParent->id)->get();
             $subCategories = [];
 
-            for($j = 0; $j < count($secondParentsCategoriesList); $j++) { // get third level categories
-                $currentSecondParent = $secondParentsCategoriesList[$j];
+            foreach($secondParentsCategoriesList as $currentSecondParent) { // get third level categories
 
                 $brandsList = Brand::where('category_id', '=', $currentSecondParent->id)->get('name');
                 $brands = [];
@@ -41,7 +38,7 @@ class CategoryController extends Controller
             $currentTopParent["status"] = false;
             $currentTopParent["is_sub_category"] = (boolean)$currentTopParent->is_parent;
             $currentTopParent["sub_categories"] = $subCategories;
-            $data[$i] = $currentTopParent;
+            $data[] = $currentTopParent;
         }
 
         return response()->json([
@@ -49,6 +46,41 @@ class CategoryController extends Controller
             'message' => 'Ok' ,
             'data' => $data
         ], 200);
+    }
+
+    public function getBrands(Request $request, $cname)
+    {
+        $cat = Category::where('name', '=', $cname)->get();
+        if( count($cat) == 1 ) {
+            $brands = Brand::where('category_id', '=', $cat[0]->id)->get('name');
+            $data = [];
+            foreach($brands as $b) 
+                $data[] = $b->name;
+            
+            return response()->json([
+                'code' => 200 ,
+                'message' => 'Ok' ,
+                'data' => $data
+            ], 200);
+        }
+    }
+
+    public function getPath(Request $request, $cname)
+    {
+
+        $path = [ $cname ];
+        $category = Category::where('name', '=', $cname)->get();
+        if( count($category) == 1 && $category[0]->parent_id != null ) {
+
+            $cpid = $category[0]->parent_id;
+            while( $cpid != null ) {
+
+                $category = Category::where('id', '=', $cpid)->get();
+                $path[] = $category[0]->name;
+                $cpid = $category[0]->parent_id;
+            }
+        }
+
     }
 
 }
