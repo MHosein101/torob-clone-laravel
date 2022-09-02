@@ -39,6 +39,7 @@ class SearchController extends Controller
     }
     
     private $defaultQueryParams = [
+        'q' => '' ,
         'category' => null ,
         'brand' => null ,
         'sort' => 'dateNew' , // priceMin , priceMax , dateNew , mostFavorite
@@ -50,11 +51,11 @@ class SearchController extends Controller
     ];
     
 
-    public function search(Request $request, $text) 
+    public function search(Request $request) 
     {
         $sp = $this->parseParams( $request->query() );
 
-        $products = Product::where('title','LIKE', "%$text%");
+        $products = Product::where('title','LIKE', "%{$sp["q"]}%");
         
         // join with favorites sub sql
         $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
@@ -83,19 +84,19 @@ class SearchController extends Controller
         // category
         if( $sp["category"] ) {
             $cid = Category::where('name', '=',  $sp["category"]  )->get('id');
-            if($cid) {
+            if( count($cid) == 1 ) {
                 $cid = $cid[0]->id;
+                $products = $products->where('category_id', '=', $cid);
             }
-            $products = $products->where('category_id', '=', $cid);
         }
 
         // brand
         if( $sp["brand"] ) {
-            $cid = Brand::where('name', '=',  $sp["brand"]  )->get('id');
-            if($cid) {
-                $cid = $cid[0]->id;
+            $bid = Brand::where('name', '=',  $sp["brand"]  )->get('id');
+            if( count($bid) == 1 ) {
+                $bid = $bid[0]->id;
+                $products = $products->where('brand_id', '=', $bid);
             }
-            $products = $products->where('brand_id', '=', $cid);
         }
 
         // date filter
@@ -118,7 +119,7 @@ class SearchController extends Controller
             ->skip( ($sp["page"] - 1) * $sp["perPage"] )
             ->take( $sp["perPage"] );
 
-        $products = $products->get(['title','image_url', 'technical_specs', 'physical_specs', 'favorites_count', 'is_available', 'price_start', 'shops_count']);
+        $products = $products->get(['title','image_url', 'is_available', 'price_start', 'shops_count', 'products.id', 'products.brand_id', 'products.category_id']);
 
         return response()->json([
             'code' => 200 ,
