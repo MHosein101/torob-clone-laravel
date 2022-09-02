@@ -80,6 +80,12 @@ class CategoryController extends Controller
                 $cpid = $category[0]->parent_id;
             }
         }
+        
+        return response()->json([
+            'code' => 200 ,
+            'message' => 'Ok' ,
+            'data' => $path
+        ], 200);
 
     }
 

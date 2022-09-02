@@ -14,21 +14,20 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        Product::create([ 'title' => 'مسواک قرمز' , 'category_id' => 23 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'مسواک جدید' , 'category_id' => 23 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'مسواک خارجی' , 'category_id' => 23 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'مسواک بچگانه' , 'category_id' => 23 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'کابل موبایل usb' , 'category_id' => 7 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'کابل  موبایل تایپ سی type c' , 'category_id' => 7 , 'brand_id' => 3 ]);
-        Product::create([ 'title' => 'ویبره گوشی موبایل نوکیا' , 'category_id' => 7 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'برد  موبایل نوکیا' , 'category_id' => 7 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'لباس زیر مردانه' , 'category_id' => 14 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'جوراب مردانه' , 'category_id' => 14 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'تیشرت مردانه' , 'category_id' => 14 , 'brand_id' => 1 ]);
-        Product::create([ 'title' => 'شلوارک مردانه' , 'category_id' => 14 , 'brand_id' => 3 ]);
-        Product::create([ 'title' => 'کفش آدیداس مردانه' , 'category_id' => 14 , 'brand_id' => 3 ]);
-        Product::create([ 'title' => 'برچسب موبایل' , 'category_id' => 6 , 'brand_id' => 2 ]);
-        Product::create([ 'title' => 'دوربین موبایل' , 'category_id' => 6 , 'brand_id' => 3 ]);
+        Product::create([ 'title' => 'گوشی سامسونگ A13' , 'brand_id' => 1 ]); // 1
+        Product::create([ 'title' => 'گوشی سامسونگ A53 5G'  , 'brand_id' => 1 ]); // 2
+        Product::create([ 'title' => 'گوشی اپل iPhone 13 Pro' , 'brand_id' => 3 ]); // 3
+        Product::create([ 'title' => 'گوشی شیاعومی Redmi Note 11' , 'brand_id' => 2 ]); // 4
+
+        Product::create([ 'title' => 'پردازنده Core i5-12400F Alder Lake' , 'brand_id' => 6 ]); // 5
+        Product::create([ 'title' => 'پردازنده Core i3-10100H'  , 'brand_id' => 6 ]); // 6
+        Product::create([ 'title' => 'پردازنده Ryzen 9 5900X' , 'brand_id' => 7 ]); // 7
+        
+        Product::create([ 'title' => 'کارت گرافیک Nvidia GTX1060 3GB' , 'brand_id' => 10 ]); // 8
+        Product::create([ 'title' => 'کارت گرافیک RTX 2060 6GB' , 'brand_id' => 11 ]); // 9
+
+        Product::create([ 'title' => 'کیبورد گیمینگ تسکو TSCO TK8124GA Gaming' , 'brand_id' => 8 ]); // 10
+        Product::create([ 'title' => 'ماوس گیمینگ لاجیتک G502 HERO' , 'brand_id' => 8 ]); // 11
 
         // Product::create([ 'title' => '' , 'category_id' => 1 , 'brand_id' => 1 ]);
 

@@ -22,7 +22,7 @@ class ShopSeeder extends Seeder
             'status' => 'فعال' ,
             'site_url' => 'https://bluebox.ir/' ,
             'logo_url' => 'https://storage3.torob.com/backend-api/internet_shop/logos/6f8c326eb0a0.png' ,
-        ]);
+        ]); // 1
         
         Shop::create([
             'title' => 'رونیکا' ,
@@ -32,7 +32,7 @@ class ShopSeeder extends Seeder
             'status' => 'فعال' ,
             'site_url' => 'https://ronica.shop/' ,
             'logo_url' => 'https://storage3.torob.com/backend-api/internet_shop/logos/e7958b92869e.png' ,
-        ]);
+        ]); // 2
 
         Shop::create([
             'title' => 'شایان کامپیوتر' ,
@@ -42,7 +42,7 @@ class ShopSeeder extends Seeder
             'status' => 'فعال' ,
             'site_url' => 'https://shayancomputer.com/' ,
             'logo_url' => 'https://storage3.torob.com/backend-api/internet_shop/logos/78440c5a0883.png' ,
-        ]);
+        ]); // 3
         
         // Shop::create([
         //     'title' => '' ,

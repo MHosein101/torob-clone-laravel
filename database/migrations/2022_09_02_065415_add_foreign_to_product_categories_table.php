@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddForeignToBrandsTable extends Migration
+class AddForeignToProductCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,13 @@ class AddForeignToBrandsTable extends Migration
      */
     public function up()
     {
-        Schema::table('brands', function (Blueprint $table) {
+        Schema::table('product_categories', function (Blueprint $table) {
+            
+            $table->foreignId('product_id')
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+                
             $table->foreignId('category_id')
                 ->constrained()
                 ->cascadeOnUpdate()
@@ -28,7 +34,8 @@ class AddForeignToBrandsTable extends Migration
      */
     public function down()
     {
-        Schema::table('brands', function (Blueprint $table) {
+        Schema::table('product_categories', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
             $table->dropForeign(['category_id']);
         });
     }

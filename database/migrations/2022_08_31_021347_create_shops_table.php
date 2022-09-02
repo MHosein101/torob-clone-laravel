@@ -18,14 +18,14 @@ class CreateShopsTable extends Migration
             
             $table->string("title");
             
-            $table->string("province")->nullable();
-            $table->mediumText("address")->nullable();
+            $table->string("province")->default("");
+            $table->mediumText("address")->default("");
 
-            $table->string("owner")->nullable();
-            $table->string("status")->nullable();
+            $table->string("owner")->default("");
+            $table->string("status")->default("");
 
-            $table->string("site_url")->nullable();
-            $table->string("logo_url")->nullable();
+            $table->string("site_url")->default("");
+            $table->string("logo_url")->default("");
 
             $table->timestamps();
         });

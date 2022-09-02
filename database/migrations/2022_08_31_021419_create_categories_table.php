@@ -17,10 +17,8 @@ class CreateCategoriesTable extends Migration
             $table->id();
             
             $table->string("name");
-            $table->boolean("is_parent");
+            $table->boolean("is_parent")->default(false);
             $table->unsignedBigInteger('parent_id')->nullable();
-
-            $table->timestamps();
         });
     }
 

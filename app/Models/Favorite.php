@@ -9,4 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Favorite extends Model
 {
     use HasFactory;
+
+    public $timestamps = false;
 }

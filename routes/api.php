@@ -27,11 +27,4 @@ Route::get('categories/{name}/brands',[CategoryController::class,'getBrands']);
 Route::get('categories/{name}/path',[CategoryController::class,'getPath']);
 
 Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
-
 Route::get('search',[SearchController::class,'search']);
-
-// Route::get('search/{term?}/{sort?}/{available?}/{priceMin?}/{priceMax?}',[SearchController::class,'search']);
-    // ->whereIn('sort', ['newest', 'cheap', 'expensive', 'favorite'])
-    // ->whereIn('available', ['yes', 'no'])
-    // ->whereNumber('priceMin')
-    // ->whereNumber('priceMax');

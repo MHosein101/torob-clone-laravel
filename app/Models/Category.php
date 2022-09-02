@@ -11,9 +11,9 @@ class Category extends Model
     
     protected $hidden = [
         'is_parent' ,
-        'parent_id' ,
-        'created_at',
-        'updated_at',
+        'parent_id'
     ];
+
+    public $timestamps = false;
 
 }
