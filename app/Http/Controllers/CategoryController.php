@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Models\CategoryBrand;
 
 class CategoryController extends Controller
 {
@@ -21,12 +22,10 @@ class CategoryController extends Controller
 
             foreach($secondParentsCategoriesList as $currentSecondParent) { // get third level categories
 
-                $brandsList = Brand::where('category_id', '=', $currentSecondParent->id)->get('name');
+                $brandsIDs = CategoryBrand::where('category_id', '=', $currentSecondParent->id)->get('brand_id');
                 $brands = [];
-                if($brandsList) {
-                    foreach($brandsList as $b)
-                        $brands[] = $b->name;
-                }
+                foreach($brandsIDs as $bid)
+                    $brands[] = Brand::find($bid->brand_id);
                 
                 $currentSecondParent["brands"] = $brands;
                 $childCategories = Category::where('parent_id', '=', $currentSecondParent->id)->get();
@@ -48,35 +47,37 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function getBrands(Request $request, $cname)
+    public function getBrands(Request $request, $categoryName)
     {
-        $cat = Category::where('name', '=', $cname)->get();
-        if( count($cat) == 1 ) {
-            $brands = Brand::where('category_id', '=', $cat[0]->id)->get('name');
-            $data = [];
-            foreach($brands as $b) 
-                $data[] = $b->name;
+        $category = Category::where('name', '=', $categoryName)->get();
+        if( count($category) == 1 ) {
             
+        $brandsIDs = CategoryBrand::where('category_id', '=', $category[0]->id)->get('brand_id');
+        $brands = [];
+        foreach($brandsIDs as $bid)
+            $brands[] = Brand::find($bid->brand_id);
+        
             return response()->json([
                 'code' => 200 ,
                 'message' => 'Ok' ,
-                'data' => $data
+                'data' => $brands
             ], 200);
         }
     }
 
-    public function getPath(Request $request, $cname)
+    public function getPath(Request $request, $categoryName)
     {
 
-        $path = [ $cname ];
-        $category = Category::where('name', '=', $cname)->get();
+        $path = [];
+        $category = Category::where('name', '=', $categoryName)->get();
         if( count($category) == 1 && $category[0]->parent_id != null ) {
+            $path[] = $category[0];
 
             $cpid = $category[0]->parent_id;
             while( $cpid != null ) {
 
                 $category = Category::where('id', '=', $cpid)->get();
-                $path[] = $category[0]->name;
+                $path[] = $category[0];
                 $cpid = $category[0]->parent_id;
             }
         }
@@ -84,7 +85,7 @@ class CategoryController extends Controller
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok' ,
-            'data' => $path
+            'data' => array_reverse($path)
         ], 200);
 
     }
