@@ -19,8 +19,8 @@ class CreateProductsTable extends Migration
             $table->string("title");
             $table->string("image_url")->default("");
 
-            $table->longText("technical_specs")->default('{}');
-            $table->longText("physical_specs")->default('{}');
+            $table->longText("technical_specs")->nullable();
+            $table->longText("physical_specs")->nullable();
 
             $table->timestamps();
         });

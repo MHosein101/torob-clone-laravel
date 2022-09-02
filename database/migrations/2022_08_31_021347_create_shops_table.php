@@ -19,7 +19,7 @@ class CreateShopsTable extends Migration
             $table->string("title");
             
             $table->string("province")->default("");
-            $table->mediumText("address")->default("");
+            $table->string("address")->default("");
 
             $table->string("owner")->default("");
             $table->string("status")->default("");

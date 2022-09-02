@@ -50,32 +50,31 @@ class CategoryController extends Controller
     public function getBrands(Request $request, $categoryName)
     {
         $category = Category::where('name', '=', $categoryName)->get();
-        if( count($category) == 1 ) {
-            
-        $brandsIDs = CategoryBrand::where('category_id', '=', $category[0]->id)->get('brand_id');
         $brands = [];
-        foreach($brandsIDs as $bid)
-            $brands[] = Brand::find($bid->brand_id);
-        
-            return response()->json([
-                'code' => 200 ,
-                'message' => 'Ok' ,
-                'data' => $brands
-            ], 200);
+
+        if( count($category) == 1 ) {
+            $brandsIDs = CategoryBrand::where('category_id', '=', $category[0]->id)->get('brand_id');
+            foreach($brandsIDs as $bid)
+                $brands[] = Brand::find($bid->brand_id);
         }
+        
+        return response()->json([
+            'code' => 200 ,
+            'message' => 'Ok' ,
+            'data' => $brands
+        ], 200);
     }
 
     public function getPath(Request $request, $categoryName)
     {
-
         $path = [];
         $category = Category::where('name', '=', $categoryName)->get();
+
         if( count($category) == 1 && $category[0]->parent_id != null ) {
             $path[] = $category[0];
-
             $cpid = $category[0]->parent_id;
-            while( $cpid != null ) {
 
+            while( $cpid != null ) {
                 $category = Category::where('id', '=', $cpid)->get();
                 $path[] = $category[0];
                 $cpid = $category[0]->parent_id;
