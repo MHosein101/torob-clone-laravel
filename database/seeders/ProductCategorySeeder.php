@@ -25,7 +25,6 @@ class ProductCategorySeeder extends Seeder
 
         ProductCategory::create([ 'product_id' => 4 , 'category_id' => 1 ]);
         ProductCategory::create([ 'product_id' => 4 , 'category_id' => 2 ]);
-
         
         ProductCategory::create([ 'product_id' => 5 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 5 , 'category_id' => 10 ]);
@@ -33,10 +32,12 @@ class ProductCategorySeeder extends Seeder
         ProductCategory::create([ 'product_id' => 6 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 6 , 'category_id' => 10 ]);
         
+        ProductCategory::create([ 'product_id' => 7 , 'category_id' => 9 ]);
+        ProductCategory::create([ 'product_id' => 7 , 'category_id' => 10 ]);
+        
         ProductCategory::create([ 'product_id' => 8 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 8 , 'category_id' => 12 ]);
         
-
         ProductCategory::create([ 'product_id' => 9 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 9 , 'category_id' => 12 ]);
         

@@ -15,7 +15,7 @@ class OfferSeeder extends Seeder
     public function run()
     {
         
-        Offer::create([ 'product_id' => 3 , 'shop_id' => 1 , 'is_available' => true , 'price' => 21000 ]);
+        Offer::create([ 'product_id' => 3 , 'shop_id' => 1 , 'is_available' => false , 'price' => 21000 ]);
         Offer::create([ 'product_id' => 3 , 'shop_id' => 2 , 'is_available' => false , 'price' => 19000 ]);
 
         Offer::create([ 'product_id' => 4 , 'shop_id' => 1 , 'is_available' => true , 'price' => 5000 ]);
