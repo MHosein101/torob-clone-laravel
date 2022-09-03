@@ -31,11 +31,11 @@ class OfferSeeder extends Seeder
 
         Offer::create([ 'product_id' => 5 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3000 ]);
         Offer::create([ 'product_id' => 5 , 'shop_id' => 2 , 'is_available' => true , 'price' => 3200 ]);
-        Offer::create([ 'product_id' => 5 , 'shop_id' => 3 , 'is_available' => true , 'price' => 2900 ]);
+        Offer::create([ 'product_id' => 5 , 'shop_id' => 3 , 'is_available' => false , 'price' => 2900 ]);
 
-        Offer::create([ 'product_id' => 6 , 'shop_id' => 1 , 'is_available' => true , 'price' => 2500 ]);
-        Offer::create([ 'product_id' => 6 , 'shop_id' => 2 , 'is_available' => true , 'price' => 1900 ]);
-        Offer::create([ 'product_id' => 6 , 'shop_id' => 3 , 'is_available' => true , 'price' => 1900 ]);
+        Offer::create([ 'product_id' => 6 , 'shop_id' => 1 , 'is_available' => false , 'price' => 2500 ]);
+        Offer::create([ 'product_id' => 6 , 'shop_id' => 2 , 'is_available' => false , 'price' => 1900 ]);
+        Offer::create([ 'product_id' => 6 , 'shop_id' => 3 , 'is_available' => false , 'price' => 1900 ]);
 
         Offer::create([ 'product_id' => 7 , 'shop_id' => 1 , 'is_available' => true , 'price' => 4000 ]);
         Offer::create([ 'product_id' => 7 , 'shop_id' => 3 , 'is_available' => true , 'price' => 3900 ]);

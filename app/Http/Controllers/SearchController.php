@@ -87,16 +87,17 @@ class SearchController extends Controller
         });
 
         // join with offers sub sql
-        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")->groupBy('product_id');
-        
-        // if( isset( $request->query()['available'] ) )
-        //     $offers = $offers->where('is_available', '=', false);
-
-        // $offers = $offers->where('is_available', '=', true);
-
-        $products = $products->leftJoinSub($offers, 'product_shops', function ($join) {
-            $join->on('products.id', '=', 'product_shops.product_id');
+        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
+        ->where('is_available','=', true)->groupBy('product_id');
+        $products = $products->leftJoinSub($offers, 'product_prices', function ($join) {
+            $join->on('products.id', '=', 'product_prices.product_id');
         });
+
+        // $offersAvailable = Offer::selectRaw("product_id, SUM(is_available), COUNT(shop_id)")->groupBy('product_id')
+        // ->havingRaw('COUNT(shop_id) + SUM(is_available) = COUNT(shop_id)');
+        // $products = $products->leftJoinSub($offersAvailable, 'product_availability', function ($join) {
+        //     $join->on('products.id', '=', 'product_availability.product_id');
+        // });
 
         // category
         if( $sp["category"] ) {
@@ -112,12 +113,10 @@ class SearchController extends Controller
 
                 $products = $products->where('category_id', '=', $cid);
             }
-
             $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
         }
-        else {
-            $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]);
-        }
+        else 
+        { $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]); }
 
         // brand
         if( $sp["brand"] ) {
@@ -131,6 +130,10 @@ class SearchController extends Controller
         $productsPriceMin = clone $products;
         $productsPriceMax = clone $products;
         
+        // just available results
+        if( isset( $request->query()['available'] ) )
+            $products = $products->where('price_start', '!=', null);
+
         // sort by price
         $priceOrder = 'asc';
         if($sp['sort'] == 'priceMax')
@@ -161,8 +164,17 @@ class SearchController extends Controller
         ->get(['title','image_url', 'price_start', 'shops_count']);
         // ->get();
 
-        $productsPriceMin = $productsPriceMin->orderBy('price_start', 'asc')->first()->price_start;
-        $productsPriceMax = $productsPriceMax->orderBy('price_start', 'desc')->get()->first()->price_start;
+        $i = 0;
+        foreach($products as $p) {
+            if(  $p->price_start == null )
+                $products[$i]["is_available"] = false;
+            else
+                $products[$i]["is_available"] = true;
+            $i++;
+        }
+
+        $productsPriceMin = $productsPriceMin->where('price_start', '!=', null)->orderBy('price_start', 'asc')->get()->first()->price_start;
+        $productsPriceMax = $productsPriceMax->where('price_start', '!=', null)->orderBy('price_start', 'desc')->get()->first()->price_start;
 
         return response()->json([
             'message' => 'Ok' ,
