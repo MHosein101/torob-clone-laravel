@@ -34,7 +34,6 @@ class SearchController extends Controller
         $categories = SearchFunctions::SuggestCategoriesBySearchedText($text);
 
         return response()->json([
-            'code' => 200 ,
             'message' => 'Ok' ,
             'data' => [
                 'first_match' => $firstMatchWord ,
@@ -64,12 +63,19 @@ class SearchController extends Controller
 
         if( $sp["q"] == '' && $sp["category"] == null && $sp["brand"] == null ) {
             return response()->json([
-                'code' => 400 ,
                 'message' => 'Define at least one of this : search query or category or brand'
             ], 400);
         }
 
         $products = Product::where('title','LIKE', "%{$sp["q"]}%");
+
+        $_products = clone $products;
+        if( count($_products->get()) == 0 ) {
+            return response()->json([
+                'message' => 'No results.'
+            ], 200);
+        }
+
         $suggestedCategories = null;
         
         // // join with favorites sub sql
@@ -159,7 +165,6 @@ class SearchController extends Controller
         $productsPriceMax = $productsPriceMax->orderBy('price_start', 'desc')->get()->first()->price_start;
 
         return response()->json([
-            'code' => 200 ,
             'message' => 'Ok' ,
             'data' => [
                 'price_range' => [ 'min' => $productsPriceMin , 'max' => $productsPriceMax ] ,

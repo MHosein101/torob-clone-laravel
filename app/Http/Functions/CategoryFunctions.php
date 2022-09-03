@@ -6,65 +6,54 @@ use App\Models\Category;
 
 class CategoryFunctions {
 
+    public static function GetSubCategories($val) {
+        $categories = [];
+
+        $subIDs = Category::where('parent_id', '=', $val)->get('id');
+        foreach($subIDs as $sid) {
+            $c = Category::where('id', '=', $sid->id)->first();
+            $categories[] = $c->name;
+        }
+
+        return $categories;
+    }
+
     public static function GetSubCategoriesByName($categoryName) {
         $category = Category::where('name', '=', $categoryName)->get();
-        $secondOutput = [];
-
         if( count($category) != 1 ) return;
-        
+    
         $category = $category[0];
         $subCategories = [];
         
-        if($category->level == 1) {
-            $secondOutput[] = $category->name;
+        switch($category->level) {
+            case 1:
+                $category = CategoryFunctions::GetSubCategories($category->id);
+                break;
+            case 2:
+                $category = Category::find($category->parent_id);
+                $subCategories = CategoryFunctions::GetSubCategories($category->id);
+                
+                $category = [
+                    'name' => $category->name ,
+                    'sub_categories' => $subCategories
+                ];
+                break;
+            case 3:
+                $category = Category::find($category->parent_id);
+                $second = clone $category;
+                $category = Category::find($second->parent_id);
+                $subCategories = CategoryFunctions::GetSubCategories($second->id);
 
-            $subIDs = Category::where('parent_id', '=', $category->id)->get('id');
-            foreach($subIDs as $sid) {
-                $c = Category::where('id', '=', $sid->id)->first();
-                $subCategories[] = $c;
-                $secondOutput[] = $c->name;
-            }
+                $category = [
+                    'name' => $category->name ,
+                    'sub_categories' => [
+                        'name' => $second->name ,
+                        'sub_categories' => $subCategories
+                    ]
+                ];
+                break;
         }
-        else if($category->level == 2) {
-
-            $category = Category::find($category->parent_id);
-
-            $secondOutput[] = $category->name;
-
-            $subIDs = Category::where('parent_id', '=', $category->id)->get('id');
-            foreach($subIDs as $sid) {
-                $c = Category::where('id', '=', $sid->id)->first();
-                $subCategories[] = $c;
-                $secondOutput[] = $c->name;
-
-            }
-        }
-        else if($category->level == 3) {
-            $categorySub = Category::find($category->parent_id);
-
-            $secondOutput[1] = $categorySub->name;
-
-            $category = Category::find($categorySub->parent_id);
-
-            $secondOutput[0] = $category->name;
-
-            $subIDs = Category::where('parent_id', '=', $categorySub->id)->get('id');
-            foreach($subIDs as $sid) {
-                $c = Category::where('id', '=', $sid->id)->first();
-                $subCategories[] = $c;
-                $secondOutput[] = $c->name;
-            }
-
-            $categorySub["status"] = false;
-            $categorySub["is_sub_category"] = true;
-            $categorySub["sub_categories"] = $subCategories;
-            $category["status"] = false;
-            $category["is_sub_category"] = true;
-            $category["sub_categories"] = $categorySub;
-        }
-        
-        // return $category;
-        return $secondOutput;
+        return $category;
     }
 
 }

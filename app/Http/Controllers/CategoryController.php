@@ -42,7 +42,6 @@ class CategoryController extends Controller
         }
 
         return response()->json([
-            'code' => 200 ,
             'message' => 'Ok' ,
             'data' => $data
         ], 200);
@@ -53,7 +52,6 @@ class CategoryController extends Controller
         $category = CategoryFunctions::GetSubCategoriesByName($categoryName);
 
         return response()->json([
-            'code' => 200 ,
             'message' => 'Ok' ,
             'data' => $category
         ], 200);
@@ -72,7 +70,6 @@ class CategoryController extends Controller
                 
         
         return response()->json([
-            'code' => 200 ,
             'message' => 'Ok' ,
             'data' => $brands
         ], 200);
@@ -95,7 +92,6 @@ class CategoryController extends Controller
         }
         
         return response()->json([
-            'code' => 200 ,
             'message' => 'Ok' ,
             'data' => array_reverse($path)
         ], 200);

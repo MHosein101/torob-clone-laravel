@@ -32,7 +32,6 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            'code' => $code ,
             'message' => $message ,
             'is_signup' => $isSignUp ,
             'verification_code' => $verificationCode , // FOR DEBUG
@@ -57,7 +56,6 @@ class AuthController extends Controller
             $user->save();
 
             return response()->json([
-                'code' => 200 ,
                 'message' => 'Login successful.' ,
                 'API_TOKEN' => $user->api_token
             ], 200);
@@ -77,7 +75,6 @@ class AuthController extends Controller
             User::where('email_or_number', '=', $request->input('email_or_number'))->delete();
             
             return response()->json([
-                'code' => 200 ,
                 'message' => 'Record removed.'
             ], 200);
         }
@@ -93,7 +90,6 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'code' => 200 ,
             'message' => 'Logged out successfully.'
         ], 200);
     }
