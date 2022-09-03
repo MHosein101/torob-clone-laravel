@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Shop;
 use App\Models\Brand;
 use App\Models\Offer;
-use App\Models\Shop;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Favorite;
-use App\Models\ProductCategory;
 use Illuminate\Http\Request;
+use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
+use App\Http\Functions\SearchFunctions;
 
 class SearchController extends Controller
 {
@@ -29,15 +30,7 @@ class SearchController extends Controller
                     $firstMatchWord = $w;
         }
 
-        $matchedProductsIDs = Product::where('title','LIKE', "%$text%")->take(10);
-        
-        $categoryIDs = ProductCategory::leftJoinSub($matchedProductsIDs, 'products_date', function ($join) {
-            $join->on('product_categories.product_id', '=', 'products_date.id');
-        })->select('category_id')->distinct()->get();
-
-        $categories =[];
-        foreach($categoryIDs as $cid)
-            $categories[] = Category::find($cid)->first()->name;
+        $categories = SearchFunctions::SuggestCategoriesBySearchedText($text);
 
         return response()->json([
             'code' => 200 ,
@@ -66,7 +59,7 @@ class SearchController extends Controller
 
     public function search(Request $request) 
     {
-        $sp = $this->parseParams( $request->query() );
+        $sp = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
 
         if( $sp["q"] == '' && $sp["category"] == null && $sp["brand"] == null ) {
             return response()->json([
@@ -76,6 +69,7 @@ class SearchController extends Controller
         }
 
         $products = Product::where('title','LIKE', "%{$sp["q"]}%");
+        $suggestedCategories = null;
         
         // // join with favorites sub sql
         $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
@@ -120,6 +114,11 @@ class SearchController extends Controller
 
                 $products = $products->where('category_id', '=', $cid);
             }
+
+            $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
+        }
+        else {
+            $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]);
         }
 
         // brand
@@ -163,20 +162,11 @@ class SearchController extends Controller
             'message' => 'Ok' ,
             'data' => [
                 'price_range' => [ 'min' => $productsPriceMin , 'max' => $productsPriceMax ] ,
+                'suggested_categories' => $suggestedCategories ,
                 'products' => $products
             ]
         ], 200);
         
-    }
-
-    private function parseParams($query) 
-    {
-        $params = $this->defaultQueryParams;
-
-        foreach($this->defaultQueryParams as $key => $val)
-            $params[$key] = isset($query[$key]) ? $query[$key] : $val;
-
-        return $params;
     }
 
 

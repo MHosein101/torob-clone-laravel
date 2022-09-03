@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use App\Models\CategoryBrand;
+use App\Http\Functions\CategoryFunctions;
 
 class CategoryController extends Controller
 {
@@ -49,23 +50,8 @@ class CategoryController extends Controller
 
     public function getSubCategories(Request $request, $categoryName)
     {
-        $category = Category::where('name', '=', $categoryName)->get();
-        if( count($category) == 1 ) {
-            $category = $category[0];
+        $category = CategoryFunctions::GetSubCategoriesByName($categoryName);
 
-            if($category->level != 1)
-                $category = Category::find($category->parent_id);
-
-            $subCategories = [];
-            $subIDs = Category::where('parent_id', '=', $category->id)->get('id');
-            foreach($subIDs as $sid)
-                $subCategories[] = Category::where('id', '=', $sid->id)->first();
-        }
-
-        $category["status"] = false;
-        $category["is_sub_category"] = true;
-        $category["sub_categories"] = $subCategories;
-        
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok' ,
@@ -78,11 +64,12 @@ class CategoryController extends Controller
         $category = Category::where('name', '=', $categoryName)->get();
         $brands = [];
 
-        if( count($category) == 1 ) {
-            $brandsIDs = CategoryBrand::where('category_id', '=', $category[0]->id)->get('brand_id');
-            foreach($brandsIDs as $bid)
-                $brands[] = Brand::find($bid->brand_id);
-        }
+        if( count($category) != 1 ) return;
+        
+        $brandsIDs = CategoryBrand::where('category_id', '=', $category[0]->id)->get('brand_id');
+        foreach($brandsIDs as $bid)
+            $brands[] = Brand::find($bid->brand_id);
+                
         
         return response()->json([
             'code' => 200 ,
