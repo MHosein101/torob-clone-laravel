@@ -17,7 +17,7 @@ class CreateCategoriesTable extends Migration
             $table->id();
             
             $table->string("name");
-            $table->boolean("is_parent")->default(false);
+            $table->tinyInteger("level");
             $table->unsignedBigInteger('parent_id')->nullable();
         });
     }

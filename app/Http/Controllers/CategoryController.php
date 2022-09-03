@@ -13,7 +13,7 @@ class CategoryController extends Controller
     public function getAll(Request $request)
     {
         $data = [];
-        $topParentCategories = Category::where('is_parent', '=', true)->where('parent_id', '=', null)->get();
+        $topParentCategories = Category::where('level', '=', 1)->where('parent_id', '=', null)->get();
 
         foreach($topParentCategories as $currentTopParent) { // get second level categories
 
@@ -35,7 +35,7 @@ class CategoryController extends Controller
 
             
             $currentTopParent["status"] = false;
-            $currentTopParent["is_sub_category"] = (boolean)$currentTopParent->is_parent;
+            $currentTopParent["is_sub_category"] = true;
             $currentTopParent["sub_categories"] = $subCategories;
             $data[] = $currentTopParent;
         }
@@ -44,6 +44,34 @@ class CategoryController extends Controller
             'code' => 200 ,
             'message' => 'Ok' ,
             'data' => $data
+        ], 200);
+    }
+
+    public function getSubCategories(Request $request, $categoryName)
+    {
+        $category = Category::where('name', '=', $categoryName)->get();
+        if( count($category) == 1 ) {
+            $category = $category[0];
+
+            if($category->parent_id != null) {
+                $category = Category::find($category->parent_id)->first();
+            }
+
+
+            $subCategories = [];
+            $subIDs = Category::where('parent_id', '=', $category->id)->get('id');
+            foreach($subIDs as $sid)
+                $subCategories[] = Category::where('id', '=', $sid->id)->first();
+        }
+
+        $category["status"] = false;
+        $category["is_sub_category"] = true;
+        $category["sub_categories"] = $subCategories;
+        
+        return response()->json([
+            'code' => 200 ,
+            'message' => 'Ok' ,
+            'data' => $category
         ], 200);
     }
 

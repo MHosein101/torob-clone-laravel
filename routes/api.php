@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ProductController;
 
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -23,8 +24,11 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 
 Route::get('categories',[CategoryController::class,'getAll']);
+Route::get('categories/{name}/sub',[CategoryController::class,'getSubCategories']);
 Route::get('categories/{name}/brands',[CategoryController::class,'getBrands']);
 Route::get('categories/{name}/path',[CategoryController::class,'getPath']);
 
 Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
 Route::get('search',[SearchController::class,'search']);
+
+Route::get('product/{name}',[ProductController::class,'showDetail']);

@@ -10,7 +10,7 @@ class Category extends Model
     use HasFactory;
     
     protected $hidden = [
-        'is_parent' ,
+        'level' ,
         'parent_id'
     ];
 
