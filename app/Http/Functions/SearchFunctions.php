@@ -8,7 +8,7 @@ use App\Models\ProductCategory;
 
 class SearchFunctions {
 
-    public function ConfigQueryParams($query, $defaults) 
+    public static function ConfigQueryParams($query, $defaults) 
     {
         $params = $defaults;
 

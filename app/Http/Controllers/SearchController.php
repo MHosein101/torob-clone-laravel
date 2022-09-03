@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Functions\SearchFunctions;
+use App\Http\Functions\CategoryFunctions;
 
 class SearchController extends Controller
 {
@@ -91,15 +92,6 @@ class SearchController extends Controller
             $join->on('products.id', '=', 'product_shops.product_id');
         });
 
-        $productsPriceMin = clone $products;
-        $productsPriceMax = clone $products;
-
-        // sort by price
-        $priceOrder = 'asc';
-        if($sp['sort'] == 'priceMax')
-            $priceOrder = 'desc';
-        $products = $products->orderBy('price_start', $priceOrder);
-
         // category
         if( $sp["category"] ) {
             $cid = Category::where('name', '=',  $sp["category"]  )->get('id');
@@ -130,6 +122,15 @@ class SearchController extends Controller
             }
         }
 
+        $productsPriceMin = clone $products;
+        $productsPriceMax = clone $products;
+        
+        // sort by price
+        $priceOrder = 'asc';
+        if($sp['sort'] == 'priceMax')
+            $priceOrder = 'desc';
+        $products = $products->orderBy('price_start', $priceOrder);
+
         // date filter
         if(  $sp['sort'] == 'dateRecent' ) {
             $products = $products->orderBy('id', 'desc');
@@ -154,7 +155,7 @@ class SearchController extends Controller
         ->get(['title','image_url', 'price_start', 'shops_count']);
         // ->get();
 
-        $productsPriceMin = $productsPriceMin->orderBy('price_start', 'asc')->get()->first()->price_start;
+        $productsPriceMin = $productsPriceMin->orderBy('price_start', 'asc')->first()->price_start;
         $productsPriceMax = $productsPriceMax->orderBy('price_start', 'desc')->get()->first()->price_start;
 
         return response()->json([

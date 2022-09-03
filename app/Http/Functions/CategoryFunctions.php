@@ -8,7 +8,7 @@ class CategoryFunctions {
 
     public static function GetSubCategoriesByName($categoryName) {
         $category = Category::where('name', '=', $categoryName)->get();
-        $secondOutput = [null];
+        $secondOutput = [];
 
         if( count($category) != 1 ) return;
         
@@ -26,8 +26,6 @@ class CategoryFunctions {
             }
         }
         else if($category->level == 2) {
-            
-            $secondOutput[] = $category->name;
 
             $category = Category::find($category->parent_id);
 
