@@ -86,24 +86,25 @@ class SearchController extends Controller
         });
 
         // join with offers sub sql
-        $priceFunc = 'MIN';
-        $priceOrder = 'asc';
-        if($sp['sort'] == 'priceMax') {
-            $priceFunc = 'MAX';
-            $priceOrder = 'desc';
-        }
-
-        $offers = Offer::selectRaw("product_id, is_available, $priceFunc(price) as price_start, COUNT(shop_id) as shops_count");
+        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")->groupBy('product_id');
         
         // if( isset( $request->query()['available'] ) )
         //     $offers = $offers->where('is_available', '=', false);
 
-        $offers = $offers->groupBy('product_id', 'is_available');
+        // $offers = $offers->where('is_available', '=', true);
 
         $products = $products->leftJoinSub($offers, 'product_shops', function ($join) {
             $join->on('products.id', '=', 'product_shops.product_id');
-        })
-        ->orderBy('price_start', $priceOrder); // sort by price
+        });
+
+        $productsPriceMin = clone $products;
+        $productsPriceMax = clone $products;
+
+        // sort by price
+        $priceOrder = 'asc';
+        if($sp['sort'] == 'priceMax')
+            $priceOrder = 'desc';
+        $products = $products->orderBy('price_start', $priceOrder);
 
         // category
         if( $sp["category"] ) {
@@ -151,13 +152,19 @@ class SearchController extends Controller
             ->take( $sp["perPage"] );
 
         $products = $products
-        ->get(['title','image_url', 'is_available', 'price_start', 'shops_count']);
+        ->get(['title','image_url', 'price_start', 'shops_count']);
         // ->get();
+
+        $productsPriceMin = $productsPriceMin->orderBy('price_start', 'asc')->get()->first()->price_start;
+        $productsPriceMax = $productsPriceMax->orderBy('price_start', 'desc')->get()->first()->price_start;
 
         return response()->json([
             'code' => 200 ,
             'message' => 'Ok' ,
-            'data' => $products
+            'data' => [
+                'price_range' => [ 'min' => $productsPriceMin , 'max' => $productsPriceMax ] ,
+                'products' => $products
+            ]
         ], 200);
         
     }
