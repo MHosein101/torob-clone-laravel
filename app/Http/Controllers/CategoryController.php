@@ -53,10 +53,8 @@ class CategoryController extends Controller
         if( count($category) == 1 ) {
             $category = $category[0];
 
-            if($category->parent_id != null) {
-                $category = Category::find($category->parent_id)->first();
-            }
-
+            if($category->level != 1)
+                $category = Category::find($category->parent_id);
 
             $subCategories = [];
             $subIDs = Category::where('parent_id', '=', $category->id)->get('id');
