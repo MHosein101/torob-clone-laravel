@@ -34,7 +34,7 @@ class CategoryController extends Controller
                 'message' => 'No category found.'
             ], 404);
 
-        $subCategories = CategoryFunctions::GetSubCategoriesByName($category[0]);
+        $subCategories = CategoryFunctions::GetSubCategoriesByName($category[0]->name);
         
         return response()->json([
             'message' => 'Ok' ,

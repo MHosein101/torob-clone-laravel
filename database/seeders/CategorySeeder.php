@@ -17,13 +17,23 @@ class CategorySeeder extends Seeder
         $c12 = Category::create([ "name" => "لوازم جانبی موبایل و تبلت" , "level" => 2, "parent_id" => $c1->id ]); // 3
         Category::create([ "name" => "کیف و کاور گوشی" , "level" => 3, "parent_id" => $c12->id ]); // 4
         Category::create([ "name" => "شارژر گوشی" , "level" => 3, "parent_id" => $c12->id ]); // 5
-        Category::create([ "name" => "کابل و تبدیل" , "level" => 3, "parent_id" => $c12->id ]); // 6
-        Category::create([ "name" => "محافظ لنز دوربین" , "level" => 3, "parent_id" => $c12->id ]); // 7
+
+        $c13 = Category::create([ "name" => "کابل و تبدیل" , "level" => 3, "parent_id" => $c12->id ]); // 6
+        Category::create([ "name" => "کابل USB Type A" , "level" => 4, "parent_id" => $c13->id ]);
+        Category::create([ "name" => "کابل USB Type C" , "level" => 4, "parent_id" => $c13->id ]);
+        Category::create([ "name" => "کابل USB Micro" , "level" => 4, "parent_id" => $c13->id ]);
+
 
         $c2 = Category::create([ "name" => "لپ‌تاپ کامپیوتر اداری" , "level" => 1 ]); // 8
 
         $c21 = Category::create([ "name" => "قطعات داخلی کامپیوتر و لپ تاپ" , "level" => 2, "parent_id" => $c2->id ]); // 9
-        Category::create([ "name" => "پردازنده" , "level" => 3, "parent_id" => $c21->id ]); // 10
+        
+        $c211 = Category::create([ "name" => "پردازنده" , "level" => 3, "parent_id" => $c21->id ]); // 10
+        Category::create([ "name" => "تسل دوازدهم" , "level" => 4, "parent_id" => $c211->id ]);
+        Category::create([ "name" => "تسل یازدهم" , "level" => 4, "parent_id" => $c211->id ]);
+        Category::create([ "name" => "تسل دهم" , "level" => 4, "parent_id" => $c211->id ]);
+        Category::create([ "name" => "تسل تهم" , "level" => 4, "parent_id" => $c211->id ]);
+
         Category::create([ "name" => "مادربورد" , "level" => 3, "parent_id" => $c21->id ]); // 11
         Category::create([ "name" => "کارت گرافیک" , "level" => 3, "parent_id" => $c21->id ]); // 12
         
@@ -46,26 +56,6 @@ class CategorySeeder extends Seeder
         $c32 = Category::create(["name" => "پوشاک و کفش زنانه" , "level" => 2, "parent_id" => $c3->id ]); // 22
         Category::create([ "name" => "شلوار و سرهمی زنانه" , "level" => 3, "parent_id" => $c32->id ]); // 23
         Category::create([ "name" => "کفش و صندل زنانه" , "level" => 3, "parent_id" => $c32->id ]); // 24
-
-
-
-        $c4 = Category::create([ "name" => "level-1" , "level" => 1 ]); // 24
-
-            $c41 = Category::create([ "name" => "level-2-1" , "level" => 2, "parent_id" => $c4->id ]); // 25
-
-                Category::create([ "name" => "level-2-1-1" , "level" => 3, "parent_id" => $c41->id ]); // 26
-
-                $c42 = Category::create([ "name" => "level-2-1-2" , "level" => 3, "parent_id" => $c41->id ]); // 27
-
-                    Category::create([ "name" => "level-2-1-2-1" , "level" => 4, "parent_id" => $c42->id ]); // 28
-                    Category::create([ "name" => "level-2-1-2-2" , "level" => 4, "parent_id" => $c42->id ]); // 29
-                    Category::create([ "name" => "level-2-1-2-3" , "level" => 4, "parent_id" => $c42->id ]); // 30
-
-            $c43 = Category::create([ "name" => "level-2-2" , "level" => 3, "parent_id" => $c4->id ]); // 31
-
-                Category::create([ "name" => "level-2-2-1" , "level" => 3, "parent_id" => $c43->id ]); // 32
-                Category::create([ "name" => "level-2-2-2" , "level" => 3, "parent_id" => $c43->id ]); // 33
-
 
         // $c1 = Category::create([ "name" => "" , "level" => 1 ]);
         // $c2 = Category::create([ "name" => "" , "level" => 2, "parent_id" => $c1->id ]);

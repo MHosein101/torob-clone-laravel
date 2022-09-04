@@ -48,7 +48,11 @@ class CategoryFunctions {
         return $categories;
     }
 
-    public static function GetSubCategoriesByName($category) {
+    public static function GetSubCategoriesByName($categoryName) {
+        $category = Category::where('name', $categoryName)->get();
+        if( count($category) == 0 ) return;
+
+        $category = $category[0];
         $subCategory = null;
         $subCategorySubCategories = null;
         
