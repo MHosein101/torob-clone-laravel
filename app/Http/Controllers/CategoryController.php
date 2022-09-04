@@ -49,11 +49,11 @@ class CategoryController extends Controller
 
     public function getSubCategories(Request $request, $categoryName)
     {
-        $category = CategoryFunctions::GetSubCategoriesByName($categoryName);
+        $subCategories = CategoryFunctions::GetSubCategoriesByName($categoryName);
 
         return response()->json([
             'message' => 'Ok' ,
-            'data' => $category
+            'data' => $subCategories
         ], 200);
     }
 
@@ -79,8 +79,9 @@ class CategoryController extends Controller
     {
         $path = [];
         $category = Category::where('name', '=', $categoryName)->get();
+        if( count($category) == 0 ) return;
 
-        if( count($category) == 1 && $category[0]->parent_id != null ) {
+        if($category[0]->level != 1 ) {
             $path[] = $category[0];
             $cpid = $category[0]->parent_id;
 
@@ -90,6 +91,8 @@ class CategoryController extends Controller
                 $cpid = $category[0]->parent_id;
             }
         }
+        else
+            $path[] = $category[0];
         
         return response()->json([
             'message' => 'Ok' ,

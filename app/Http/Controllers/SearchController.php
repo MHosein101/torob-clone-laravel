@@ -79,7 +79,7 @@ class SearchController extends Controller
             ], 400);
         }
 
-        $products = Product::where('title','LIKE', "%{$sp["q"]}%");
+        $products = Product::where('products.title','LIKE', "%{$sp["q"]}%");
 
         $_products = clone $products;
         if( count($_products->get()) == 0 ) {
@@ -112,6 +112,17 @@ class SearchController extends Controller
         //     $join->on('products.id', '=', 'product_availability.product_id');
         // });
 
+        // $offersSingleShop = Offer::selectRaw("product_id, shop_id")->where('is_available', '=', true);
+        // $shop = Shop::leftJoinSub($offersSingleShop, 'offer_shop', function ($join) {
+        //     $join->on('shops.id', '=', 'offer_shop.shop_id');
+        // })->select(['shops.id', 'shops.title', 'product_id']);
+
+        // $products = $products->leftJoinSub($shop, 'product_shop', function ($join) {
+        //     $join->on('products.id', '=', 'product_shop.product_id');
+        // });
+
+        // dd($products->get());
+
         // category
         if( $sp["category"] != null ) {
             $cid = Category::where('name', '=',  $sp["category"]  )->get('id');
@@ -127,12 +138,12 @@ class SearchController extends Controller
 
                 $products = $products->where('category_id', '=', $cid);
 
-                // $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
+                $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
                 $searchBrands = CategoryFunctions::GetBrandsInCategory($cid);
             }
         }
         else { 
-            // $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]); 
+            $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]); 
             $searchBrands = SearchFunctions::GetBrandsInSearch($sp["q"]);
         }
 
@@ -179,8 +190,8 @@ class SearchController extends Controller
             ->take( $sp["perPage"] );
 
         $products = $products
-        ->get(['title','image_url', 'price_start', 'shops_count']);
-        // ->get();
+        // ->get(['title','image_url', 'price_start', 'shops_count']);
+        ->get();
 
         $i = 0;
         foreach($products as $p) {

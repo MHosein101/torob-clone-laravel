@@ -14,52 +14,49 @@ class CategoryFunctions {
         $subIDs = Category::where('parent_id', '=', $val)->get('id');
         foreach($subIDs as $sid) {
             $c = Category::where('id', '=', $sid->id)->first();
-            $categories[] = $c->name;
+            $categories[] = $c;
         }
 
         return $categories;
     }
 
-    public static function GetSubCategoriesByID($categoryId) {
-        return CategoryFunctions::GetSubCategoriesByName( Category::find($categoryId)->name , true );
-    }
-
-    public static function GetSubCategoriesByName($categoryName, $showAllLevels = false) {
+    public static function GetSubCategoriesByName($categoryName) {
         $category = Category::where('name', '=', $categoryName)->get();
         if( count($category) != 1 ) return;
     
         $category = $category[0];
-        $subCategories = [];
+        $subCategory = null;
+        $subCategorySubCategories = null;
         
         switch($category->level) {
             case 1:
-                $category = CategoryFunctions::GetSubCategories($category->id);
+                return [
+                    'id' => $category->id ,
+                    'name' => $category->name ,
+                    'sub_categories' => CategoryFunctions::GetSubCategories($category->id)
+                ];
                 break;
             case 2:
+                $subCategory = clone $category;
                 $category = Category::find($category->parent_id);
-                $subCategories = CategoryFunctions::GetSubCategories($category->id);
-                
-                $category = [
-                    'name' => $category->name ,
-                    'sub_categories' => $subCategories
-                ];
+                $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);
                 break;
             case 3:
-                $category = Category::find($category->parent_id);
-                $second = clone $category;
-                $category = Category::find($second->parent_id);
-                $subCategories = CategoryFunctions::GetSubCategories($second->id);
-
-                $category = [
-                    'name' => $category->name ,
-                    'sub_categories' => [
-                        'name' => $second->name ,
-                        'sub_categories' => $subCategories
-                    ]
-                ];
+                $subCategory = Category::find($category->parent_id);
+                $category = Category::find($subCategory->parent_id);
+                $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);
                 break;
         }
-        return $category;
+        
+        return [
+            'id' => $category->id ,
+            'name' => $category->name ,
+            'sub_categories' => [
+                'id' => $subCategory->id ,
+                'name' => $subCategory->name ,
+                'sub_categories' => $subCategorySubCategories
+            ]
+        ];
     }
 
     public static function GetBrandsInCategory($categoryID) {

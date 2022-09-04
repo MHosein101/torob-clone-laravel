@@ -21,19 +21,7 @@ class SearchFunctions {
     }
 
     public static function SuggestCategoriesBySearchedText($text, $justSubCategories = false) {
-        // $matchedProductsIDs = Product::where('title','LIKE', "%$text%")->take(20);
         
-        // $category = ProductCategory::rightJoinSub($matchedProductsIDs, 'matched_products', function ($join) {
-        //     $join->on('product_categories.product_id', '=', 'matched_products.id');
-        // })->select('category_id')->distinct()->get()->first();
-
-        // $categories = CategoryFunctions::GetSubCategoriesByID($category->category_id);
-        // foreach($categoryIDs as $cid) {
-        //     $c = Category::find($cid)->first();
-        //     if($justSubCategories && $c->level == 1) continue;
-        //     $categories[] = ($justSubCategories) ? $c->id : $c->name ;
-        // }
-        // return $categories;
     }
 
     public static function GetBrandsInSearch($text) {
