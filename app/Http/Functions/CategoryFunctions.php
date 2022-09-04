@@ -64,7 +64,7 @@ class CategoryFunctions {
 
         $brands = [];
         foreach($brandsIDs as $bid)
-            $brands[] = Brand::find($bid);
+            $brands[] = Brand::find($bid)->first();
 
         return $brands;
     }

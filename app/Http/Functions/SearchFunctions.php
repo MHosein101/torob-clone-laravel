@@ -20,8 +20,75 @@ class SearchFunctions {
         return $params;
     }
 
-    public static function SuggestCategoriesBySearchedText($text, $justSubCategories = false) {
+    public static function SuggestSearchQuery($text) {
+        $delimiters = [' ', '.', '-', ',', '|', '\\', '/', '(', ')'];
+        $newText = str_replace($delimiters, $delimiters[0], $text);
+        $searchedWords = explode($delimiters[0], $newText);
+
+        $productsTitle = [];
+        foreach($searchedWords as $s) {
+            $matchedProducts = Product::where('title','LIKE', "%$s%")->take(20)->get('title');
+            foreach($matchedProducts as $p)
+                $productsTitle[] = $p->title;
+        }
         
+        $queries = [];
+        foreach($productsTitle as $title) {
+            $newTitle = str_replace($delimiters, $delimiters[0], $title);
+            $words = explode($delimiters[0], $newTitle);
+            
+            foreach($words as $w) {
+                foreach($searchedWords as $s) {
+                    if( strpos( strtolower($w), strtolower($s) ) !== false )
+                        $queries[] = $w; 
+                }
+            }
+        }
+        return array_reverse( array_unique($queries) );
+    }
+
+    public static function SuggestCategoriesInSearch($textOrData, $useData = false) {
+        $queries = null;
+
+        if($useData)
+            $queries = $textOrData;
+        else
+            $queries = SearchFunctions::SuggestSearchQuery($textOrData);
+
+        $foundProductsIDs = [];
+        foreach($queries as $q) {
+            $products = Product::where('title','LIKE', "%$q%")->take(10)->get();
+            foreach($products as $p)
+                $foundProductsIDs[] = $p->id;
+        }
+        $foundProductsIDs = array_unique($foundProductsIDs);
+
+        $categorIDs = [];
+        foreach($foundProductsIDs as $pid) {
+            $categories = ProductCategory::where('product_id', $pid)->get();
+            foreach($categories as $c)
+                $categorIDs[] = $c->category_id;
+        }
+        $categorIDs = array_unique($categorIDs);
+
+        $mainCategory = null;
+        foreach($categorIDs as $cid) {
+            $c = Category::find($cid);
+            if($c->level == 1)
+                $mainCategory = $c;
+        }
+
+        $topCategories = Category::where('parent_id', $mainCategory->id)->get();
+        $suggestedCategories = [];
+
+        foreach($topCategories as $category) {
+            $suggestedCategories[] = $category;
+            $subCategories = Category::where('parent_id', $category->id)->get();
+            foreach($subCategories as $sc)
+                $suggestedCategories[] = $sc;
+        }
+
+        return $suggestedCategories;
     }
 
     public static function GetBrandsInSearch($text) {
@@ -35,7 +102,7 @@ class SearchFunctions {
 
         $brands = [];
         foreach($brandsIDs as $bid) {
-            $brands[] = Brand::find($bid);
+            $brands[] = Brand::find($bid)->first();
         }
 
         return $brands;

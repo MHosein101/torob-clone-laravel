@@ -19,32 +19,8 @@ class SearchController extends Controller
 
     public function suggestion(Request $request, $text)
     {
-        $delimiters = [' ', '.', '-', ',', '|', '\\', '/', '(', ')'];
-        $newText = str_replace($delimiters, $delimiters[0], $text);
-        $searchedWords = explode($delimiters[0], $newText);
-
-        $productsTitle = [];
-        foreach($searchedWords as $s) {
-            $matchedProducts = Product::where('title','LIKE', "%$s%")->take(20)->get('title');
-            foreach($matchedProducts as $p)
-                $productsTitle[] = $p->title;
-        }
-        
-        $queries = [];
-        foreach($productsTitle as $title) {
-            $newTitle = str_replace($delimiters, $delimiters[0], $title);
-            $words = explode($delimiters[0], $newTitle);
-            
-            foreach($words as $w) {
-                foreach($searchedWords as $s) {
-                    if( strpos( strtolower($w), strtolower($s) ) !== false )
-                        $queries[] = $w; 
-                }
-            }
-        }
-        $queries = array_reverse( array_unique($queries) );
-
-        $categories = SearchFunctions::SuggestCategoriesBySearchedText($text);
+        $queries = SearchFunctions::SuggestSearchQuery($text);
+        $categories = SearchFunctions::SuggestCategoriesInSearch($queries, true);
 
         return response()->json([
             'message' => 'Ok' ,
@@ -53,7 +29,6 @@ class SearchController extends Controller
                 'suggested_categories' => $categories
             ]
         ], 200);
-        
     }
     
     private $defaultQueryParams = [
@@ -81,14 +56,7 @@ class SearchController extends Controller
 
         $products = Product::where('products.title','LIKE', "%{$sp["q"]}%");
 
-        $_products = clone $products;
-        if( count($_products->get()) == 0 ) {
-            return response()->json([
-                'message' => 'No results.'
-            ], 200);
-        }
-
-        $suggestedCategories = null;
+        $searchCategories = null;
         $searchBrands = null;
         
         // // join with favorites sub sql
@@ -138,12 +106,12 @@ class SearchController extends Controller
 
                 $products = $products->where('category_id', '=', $cid);
 
-                $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
+                $searchCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
                 $searchBrands = CategoryFunctions::GetBrandsInCategory($cid);
             }
         }
         else { 
-            $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]); 
+            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($sp["q"]); 
             $searchBrands = SearchFunctions::GetBrandsInSearch($sp["q"]);
         }
 
@@ -156,6 +124,14 @@ class SearchController extends Controller
             }
         }
 
+        
+        $_products = clone $products;
+        if( count($_products->get()) == 0 ) {
+            return response()->json([
+                'message' => 'No results.'
+            ], 200);
+        }
+        
         $productsPriceMin = clone $products;
         $productsPriceMax = clone $products;
         
@@ -190,8 +166,8 @@ class SearchController extends Controller
             ->take( $sp["perPage"] );
 
         $products = $products
-        // ->get(['title','image_url', 'price_start', 'shops_count']);
-        ->get();
+        ->get(['title','image_url', 'price_start', 'shops_count']);
+        // ->get();
 
         $i = 0;
         foreach($products as $p) {
@@ -204,15 +180,21 @@ class SearchController extends Controller
             $i++;
         }
 
-        $productsPriceMin = $productsPriceMin->where('price_start', '!=', null)->orderBy('price_start', 'asc')->get()->first()->price_start;
-        $productsPriceMax = $productsPriceMax->where('price_start', '!=', null)->orderBy('price_start', 'desc')->get()->first()->price_start;
+        $productsPriceMin = $productsPriceMin->where('price_start', '!=', null)->orderBy('price_start', 'asc')->get();
+        $productsPriceMax = $productsPriceMax->where('price_start', '!=', null)->orderBy('price_start', 'desc')->get();
+
+        if( count($productsPriceMin) > 0 && count($productsPriceMax) > 0 ) {
+            $productsPriceMin = $productsPriceMin[0]->price_start;
+            $productsPriceMax = $productsPriceMax[0]->price_start;
+        }
 
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
                 'price_range' => [ 'min' => $productsPriceMin , 'max' => $productsPriceMax ] ,
                 'brands' => $searchBrands ,
-                'suggested_categories' => $suggestedCategories ,
+                'categories_type' => '' , // suggestion , similar , exact
+                'categories' => $searchCategories ,
                 'products' => $products
             ]
         ], 200);
