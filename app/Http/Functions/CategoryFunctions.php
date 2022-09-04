@@ -68,6 +68,8 @@ class CategoryFunctions {
             case 3:
             case 4:
             case 5:
+            case 6:
+            case 7:
                 $subCategory = Category::find($category->parent_id);
                 $category = Category::find($subCategory->parent_id);
                 $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);
