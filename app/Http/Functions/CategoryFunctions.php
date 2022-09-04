@@ -74,9 +74,16 @@ class CategoryFunctions {
             case 5:
             case 6:
             case 7:
+                $currentCategory = clone $category;
                 $subCategory = Category::find($category->parent_id);
                 $category = Category::find($subCategory->parent_id);
-                $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);
+                $currentSubCategories = Category::where('parent_id', $currentCategory->id)->get();
+                if( count($currentSubCategories) > 0 )
+                    $currentCategory['sub_categories'] = $currentSubCategories;
+                else
+                    $currentCategory = CategoryFunctions::GetSubCategories($currentCategory->parent_id);
+                
+                $subCategorySubCategories = $currentCategory;
                 break;
         }
         
