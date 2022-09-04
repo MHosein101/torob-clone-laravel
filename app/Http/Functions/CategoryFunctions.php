@@ -2,7 +2,9 @@
 
 namespace App\Http\Functions;
 
+use App\Models\Brand;
 use App\Models\Category;
+use App\Models\CategoryBrand;
 
 class CategoryFunctions {
 
@@ -18,7 +20,11 @@ class CategoryFunctions {
         return $categories;
     }
 
-    public static function GetSubCategoriesByName($categoryName) {
+    public static function GetSubCategoriesByID($categoryId) {
+        return CategoryFunctions::GetSubCategoriesByName( Category::find($categoryId)->name , true );
+    }
+
+    public static function GetSubCategoriesByName($categoryName, $showAllLevels = false) {
         $category = Category::where('name', '=', $categoryName)->get();
         if( count($category) != 1 ) return;
     
@@ -54,6 +60,16 @@ class CategoryFunctions {
                 break;
         }
         return $category;
+    }
+
+    public static function GetBrandsInCategory($categoryID) {
+        $brandsIDs = CategoryBrand::where('category_id', '=', $categoryID)->get('brand_id');
+
+        $brands = [];
+        foreach($brandsIDs as $bid)
+            $brands[] = Brand::find($bid);
+
+        return $brands;
     }
 
 }

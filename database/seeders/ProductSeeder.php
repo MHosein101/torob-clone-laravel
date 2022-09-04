@@ -26,8 +26,8 @@ class ProductSeeder extends Seeder
         Product::create([ 'title' => 'کارت گرافیک Nvidia GTX1060 3GB' , 'brand_id' => 10 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/BV/C_/BVC_FQYE_XshX_0Z_/0x145.jpg' ]); // 8
         Product::create([ 'title' => 'کارت گرافیک RTX 2060 6GB' , 'brand_id' => 11 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/_8/CL/_8CLqDxw-fAyzyGp.jpg_/0x145.jpg' ]); // 9
 
-        Product::create([ 'title' => 'کیبورد گیمینگ تسکو TSCO TK8124GA Gaming' , 'brand_id' => 8 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/6f/uZ/6fuZlT_rW4CPGH6d.jpg_/0x145.jpg' ]); // 10
-        Product::create([ 'title' => 'ماوس گیمینگ لاجیتک G502 HERO' , 'brand_id' => 8 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/xn/gh/xnghPNRl-yapJlfD.jpg_/0x145.jpg' ]); // 11
+        Product::create([ 'title' => 'کیبورد گیمینگ تسکو TSCO TK8124GA Gaming' , 'image_url' => 'https://storage.torob.com/backend-api/base/images/6f/uZ/6fuZlT_rW4CPGH6d.jpg_/0x145.jpg' ]); // 10
+        Product::create([ 'title' => 'ماوس گیمینگ لاجیتک G502 HERO' , 'image_url' => 'https://storage.torob.com/backend-api/base/images/xn/gh/xnghPNRl-yapJlfD.jpg_/0x145.jpg' ]); // 11
 
         // Product::create([ 'title' => '' , 'category_id' => 1 , 'brand_id' => 1 ]);
 

@@ -19,25 +19,37 @@ class SearchController extends Controller
 
     public function suggestion(Request $request, $text)
     {
-        $matchedProducts = Product::where('title','LIKE', "%$text%")->take(3)->get('title');
-        $firstMatchWord = "";
-        $queries = [];
-        foreach($matchedProducts as $t) { 
-            $queries[] = $t->title; 
+        $delimiters = [' ', '.', '-', ',', '|', '\\', '/', '(', ')'];
+        $newText = str_replace($delimiters, $delimiters[0], $text);
+        $searchedWords = explode($delimiters[0], $newText);
 
-            $words = explode(' ', $t->title);
-            foreach($words as $w)
-                if( strpos($w, $text) !== false )
-                    $firstMatchWord = $w;
+        $productsTitle = [];
+        foreach($searchedWords as $s) {
+            $matchedProducts = Product::where('title','LIKE', "%$s%")->take(20)->get('title');
+            foreach($matchedProducts as $p)
+                $productsTitle[] = $p->title;
         }
+        
+        $queries = [];
+        foreach($productsTitle as $title) {
+            $newTitle = str_replace($delimiters, $delimiters[0], $title);
+            $words = explode($delimiters[0], $newTitle);
+            
+            foreach($words as $w) {
+                foreach($searchedWords as $s) {
+                    if( strpos( strtolower($w), strtolower($s) ) !== false )
+                        $queries[] = $w; 
+                }
+            }
+        }
+        $queries = array_reverse( array_unique($queries) );
 
         $categories = SearchFunctions::SuggestCategoriesBySearchedText($text);
 
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
-                'first_match' => $firstMatchWord ,
-                'suggested_queries' => array_reverse($queries) ,
+                'suggested_queries' => $queries ,
                 'suggested_categories' => $categories
             ]
         ], 200);
@@ -77,6 +89,7 @@ class SearchController extends Controller
         }
 
         $suggestedCategories = null;
+        $searchBrands = null;
         
         // // join with favorites sub sql
         $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
@@ -100,8 +113,9 @@ class SearchController extends Controller
         // });
 
         // category
-        if( $sp["category"] ) {
+        if( $sp["category"] != null ) {
             $cid = Category::where('name', '=',  $sp["category"]  )->get('id');
+
             if( count($cid) == 1 ) {
                 $cid = $cid[0]->id;
 
@@ -112,11 +126,15 @@ class SearchController extends Controller
                 });
 
                 $products = $products->where('category_id', '=', $cid);
+
+                // $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
+                $searchBrands = CategoryFunctions::GetBrandsInCategory($cid);
             }
-            $suggestedCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
         }
-        else 
-        { $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]); }
+        else { 
+            // $suggestedCategories = SearchFunctions::SuggestCategoriesBySearchedText($sp["q"]); 
+            $searchBrands = SearchFunctions::GetBrandsInSearch($sp["q"]);
+        }
 
         // brand
         if( $sp["brand"] ) {
@@ -166,8 +184,10 @@ class SearchController extends Controller
 
         $i = 0;
         foreach($products as $p) {
-            if(  $p->price_start == null )
+            if(  $p->price_start == null ) {
+                $products[$i]["shops_count"] = 0;
                 $products[$i]["is_available"] = false;
+            }
             else
                 $products[$i]["is_available"] = true;
             $i++;
@@ -180,6 +200,7 @@ class SearchController extends Controller
             'message' => 'Ok' ,
             'data' => [
                 'price_range' => [ 'min' => $productsPriceMin , 'max' => $productsPriceMax ] ,
+                'brands' => $searchBrands ,
                 'suggested_categories' => $suggestedCategories ,
                 'products' => $products
             ]

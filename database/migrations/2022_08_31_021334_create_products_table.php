@@ -22,6 +22,8 @@ class CreateProductsTable extends Migration
             $table->longText("technical_specs")->nullable();
             $table->longText("physical_specs")->nullable();
 
+            $table->unsignedBigInteger('brand_id')->nullable();
+
             $table->timestamps();
         });
     }

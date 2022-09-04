@@ -15,11 +15,11 @@ class AddForeignToProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             
-            $table->foreignId('brand_id')
-                ->constrained()
-                ->cascadeOnUpdate()
-                ->cascadeOnDelete()
-                ->nullable();
+            // $table->foreignId('brand_id')
+                // ->constrained();
+                // ->default(0)
+                // ->cascadeOnUpdate()
+                // ->cascadeOnDelete()
 
         });
     }
@@ -32,7 +32,7 @@ class AddForeignToProductsTable extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropForeign(['brand_id']);
+            // $table->dropForeign(['brand_id']);
         });
     }
 }

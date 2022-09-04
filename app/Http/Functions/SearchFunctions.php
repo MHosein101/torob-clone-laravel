@@ -2,8 +2,10 @@
 
 namespace App\Http\Functions;
 
+use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\CategoryBrand;
 use App\Models\ProductCategory;
 
 class SearchFunctions {
@@ -18,19 +20,37 @@ class SearchFunctions {
         return $params;
     }
 
-    public static function SuggestCategoriesBySearchedText($text) {
-        $matchedProductsIDs = Product::where('title','LIKE', "%$text%")->take(20);
+    public static function SuggestCategoriesBySearchedText($text, $justSubCategories = false) {
+        // $matchedProductsIDs = Product::where('title','LIKE', "%$text%")->take(20);
         
-        $categoryIDs = ProductCategory::leftJoinSub($matchedProductsIDs, 'products_date', function ($join) {
-            $join->on('product_categories.product_id', '=', 'products_date.id');
-        })->select('category_id')->distinct()->get();
+        // $category = ProductCategory::rightJoinSub($matchedProductsIDs, 'matched_products', function ($join) {
+        //     $join->on('product_categories.product_id', '=', 'matched_products.id');
+        // })->select('category_id')->distinct()->get()->first();
 
-        $categories =[];
+        // $categories = CategoryFunctions::GetSubCategoriesByID($category->category_id);
+        // foreach($categoryIDs as $cid) {
+        //     $c = Category::find($cid)->first();
+        //     if($justSubCategories && $c->level == 1) continue;
+        //     $categories[] = ($justSubCategories) ? $c->id : $c->name ;
+        // }
+        // return $categories;
+    }
 
-        foreach($categoryIDs as $cid)
-            $categories[] = Category::find($cid)->first()->name;
+    public static function GetBrandsInSearch($text) {
+        $firstProduct = Product::where('title','LIKE', "%$text%")->take(1)->get();
 
-        return $categories;
+        if( count($firstProduct) == 0 || $firstProduct[0]->brand_id == null ) return [];
+        
+        $productBrand = Brand::find($firstProduct[0]->brand_id);
+        $brandCategory = CategoryBrand::where('brand_id', '=', $productBrand->id)->take(1)->get();
+        $brandsIDs = CategoryBrand::where('category_id', '=', $brandCategory[0]->category_id)->get('brand_id');
+
+        $brands = [];
+        foreach($brandsIDs as $bid) {
+            $brands[] = Brand::find($bid);
+        }
+
+        return $brands;
     }
 
 }
