@@ -8,6 +8,34 @@ use App\Models\CategoryBrand;
 
 class CategoryFunctions {
 
+    public static function GetCategoriesTree($id) {
+        $category = Category::find($id);
+        $subCategoriesIDs = Category::where('parent_id', $id)->get();
+        $brandsIDs = CategoryBrand::where('category_id', $category->id)->get();
+
+        if( count($brandsIDs) > 0 ) {
+            $brands = [];
+
+            foreach($brandsIDs as $b)
+                $brands[] = Brand::find($b->id);
+
+            $category["brands"] = $brands;
+        }
+
+        if(  count($subCategoriesIDs) > 0  ) {
+            $subCategories = [];
+
+            foreach($subCategoriesIDs as $subc)
+                $subCategories[] = CategoryFunctions::GetCategoriesTree($subc->id);
+
+            $category["status"] = false;
+            $category["is_sub_category"] = true;
+            $category["sub_categories"] = $subCategories;
+        }
+
+        return $category;
+    }
+
     public static function GetSubCategories($val) {
         $categories = [];
 
@@ -20,11 +48,7 @@ class CategoryFunctions {
         return $categories;
     }
 
-    public static function GetSubCategoriesByName($categoryName) {
-        $category = Category::where('name', '=', $categoryName)->get();
-        if( count($category) != 1 ) return;
-    
-        $category = $category[0];
+    public static function GetSubCategoriesByName($category) {
         $subCategory = null;
         $subCategorySubCategories = null;
         
@@ -42,6 +66,8 @@ class CategoryFunctions {
                 $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);
                 break;
             case 3:
+            case 4:
+            case 5:
                 $subCategory = Category::find($category->parent_id);
                 $category = Category::find($subCategory->parent_id);
                 $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);

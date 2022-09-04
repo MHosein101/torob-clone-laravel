@@ -13,34 +13,12 @@ class CategoryController extends Controller
     
     public function getAll(Request $request)
     {
-        $data = [];
-        $topParentCategories = Category::where('level', '=', 1)->where('parent_id', '=', null)->get();
+        $date = [];
+        $topCategoriesIDs = Category::where('level', 1)->get();
 
-        foreach($topParentCategories as $currentTopParent) { // get second level categories
-
-            $secondParentsCategoriesList = Category::where('parent_id', '=', $currentTopParent->id)->get();
-            $subCategories = [];
-
-            foreach($secondParentsCategoriesList as $currentSecondParent) { // get third level categories
-
-                $brandsIDs = CategoryBrand::where('category_id', '=', $currentSecondParent->id)->get('brand_id');
-                $brands = [];
-                foreach($brandsIDs as $bid)
-                    $brands[] = Brand::find($bid->brand_id);
-                
-                $currentSecondParent["brands"] = $brands;
-                $childCategories = Category::where('parent_id', '=', $currentSecondParent->id)->get();
-                $currentSecondParent["sub_categories"] = $childCategories;
-                $subCategories[] = $currentSecondParent;
-            }
-
-            
-            $currentTopParent["status"] = false;
-            $currentTopParent["is_sub_category"] = true;
-            $currentTopParent["sub_categories"] = $subCategories;
-            $data[] = $currentTopParent;
-        }
-
+        foreach($topCategoriesIDs as $topc)
+            $data[] = CategoryFunctions::GetCategoriesTree($topc->id);
+        
         return response()->json([
             'message' => 'Ok' ,
             'data' => $data
@@ -49,8 +27,15 @@ class CategoryController extends Controller
 
     public function getSubCategories(Request $request, $categoryName)
     {
-        $subCategories = CategoryFunctions::GetSubCategoriesByName($categoryName);
+        $category = Category::where('name', $categoryName)->get();
+        
+        if( count($category) != 1 ) 
+            return response()->json([
+                'message' => 'No category found.'
+            ], 404);
 
+        $subCategories = CategoryFunctions::GetSubCategoriesByName($category[0]);
+        
         return response()->json([
             'message' => 'Ok' ,
             'data' => $subCategories
@@ -83,12 +68,12 @@ class CategoryController extends Controller
 
         if($category[0]->level != 1 ) {
             $path[] = $category[0];
-            $cpid = $category[0]->parent_id;
+            $category = $category[0];
 
-            while( $cpid != null ) {
-                $category = Category::where('id', '=', $cpid)->get();
-                $path[] = $category[0];
-                $cpid = $category[0]->parent_id;
+            while( $category->level != 1 ) {
+                $category = Category::where('id', '=', $category->parent_id)->get();
+                $category = $category[0];
+                $path[] = $category;
             }
         }
         else
