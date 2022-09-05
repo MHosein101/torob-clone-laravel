@@ -15,7 +15,7 @@ class UserVerification extends Mailable
 
     public function __construct($code)
     {
-        $this->code = $code;
+        $this->code = $code; // verification code
     }
 
     public function build()

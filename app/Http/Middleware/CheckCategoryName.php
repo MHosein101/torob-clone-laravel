@@ -17,8 +17,8 @@ class CheckCategoryName
      */
     public function handle(Request $request, Closure $next)
     {
-        $categoryName = $request->route('name');
-        $category = CategoryFunctions::Exists($categoryName);
+        $categoryName = $request->route('name'); // get route parameter
+        $category = CategoryFunctions::Exists($categoryName); // check exists
 
         if( !$category ) 
             return response()->json([
@@ -26,7 +26,7 @@ class CheckCategoryName
             ], 400);
         
         // $request->merge([ 'category' => $category ]);
-        $request->merge(compact('category'));
+        $request->merge(compact('category')); // send to controller
 
         return $next($request);
     }
