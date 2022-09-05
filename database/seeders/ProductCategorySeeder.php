@@ -29,14 +29,17 @@ class ProductCategorySeeder extends Seeder
         ProductCategory::create([ 'product_id' => 5 , 'category_id' => 8 ]);
         ProductCategory::create([ 'product_id' => 5 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 5 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 5 , 'category_id' => 13 ]);
         
         ProductCategory::create([ 'product_id' => 6 , 'category_id' => 8 ]);
         ProductCategory::create([ 'product_id' => 6 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 6 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 6 , 'category_id' => 14 ]);
         
         ProductCategory::create([ 'product_id' => 7 , 'category_id' => 8 ]);
         ProductCategory::create([ 'product_id' => 7 , 'category_id' => 9 ]);
         ProductCategory::create([ 'product_id' => 7 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 7 , 'category_id' => 13 ]);
         
         ProductCategory::create([ 'product_id' => 8 , 'category_id' => 8 ]);
         ProductCategory::create([ 'product_id' => 8 , 'category_id' => 9 ]);

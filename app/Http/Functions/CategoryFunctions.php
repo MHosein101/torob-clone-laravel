@@ -8,6 +8,15 @@ use App\Models\CategoryBrand;
 
 class CategoryFunctions {
 
+    public static function Exists($categoryName) {
+        $category = Category::where('name', $categoryName)->get();
+
+        if( count($category) == 0 ) 
+            return false;
+
+        return $category[0];
+    }
+
     public static function GetCategoriesTree($id) {
         $category = Category::find($id);
         $subCategoriesIDs = Category::where('parent_id', $id)->get();
@@ -36,66 +45,39 @@ class CategoryFunctions {
         return $category;
     }
 
-    public static function GetSubCategories($val) {
+    public static function GetSubCategories($pid) {
         $categories = [];
 
-        $subIDs = Category::where('parent_id', '=', $val)->get('id');
-        foreach($subIDs as $sid) {
-            $c = Category::where('id', '=', $sid->id)->first();
-            $categories[] = $c;
-        }
+        $subIDs = Category::where('parent_id', '=', $pid)->get('id');
+        foreach($subIDs as $sid)
+            $categories[] = Category::find($sid->id);
 
         return $categories;
     }
 
     public static function GetSubCategoriesByName($categoryName) {
-        $category = Category::where('name', $categoryName)->get();
-        if( count($category) == 0 ) return;
+        $category = CategoryFunctions::Exists($categoryName);
+        if( !$category ) return;
 
-        $category = $category[0];
-        $subCategory = null;
-        $subCategorySubCategories = null;
-        
-        switch($category->level) {
-            case 1:
-                return [
-                    'id' => $category->id ,
-                    'name' => $category->name ,
-                    'sub_categories' => CategoryFunctions::GetSubCategories($category->id)
-                ];
-                break;
-            case 2:
-                $subCategory = clone $category;
-                $category = Category::find($category->parent_id);
-                $subCategorySubCategories = CategoryFunctions::GetSubCategories($subCategory->id);
-                break;
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-                $currentCategory = clone $category;
-                $subCategory = Category::find($category->parent_id);
-                $category = Category::find($subCategory->parent_id);
-                $currentSubCategories = Category::where('parent_id', $currentCategory->id)->get();
-                if( count($currentSubCategories) > 0 )
-                    $currentCategory['sub_categories'] = $currentSubCategories;
-                else
-                    $currentCategory = CategoryFunctions::GetSubCategories($currentCategory->parent_id);
-                
-                $subCategorySubCategories = $currentCategory;
-                break;
+        $subCategories = CategoryFunctions::GetSubCategories($category->id);
+
+        if( count($subCategories) == 0 )
+            $category = Category::where('id', $category->parent_id)->get()->first();
+
+        // $brands = CategoryFunctions::GetBrandsInCategory($category->id);
+        // if( count($brands) > 0 )
+        //     $category['brands'] = $brands;
+            
+        $subCategories = CategoryFunctions::GetSubCategories($category->id);
+        $category['sub_categories'] = $subCategories;
+
+        while( $category->level != 1 ) {
+            $parentCategory = Category::where('id', $category->parent_id)->get()->first();
+            $parentCategory['sub_categories'] = $category;
+            $category = $parentCategory;
         }
-        
-        return [
-            'id' => $category->id ,
-            'name' => $category->name ,
-            'sub_categories' => [
-                'id' => $subCategory->id ,
-                'name' => $subCategory->name ,
-                'sub_categories' => $subCategorySubCategories
-            ]
-        ];
+
+        return $category;
     }
 
     public static function GetBrandsInCategory($categoryID) {
@@ -103,7 +85,7 @@ class CategoryFunctions {
 
         $brands = [];
         foreach($brandsIDs as $bid)
-            $brands[] = Brand::find($bid)->first();
+            $brands[] = Brand::find($bid);
 
         return $brands;
     }

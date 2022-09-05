@@ -25,16 +25,11 @@ class CategoryController extends Controller
         ], 200);
     }
 
-    public function getSubCategories(Request $request, $categoryName)
+    public function getSubCategories(Request $request)
     {
-        $category = Category::where('name', $categoryName)->get();
-        
-        if( count($category) != 1 ) 
-            return response()->json([
-                'message' => 'No category found.'
-            ], 404);
+        $category = $request->category;
 
-        $subCategories = CategoryFunctions::GetSubCategoriesByName($category[0]->name);
+        $subCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
         
         return response()->json([
             'message' => 'Ok' ,
@@ -44,16 +39,9 @@ class CategoryController extends Controller
 
     public function getBrands(Request $request, $categoryName)
     {
-        $category = Category::where('name', '=', $categoryName)->get();
-        $brands = [];
+        $category = $request->category;
+        $brands = CategoryFunctions::GetBrandsInCategory($category->id);
 
-        if( count($category) != 1 ) return;
-        
-        $brandsIDs = CategoryBrand::where('category_id', '=', $category[0]->id)->get('brand_id');
-        foreach($brandsIDs as $bid)
-            $brands[] = Brand::find($bid->brand_id);
-                
-        
         return response()->json([
             'message' => 'Ok' ,
             'data' => $brands
@@ -63,21 +51,16 @@ class CategoryController extends Controller
     public function getPath(Request $request, $categoryName)
     {
         $path = [];
-        $category = Category::where('name', '=', $categoryName)->get();
-        if( count($category) == 0 ) return;
+        $category = $request->category;
 
-        if($category[0]->level != 1 ) {
-            $path[] = $category[0];
-            $category = $category[0];
-
+        $path[] = $category;
+        if($category->level != 1 ) {
             while( $category->level != 1 ) {
                 $category = Category::where('id', '=', $category->parent_id)->get();
                 $category = $category[0];
                 $path[] = $category;
             }
         }
-        else
-            $path[] = $category[0];
         
         return response()->json([
             'message' => 'Ok' ,

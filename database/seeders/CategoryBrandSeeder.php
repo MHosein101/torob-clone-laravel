@@ -20,13 +20,17 @@ class CategoryBrandSeeder extends Seeder
         CategoryBrand::create([ 'category_id' => 2 , 'brand_id' => 4 ]);
         CategoryBrand::create([ 'category_id' => 2 , 'brand_id' => 5 ]);
 
-        CategoryBrand::create([ 'category_id' => 10 , 'brand_id' => 6 ]);
-        CategoryBrand::create([ 'category_id' => 10 , 'brand_id' => 7 ]);
+        CategoryBrand::create([ 'category_id' => 12 , 'brand_id' => 6 ]);
+        CategoryBrand::create([ 'category_id' => 12 , 'brand_id' => 7 ]);
+        CategoryBrand::create([ 'category_id' => 13 , 'brand_id' => 6 ]);
+        CategoryBrand::create([ 'category_id' => 13 , 'brand_id' => 7 ]);
+        CategoryBrand::create([ 'category_id' => 14 , 'brand_id' => 6 ]);
+        CategoryBrand::create([ 'category_id' => 14 , 'brand_id' => 7 ]);
 
-        CategoryBrand::create([ 'category_id' => 12 , 'brand_id' => 8 ]);
-        CategoryBrand::create([ 'category_id' => 12 , 'brand_id' => 9 ]);
-        CategoryBrand::create([ 'category_id' => 12 , 'brand_id' => 10 ]);
-        CategoryBrand::create([ 'category_id' => 12 , 'brand_id' => 11 ]);
+        CategoryBrand::create([ 'category_id' => 16 , 'brand_id' => 8 ]);
+        CategoryBrand::create([ 'category_id' => 16 , 'brand_id' => 9 ]);
+        CategoryBrand::create([ 'category_id' => 16 , 'brand_id' => 10 ]);
+        CategoryBrand::create([ 'category_id' => 16 , 'brand_id' => 11 ]);
 
         // CategoryBrand::create([ 'category_id' => 1 , 'brand_id' => 1 ]);
     }

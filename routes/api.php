@@ -24,9 +24,9 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 
 Route::get('categories',[CategoryController::class,'getAll']);
-Route::get('categories/{name}/sub',[CategoryController::class,'getSubCategories']);
-Route::get('categories/{name}/brands',[CategoryController::class,'getBrands']);
-Route::get('categories/{name}/path',[CategoryController::class,'getPath']);
+Route::get('categories/{name}/sub',[CategoryController::class,'getSubCategories'])->middleware('category');
+Route::get('categories/{name}/brands',[CategoryController::class,'getBrands'])->middleware('category');
+Route::get('categories/{name}/path',[CategoryController::class,'getPath'])->middleware('category');
 
 Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
 Route::get('search',[SearchController::class,'search']);

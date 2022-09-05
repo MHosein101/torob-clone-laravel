@@ -56,8 +56,8 @@ class SearchController extends Controller
 
         $products = Product::where('products.title','LIKE', "%{$sp["q"]}%");
 
-        $searchCategories = null;
-        $searchBrands = null;
+        $searchCategories = [];
+        $searchBrands = [];
         
         // // join with favorites sub sql
         $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
@@ -125,12 +125,12 @@ class SearchController extends Controller
         }
 
         
-        $_products = clone $products;
-        if( count($_products->get()) == 0 ) {
-            return response()->json([
-                'message' => 'No results.'
-            ], 200);
-        }
+        // $_products = clone $products;
+        // if( count($_products->get()) == 0 ) {
+        //     return response()->json([
+        //         'message' => 'No results.'
+        //     ], 200);
+        // }
         
         $productsPriceMin = clone $products;
         $productsPriceMax = clone $products;
@@ -160,6 +160,7 @@ class SearchController extends Controller
             $products = $products->where('price_start', '>=', $sp['fromPrice'])->where('price_start', '<=', $sp['toPrice']);
         }
 
+
         // pagination
         $products = $products
             ->skip( ($sp["page"] - 1) * $sp["perPage"] )
@@ -183,17 +184,19 @@ class SearchController extends Controller
         $productsPriceMin = $productsPriceMin->where('price_start', '!=', null)->orderBy('price_start', 'asc')->get();
         $productsPriceMax = $productsPriceMax->where('price_start', '!=', null)->orderBy('price_start', 'desc')->get();
 
+        $priceRangeMin = 0;
+        $priceRangeMax = 0;
         if( count($productsPriceMin) > 0 && count($productsPriceMax) > 0 ) {
-            $productsPriceMin = $productsPriceMin[0]->price_start;
-            $productsPriceMax = $productsPriceMax[0]->price_start;
+            $priceRangeMin = $productsPriceMin[0]->price_start;
+            $priceRangeMax = $productsPriceMax[0]->price_start;
         }
 
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
-                'price_range' => [ 'min' => $productsPriceMin , 'max' => $productsPriceMax ] ,
+                'price_range' => [ 'min' => $priceRangeMin , 'max' => $priceRangeMax ] ,
                 'brands' => $searchBrands ,
-                'categories_type' => '' , // suggestion , similar , exact
+                // 'categories_type' => '' , // suggestion , similar , exact
                 'categories' => $searchCategories ,
                 'products' => $products
             ]

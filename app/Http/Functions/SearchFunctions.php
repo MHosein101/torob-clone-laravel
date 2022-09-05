@@ -62,6 +62,7 @@ class SearchFunctions {
                 $foundProductsIDs[] = $p->id;
         }
         $foundProductsIDs = array_unique($foundProductsIDs);
+        if( count($foundProductsIDs) == 0 ) return;
 
         $categorIDs = [];
         foreach($foundProductsIDs as $pid) {
@@ -71,12 +72,12 @@ class SearchFunctions {
         }
         $categorIDs = array_unique($categorIDs);
 
-        $mainCategory = null;
+        $topLevel = Category::find($categorIDs[0]);
         foreach($categorIDs as $cid) {
-            $c = Category::find($cid);
-            if($c->level == 1)
-                $mainCategory = $c;
+            if($c->level > $topLevel->level)
+                $topLevel = $c;
         }
+        $mainCategory = $topLevel;
 
         $topCategories = Category::where('parent_id', $mainCategory->id)->get();
         $suggestedCategories = [];
@@ -102,7 +103,7 @@ class SearchFunctions {
 
         $brands = [];
         foreach($brandsIDs as $bid) {
-            $brands[] = Brand::find($bid)->first();
+            $brands[] = Brand::find($bid);
         }
 
         return $brands;
