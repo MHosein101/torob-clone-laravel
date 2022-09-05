@@ -80,7 +80,7 @@ class SearchController extends Controller
             if( count($cid) == 1 ) {
                 $cid = $cid[0]->id;
 
-                $categoryIDs = ProductCategory::where('category_id', '=', $cid)->select('product_id','category_id');
+                $categoryIDs = ProductCategory::where('category_id', $cid)->select('product_id','category_id');
 
                 $products = $products->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
                     $join->on('products.id', 'product_category_ids.product_id');
