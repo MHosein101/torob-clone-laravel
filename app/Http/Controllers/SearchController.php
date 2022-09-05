@@ -63,19 +63,19 @@ class SearchController extends Controller
         ->groupBy('product_id');
 
         $products = $products->leftJoinSub($favorites, 'product_favorites', function ($join) {
-            $join->on('products.id', '=', 'product_favorites.product_id');
+            $join->on('products.id', 'product_favorites.product_id');
         });
 
         // join with offers sub sql
         $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
-        ->where('is_available','=', true)->groupBy('product_id');
+        ->where('is_available', true)->groupBy('product_id');
         $products = $products->leftJoinSub($offers, 'product_prices', function ($join) {
-            $join->on('products.id', '=', 'product_prices.product_id');
+            $join->on('products.id', 'product_prices.product_id');
         });
 
         // category
         if( $sp["category"] != null ) {
-            $cid = Category::where('name', '=',  $sp["category"]  )->get('id');
+            $cid = Category::where('name', $sp["category"]  )->get('id');
 
             if( count($cid) == 1 ) {
                 $cid = $cid[0]->id;
@@ -83,10 +83,10 @@ class SearchController extends Controller
                 $categoryIDs = ProductCategory::where('category_id', '=', $cid)->select('product_id','category_id');
 
                 $products = $products->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
-                    $join->on('products.id', '=', 'product_category_ids.product_id');
+                    $join->on('products.id', 'product_category_ids.product_id');
                 });
 
-                $products = $products->where('category_id', '=', $cid);
+                $products = $products->where('category_id', $cid);
 
                 $searchCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
                 $searchBrands = CategoryFunctions::GetBrandsInCategory($cid);
@@ -99,10 +99,10 @@ class SearchController extends Controller
 
         // brand
         if( $sp["brand"] ) {
-            $bid = Brand::where('name', '=',  $sp["brand"]  )->get('id');
+            $bid = Brand::where('name', $sp["brand"]  )->get('id');
             if( count($bid) == 1 ) {
                 $bid = $bid[0]->id;
-                $products = $products->where('brand_id', '=', $bid);
+                $products = $products->where('brand_id', $bid);
             }
         }
         

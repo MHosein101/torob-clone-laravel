@@ -48,7 +48,7 @@ class CategoryFunctions {
     public static function GetSubCategories($pid) {
         $categories = [];
 
-        $subIDs = Category::where('parent_id', '=', $pid)->get('id');
+        $subIDs = Category::where('parent_id', $pid)->get('id');
         foreach($subIDs as $sid)
             $categories[] = Category::find($sid->id);
 
@@ -81,7 +81,7 @@ class CategoryFunctions {
     }
 
     public static function GetBrandsInCategory($categoryID) {
-        $brandsIDs = CategoryBrand::where('category_id', '=', $categoryID)->get('brand_id');
+        $brandsIDs = CategoryBrand::where('category_id', $categoryID)->get('brand_id');
 
         $brands = [];
         foreach($brandsIDs as $bid)

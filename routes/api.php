@@ -31,4 +31,4 @@ Route::get('categories/{name}/path',[CategoryController::class,'getPath'])->midd
 Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
 Route::get('search',[SearchController::class,'search']);
 
-Route::get('product/{name}',[ProductController::class,'showDetail']);
+// Route::get('product/{name}',[ProductController::class,'showDetail']);

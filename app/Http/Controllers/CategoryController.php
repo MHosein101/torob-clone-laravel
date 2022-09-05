@@ -56,7 +56,7 @@ class CategoryController extends Controller
         $path[] = $category;
         if($category->level != 1 ) {
             while( $category->level != 1 ) {
-                $category = Category::where('id', '=', $category->parent_id)->get();
+                $category = Category::where('id', $category->parent_id)->get();
                 $category = $category[0];
                 $path[] = $category;
             }

@@ -11,7 +11,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $user = User::where('email_or_number', '=', $request->input('email_or_number'))->first();
+        $user = User::where('email_or_number', $request->input('email_or_number'))->first();
         $verificationCode = Str::random(5);
         $isSignUp = false;
         $code = 200;
@@ -44,7 +44,7 @@ class AuthController extends Controller
 
     public function verification(Request $request)
     {
-        $user = User::where('email_or_number', '=', $request->input('email_or_number'))->first();
+        $user = User::where('email_or_number', $request->input('email_or_number'))->first();
         
         // user already have api token
         if($user->api_token != '') return;
@@ -72,7 +72,7 @@ class AuthController extends Controller
     public function cancel(Request $request)
     {
         if($request->input('is_signup') == true) {
-            User::where('email_or_number', '=', $request->input('email_or_number'))->delete();
+            User::where('email_or_number', $request->input('email_or_number'))->delete();
             
             return response()->json([
                 'message' => 'Record removed.'

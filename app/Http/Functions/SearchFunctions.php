@@ -87,7 +87,6 @@ class SearchFunctions {
         $suggestedCategories = [];
 
         foreach($topCategories as $category) {
-            $suggestedCategories[] = $category;
             $subCategories = Category::where('parent_id', $category->id)->get();
             foreach($subCategories as $sc)
                 $suggestedCategories[] = $sc;
@@ -102,8 +101,8 @@ class SearchFunctions {
         if( count($firstProduct) == 0 || $firstProduct[0]->brand_id == null ) return [];
         
         $productBrand = Brand::find($firstProduct[0]->brand_id);
-        $brandCategory = CategoryBrand::where('brand_id', '=', $productBrand->id)->take(1)->get();
-        $brandsIDs = CategoryBrand::where('category_id', '=', $brandCategory[0]->category_id)->get('brand_id');
+        $brandCategory = CategoryBrand::where('brand_id', $productBrand->id)->take(1)->get();
+        $brandsIDs = CategoryBrand::where('category_id', $brandCategory[0]->category_id)->get('brand_id');
 
         $brands = [];
         foreach($brandsIDs as $bid)
