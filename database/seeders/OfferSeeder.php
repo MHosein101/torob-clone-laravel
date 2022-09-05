@@ -48,12 +48,11 @@ class OfferSeeder extends Seeder
         Offer::create([ 'product_id' => 9 , 'shop_id' => 2 , 'is_available' => true , 'price' => 22000 ]);
         Offer::create([ 'product_id' => 9 , 'shop_id' => 3 , 'is_available' => true , 'price' => 19000 ]);
 
-        Offer::create([ 'product_id' => 10 , 'shop_id' => 1 , 'is_available' => true , 'price' => 130 ]);
-        Offer::create([ 'product_id' => 10 , 'shop_id' => 2 , 'is_available' => true , 'price' => 150 ]);
+        Offer::create([ 'product_id' => 10 , 'shop_id' => 2 , 'is_available' => false , 'price' => 150 ]);
         Offer::create([ 'product_id' => 10 , 'shop_id' => 3 , 'is_available' => true , 'price' => 200 ]);
 
-        Offer::create([ 'product_id' => 11 , 'shop_id' => 1 , 'is_available' => true , 'price' => 90 ]);
-        Offer::create([ 'product_id' => 11 , 'shop_id' => 2 , 'is_available' => true , 'price' => 120 ]);
+        Offer::create([ 'product_id' => 11 , 'shop_id' => 1 , 'is_available' => false , 'price' => 90 ]);
+        Offer::create([ 'product_id' => 11 , 'shop_id' => 2 , 'is_available' => false , 'price' => 120 ]);
         Offer::create([ 'product_id' => 11 , 'shop_id' => 3 , 'is_available' => true , 'price' => 100 ]);
 
 

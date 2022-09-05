@@ -41,21 +41,21 @@ class ProductCategorySeeder extends Seeder
         ProductCategory::create([ 'product_id' => 7 , 'category_id' => 10 ]);
         ProductCategory::create([ 'product_id' => 7 , 'category_id' => 13 ]);
         
-        ProductCategory::create([ 'product_id' => 8 , 'category_id' => 8 ]);
-        ProductCategory::create([ 'product_id' => 8 , 'category_id' => 9 ]);
-        ProductCategory::create([ 'product_id' => 8 , 'category_id' => 12 ]);
+        ProductCategory::create([ 'product_id' => 8 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 8 , 'category_id' => 11 ]);
+        ProductCategory::create([ 'product_id' => 8 , 'category_id' => 16 ]);
         
-        ProductCategory::create([ 'product_id' => 9 , 'category_id' => 8 ]);
-        ProductCategory::create([ 'product_id' => 9 , 'category_id' => 9 ]);
-        ProductCategory::create([ 'product_id' => 9 , 'category_id' => 12 ]);
+        ProductCategory::create([ 'product_id' => 9 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 9 , 'category_id' => 11 ]);
+        ProductCategory::create([ 'product_id' => 9 , 'category_id' => 16 ]);
         
-        ProductCategory::create([ 'product_id' => 10 , 'category_id' => 8 ]);
-        ProductCategory::create([ 'product_id' => 10 , 'category_id' => 13 ]);
-        ProductCategory::create([ 'product_id' => 10 , 'category_id' => 14 ]);
+        ProductCategory::create([ 'product_id' => 10 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 10 , 'category_id' => 17 ]);
+        ProductCategory::create([ 'product_id' => 10 , 'category_id' => 18 ]);
         
-        ProductCategory::create([ 'product_id' => 11 , 'category_id' => 8 ]);
-        ProductCategory::create([ 'product_id' => 11 , 'category_id' => 13 ]);
-        ProductCategory::create([ 'product_id' => 11 , 'category_id' => 15 ]);
+        ProductCategory::create([ 'product_id' => 11 , 'category_id' => 10 ]);
+        ProductCategory::create([ 'product_id' => 11 , 'category_id' => 17 ]);
+        ProductCategory::create([ 'product_id' => 11 , 'category_id' => 19 ]);
         
         // ProductCategory::create([ 'product_id' => 1 , 'category_id' => 1 ]);
     }

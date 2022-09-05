@@ -102,9 +102,8 @@ class SearchFunctions {
         $brandsIDs = CategoryBrand::where('category_id', '=', $brandCategory[0]->category_id)->get('brand_id');
 
         $brands = [];
-        foreach($brandsIDs as $bid) {
+        foreach($brandsIDs as $bid)
             $brands[] = Brand::find($bid);
-        }
 
         return $brands;
     }
