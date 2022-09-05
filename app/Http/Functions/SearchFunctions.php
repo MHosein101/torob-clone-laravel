@@ -55,6 +55,9 @@ class SearchFunctions {
         else
             $queries = SearchFunctions::SuggestSearchQuery($textOrData);
 
+
+
+
         $foundProductsIDs = [];
         foreach($queries as $q) {
             $products = Product::where('title','LIKE', "%$q%")->take(10)->get();
@@ -74,7 +77,8 @@ class SearchFunctions {
 
         $topLevel = Category::find($categorIDs[0]);
         foreach($categorIDs as $cid) {
-            if($c->level > $topLevel->level)
+            $c = Category::find($cid);
+            if($c->level < $topLevel->level)
                 $topLevel = $c;
         }
         $mainCategory = $topLevel;
