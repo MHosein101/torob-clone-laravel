@@ -95,36 +95,33 @@ class SearchController extends Controller
             $join->on('products.id', 'product_prices.product_id');
         });
 
-        // if category name included in search
-        if( $sp["category"] != null ) {
-            $cid = Category::where('name', $sp["category"]  )->get('id');
+        // check category name
+        $category = false;
+        if( $sp["category"] != null )
+            $category = CategoryFunctions::Exists($sp["category"]);
+        
+        if($category) { // if category name included in search
+            // product categories table sub sql
+            $categoryIDs = ProductCategory::where('category_id', $category->id)->select('product_id','category_id');
 
-            if( count($cid) == 1 ) {
-                $cid = $cid[0]->id;
+            // join with product categories sub sql to get each product its category id
+            $products = $products->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
+                $join->on('products.id', 'product_category_ids.product_id');
+            });
 
-                // product categories table sub sql
-                $categoryIDs = ProductCategory::where('category_id', $cid)->select('product_id','category_id');
+            $products = $products->where('category_id', $category->id); // filter by category
 
-                // join with product categories sub sql to get each product its category id
-                $products = $products->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
-                    $join->on('products.id', 'product_category_ids.product_id');
-                });
-
-                $products = $products->where('category_id', $cid); // filter by category
-
-                $searchCategories = CategoryFunctions::GetSubCategoriesByName($sp["category"]);
-                $searchBrands = CategoryFunctions::GetBrandsInCategory($cid);
-            }
+            $searchCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
+            $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
         }
-        else { 
-            // get parent and children of category 
+        else { // just query available in search request
             $searchCategories = SearchFunctions::SuggestCategoriesInSearch($sp["q"]); 
             $searchBrands = SearchFunctions::GetBrandsInSearch($sp["q"]);
         }
 
-        // if brand name included in search
+        // if category and brand name included in search
         if( $sp["brand"] ) {
-            $bid = Brand::where('name', $sp["brand"]  )->get('id'); // find brand
+            $bid = Brand::where('name', $sp["brand"] )->get('id'); // find brand
             if( count($bid) == 1 ) {
                 $bid = $bid[0]->id;
                 $products = $products->where('brand_id', $bid); // filter by brand
@@ -139,19 +136,31 @@ class SearchController extends Controller
         if( isset( $request->query()['available'] ) )
             $products = $products->where('price_start', '!=', null);
 
-        // sort by price
-        $priceOrder = 'asc';
-        if($sp['sort'] == 'priceMax')
-            $priceOrder = 'desc';
-        $products = $products->orderBy('price_start', $priceOrder);
 
-        // filter by date
-        if(  $sp['sort'] == 'dateRecent' ) {
-            $products = $products->orderBy('id', 'desc');
+        if( isset( $request->query()['sort'] ) ) { // if sort filter value included
+
+            // filter by date
+            if( $sp['sort'] == 'priceMin' || 
+                $sp['sort'] == 'priceMax' ) {
+
+                // sort by price
+                $priceOrder = 'asc';
+                if($sp['sort'] == 'priceMax')
+                    $priceOrder = 'desc';
+
+                $products = $products->orderBy('price_start', $priceOrder)
+                                     ->where('price_start', '!=', null);
+            }
+
+            // filter by date
+            if(  $sp['sort'] == 'dateRecent' )
+                $products = $products->orderBy('id', 'desc');
+
+            // filter by favorites count of each product
+            if(  $sp['sort'] == 'mostFavorite' )
+                $products = $products->orderBy('favorites_count', 'desc');
         }
-
-        // filter by favorites count of each product
-        if(  $sp['sort'] == 'mostFavorite' ) {
+        else { // use default sort
             $products = $products->orderBy('favorites_count', 'desc');
         }
 
@@ -174,23 +183,25 @@ class SearchController extends Controller
         $i = 0;
         foreach($products as $p) { // loop through products
 
-            if($p->shops_count == 1) { // if product available in single shop
-                $shopId = Offer::where('product_id', $p->id) // get shop id
-                    ->where('is_available', true)
-                    ->get()->first()->shop_id;
+            if( $p->price_start == null ) { // if product not available in any shop
+                $products[$i]["price_start"] = 0;
+                $products[$i]["is_available"] = false;
+            }
+            else
+                $products[$i]["is_available"] = true;
 
+            if( $p->shops_count == null ) { // if product is not available in any shop
+                $shops = Offer::where('product_id', $p->id)->get();
+                $products[$i]["shops_count"] = count($shops); // get shops count
+            }
+
+            if($p->shops_count == 1) { // if product available in single shop
+                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id;
                 $products[$i]["shop_name"] = Shop::find($shopId)->title; // set shop name for product
             }
             else
                 $products[$i]["shop_name"] = "(Multiple)";
 
-            if(  $p->price_start == null ) { // if product not available in any shop
-                $products[$i]["price_start"] = 0;
-                $products[$i]["shops_count"] = 0;
-                $products[$i]["is_available"] = false;
-            }
-            else
-                $products[$i]["is_available"] = true;
 
             $i++;
         }
@@ -208,6 +219,13 @@ class SearchController extends Controller
         if( count($productsPriceMin) > 0 && count($productsPriceMax) > 0 ) {
             $priceRangeMin = $productsPriceMin[0]->price_start;
             $priceRangeMax = $productsPriceMax[0]->price_start;
+        }
+
+        // if category name searched but was invalid
+        if($sp["category"] != null && !$category) {
+            $products = [];
+            $priceRangeMin = 0;
+            $priceRangeMax = 0;
         }
 
         return response()->json([

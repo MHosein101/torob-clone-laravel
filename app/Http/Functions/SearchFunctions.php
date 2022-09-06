@@ -83,16 +83,25 @@ class SearchFunctions {
 
         if($useData)
             $queries = $textOrData;
-        else
+        else {
             $queries = SearchFunctions::SuggestSearchQuery($textOrData);
+            $queries[] = $textOrData;
+        }
 
+        // find products if they title matched one of queries
+        $products = Product::select('id')->where('title','LIKE', "%{$queries[0]}%");//->take(24);
+        $skipFirst = true;
+        foreach($queries as $q) {
+            if($skipFirst) { $skipFirst = false; continue; }
+            $products = $products->orWhere('title','LIKE', "%$q%");
+        }
+
+        $products = $products->get();
         $foundProductsIDs = [];
         // get product ids that matched with each $queries
-        foreach($queries as $q) {
-            $products = Product::where('title','LIKE', "%$q%")->take(10)->get();
-            foreach($products as $p)
-                $foundProductsIDs[] = $p->id;
-        }
+        foreach($products as $p)
+            $foundProductsIDs[] = $p->id;
+        
         $foundProductsIDs = array_unique($foundProductsIDs);
         if( count($foundProductsIDs) == 0 ) return []; // if no products matched
 

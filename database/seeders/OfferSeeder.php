@@ -15,7 +15,7 @@ class OfferSeeder extends Seeder
     public function run()
     {
         
-        Offer::create([ 'product_id' => 3 , 'shop_id' => 1 , 'is_available' => false , 'price' => 21000 ]);
+        Offer::create([ 'product_id' => 3 , 'shop_id' => 1 , 'is_available' => true , 'price' => 21000 ]);
         Offer::create([ 'product_id' => 3 , 'shop_id' => 2 , 'is_available' => false , 'price' => 19000 ]);
 
         Offer::create([ 'product_id' => 4 , 'shop_id' => 1 , 'is_available' => true , 'price' => 5000 ]);
@@ -26,8 +26,7 @@ class OfferSeeder extends Seeder
         Offer::create([ 'product_id' => 2 , 'shop_id' => 2 , 'is_available' => true , 'price' => 6000 ]);
         Offer::create([ 'product_id' => 2 , 'shop_id' => 3 , 'is_available' => true , 'price' => 7000 ]);
 
-        Offer::create([ 'product_id' => 1 , 'shop_id' => 3 , 'is_available' => true , 'price' => 9000 ]);
-
+        Offer::create([ 'product_id' => 1 , 'shop_id' => 3 , 'is_available' => false , 'price' => 9000 ]);
 
         Offer::create([ 'product_id' => 5 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3000 ]);
         Offer::create([ 'product_id' => 5 , 'shop_id' => 2 , 'is_available' => true , 'price' => 3200 ]);
