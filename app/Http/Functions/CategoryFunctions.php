@@ -16,10 +16,11 @@ class CategoryFunctions {
      * @return Category or false
      */ 
     public static function Exists($categoryName) {
+        if( $categoryName == null ) return false;
+
         $category = Category::where('name', $categoryName)->get();
 
-        if( count($category) == 0 ) 
-            return false;
+        if( count($category) == 0 ) return false;
 
         return $category[0];
     }

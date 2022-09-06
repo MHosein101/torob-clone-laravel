@@ -56,6 +56,7 @@ class SearchFunctions {
         }
         
         $queries = [];
+        $queries[] = $text;
         // search each $searchedWords in products title words, case insensitive, and get the matched ones
         foreach($productsTitle as $title) {
             $newTitle = str_replace($delimiters, $delimiters[0], $title);
@@ -69,7 +70,7 @@ class SearchFunctions {
             }
         }
 
-        return array_reverse( array_unique($queries) );
+        return array_unique($queries);
     }
 
     /**
@@ -80,14 +81,16 @@ class SearchFunctions {
      * 
      * @return Product
      */ 
-    public static function LimitProductsWithQueries($queries, $product) {
-        $products = $product->where('title','LIKE', "%{$queries[0]}%");
-        $skipFirst = true;
-        foreach($queries as $q) {
-            if($skipFirst) { $skipFirst = false; continue; }
-            $products = $products->orWhere('title','LIKE', "%$q%");
-        }
-        return $product;
+    public static function LimitProductsWithQueries($queries, $products) {
+       $products = $products->where(function($query) use ($queries) {
+            $query->where('products.title','LIKE', "%{$queries[0]}%");
+            $skipFirst = true;
+            foreach($queries as $q) {
+                if($skipFirst) { $skipFirst = false; continue; }
+                $query->orWhere('products.title','LIKE', "%$q%");
+            }
+       });
+       return $products;
     }
 
     /**
@@ -102,7 +105,7 @@ class SearchFunctions {
 
         $products = null;
         if($sqlQuery == null) // make new sql search query
-            $product = SearchFunctions::LimitProductsWithQueries($queries, Product::select('id'));
+            $products = SearchFunctions::LimitProductsWithQueries($queries, Product::select('id'));
         else
             $products = $sqlQuery; // use ready query
 
@@ -152,6 +155,22 @@ class SearchFunctions {
         return $suggestedCategories;
     }
 
+    /**
+     * Get brands of products that first matched in search
+     *
+     * @param product product sql query object
+     * 
+     * @return BrandArray
+     */ 
+    public static function BrandExists($brandName) {
+        if( $brandName == null ) return false;
+
+        $brand = Brand::where('name', $brandName)->get();
+
+        if( count($brand) == 0 ) return false;
+
+        return $brand[0];
+    }
 
     /**
      * Get brands of products that first matched in search
@@ -166,15 +185,15 @@ class SearchFunctions {
         // if no result matched OR product has no brand
         if( count($firstProduct) == 0 || $firstProduct[0]->brand_id == null ) return [];
         
-        $productBrand = Brand::find($firstProduct[0]->brand_id)->first(); // find brand
+        $productBrand = Brand::find($firstProduct[0]->brand_id); // find brand
         $brandCategory = CategoryBrand::where('brand_id', $productBrand->id)->get()->first(); // find brand category
         $brandsIDs = CategoryBrand::where('category_id', $brandCategory->category_id)->get('brand_id'); // get category brands ids
-
+        
         $brands = [];
         // get brands
         foreach($brandsIDs as $bid)
             $brands[] = Brand::find($bid)->first();
-
+            
         return $brands;
     }
 

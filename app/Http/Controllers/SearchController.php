@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
+use App\Models\CategoryBrand;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Functions\SearchFunctions;
@@ -43,12 +44,12 @@ class SearchController extends Controller
      * @var Object
      */
     private $defaultQueryParams = [
-        'q' => '' ,
+        'q' => null ,
         'category' => null ,
         'brand' => null ,
         'sort' => 'mostFavorite' , // dateRecent , priceMin , priceMax , mostFavorite
-        'priceMin' => 0 ,
-        'priceMax' => 10000000000 ,
+        'fromPrice' => 0 ,
+        'toPrice' => 10000000000 ,
         'available' => false ,
         'page' => 1 ,
         'perPage' => 24
@@ -61,166 +62,59 @@ class SearchController extends Controller
      * 
      * @return Json (Object , Array of Product , Array of Brand , Array of Category)
      */ 
-    public function search(Request $request) 
+    public function search(Request $request)
     {
-        // add default value to parameters that not included
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
 
-        // search cant continue if none of these three exists in query
-        if( $params["q"] == '' && $params["category"] == null && $params["brand"] == null )
+        if( $params["q"] == null && $params["category"] == null && $params["brand"] == null )
             return response()->json([
                 'message' => 'Define at least one of this : search query or category or brand'
             ], 400);
 
-        // start sql with all products columns
-        $products = null;
-        $queries = null;
-        $category = false;
+        $searchQueryBuilder = null;
         $take = $params["perPage"];
         $skip = ( $params["page"] - 1 ) * $params["perPage"];
 
+        $suggestedQueries = [];
         $searchCategories = [];
         $searchBrands = [];
         
-        // favorites table sub sql
-        $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
-        ->groupBy('product_id');
+        $searchQueryBuilder = $this->joinTables( Product::select('*') );
 
-        // join with favorites sub sql to get each product favorite count
-        $products = Product::leftJoinSub($favorites, 'product_favorites', function ($join) {
-            $join->on('products.id', 'product_favorites.product_id');
-        });
-
-        // offers table sub sql
-        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
-        ->where('is_available', true)->groupBy('product_id');
-        
-        // join with offers sub sql to get each product least price
-        $products = $products->leftJoinSub($offers, 'product_prices', function ($join) {
-            $join->on('products.id', 'product_prices.product_id');
-        });
-        
-        if($params["q"] != '') { // if search query included
-            $queries = SearchFunctions::SuggestSearchQuery($params["q"], $take, $skip); // suggest similar queries
-            $products = SearchFunctions::LimitProductsWithQueries($queries, $products);
+        if($params["q"] != null) { // if search query included 
+            $suggestedQueries = SearchFunctions::SuggestSearchQuery($params["q"], $take, $skip); // suggest similar queries
+            $searchQueryBuilder = $this->processTextQuery( $searchQueryBuilder, $suggestedQueries );
         }
+
+        $data = $this->processCategory( $searchQueryBuilder , $params["category"] , $params["q"], $suggestedQueries );
+        
+        $searchQueryBuilder = $data[0];
+        $searchCategories = $data[1];
+        $searchBrands = $data[2];
+
+        $data = $this->processBrand( $searchQueryBuilder , $params["brand"] , $searchCategories , $searchBrands );
+        
+        $searchQueryBuilder = $data[0];
+        $searchCategories = $data[1];
+        $searchBrands = $data[2];
+
+        $searchQueryBuilder = $this->filterResults( $searchQueryBuilder , $request->query() , $params["fromPrice"] , $params["toPrice"] );
 
         // clone current sql query to get min and max product prices
-        $productsPriceMin = clone $products;
-        $productsPriceMax = clone $products;
-        
-        // just show available results
-        if( isset( $request->query()['available'] ) )
-            $products = $products->where('price_start', '!=', null);
+        $productsPriceMin = clone $searchQueryBuilder;
+        $productsPriceMax = clone $searchQueryBuilder;
 
-
-        if( isset( $request->query()['sort'] ) ) { // if sort filter value included
-
-            // filter by date
-            if( $params['sort'] == 'priceMin' || 
-                $params['sort'] == 'priceMax' ) {
-
-                // sort by price
-                $priceOrder = 'asc';
-                if($params['sort'] == 'priceMax')
-                    $priceOrder = 'desc';
-
-                $products = $products->orderBy('price_start', $priceOrder)
-                                     ->where('price_start', '!=', null);
-            }
-
-            // filter by date
-            if(  $params['sort'] == 'dateRecent' )
-                $products = $products->orderBy('id', 'desc');
-
-            // filter by favorites count of each product
-            if(  $params['sort'] == 'mostFavorite' )
-                $products = $products->orderBy('favorites_count', 'desc');
-        }
-        else { // use default sort
-            $products = $products->orderBy('favorites_count', 'desc');
-        }
-
-        // filter by price range 
-        if(  isset( $request->query()['fromPrice'] ) || 
-             isset( $request->query()['toPrice'] ) ) {
-            $products = $products->where('price_start', '>=', $params['fromPrice'])
-                                 ->where('price_start', '<=', $params['toPrice']);
-        }
-
-        // check category name
-        if( $params["category"] != null )
-            $category = CategoryFunctions::Exists($params["category"]);
-        
-        if($category) { // if category name included in search
-            // product categories table sub sql
-            $categoryIDs = ProductCategory::where('category_id', $category->id)->select('product_id','category_id');
-
-            // join with product categories sub sql to get each product its category id
-            $products = $products->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
-                $join->on('products.id', 'product_category_ids.product_id');
-            });
-
-            $products = $products->where('category_id', $category->id); // filter by category
-
-            $searchCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
-            $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
-        }
-        else if($params["q"] != '') { // just query available in search request
-            // only suggest categories if search query included 
-            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($queries, $products);
-        }
-
-        // if brand name included in search
-        if( $params["brand"] ) { 
-            // find and check brand
-            $bid = Brand::where('name', $params["brand"] )->get('id');
-            if( count($bid) == 1 ) {
-                $bid = $bid[0]->id;
-                $products = $products->where('brand_id', $bid); // filter by brand
-                
-                if( count($searchBrands) == 0 ) { // if no brand found in category
-                    $c = CategoryBrand::where('brand_id', $bid)->get()->first()->category_id;
-                    $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
-                }
-            }
-        }
-        else
-            $searchBrands = SearchFunctions::GetBrandsInSearch($products);
+        $searchQueryBuilder = $this->sortResults( $searchQueryBuilder , $params["sort"] );
 
         // make pagination from results
-        $products = $products->skip($skip)->take($take);
+        $searchQueryBuilder = $searchQueryBuilder->skip($skip)->take($take);
 
-        $products = $products
+        $searchResults = $searchQueryBuilder
         ->get(['id', 'title','image_url', 'price_start', 'shops_count']); // get selected values
         // ->get();
 
-        $i = 0;
-        foreach($products as $p) { // loop through products
-
-            if( $p->price_start == null ) { // if product not available in any shop
-                $products[$i]["price_start"] = 0;
-                $products[$i]["is_available"] = false;
-            }
-            else
-                $products[$i]["is_available"] = true;
-
-            if( $p->shops_count == null ) { // if product is not available in any shop
-                $shops = Offer::where('product_id', $p->id)->get();
-                $products[$i]["shops_count"] = count($shops); // get shops count
-            }
-
-            if($p->shops_count == 1) { // if product available in single shop
-                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id;
-                $products[$i]["shop_name"] = Shop::find($shopId)->title; // set shop name for product
-            }
-            else
-                $products[$i]["shop_name"] = "(Multiple)";
-
-
-            $i++;
-        }
-
+        $searchResults = $this->processResults( $searchResults );
+        
         // get min and max product prices
         $productsPriceMin = $productsPriceMin->where('price_start', '!=', null)
                                              ->orderBy('price_start', 'asc')->take(1)->get();
@@ -236,24 +130,222 @@ class SearchController extends Controller
             $priceRangeMax = $productsPriceMax[0]->price_start;
         }
 
-        // if category name searched but was invalid
-        if($params["category"] != null && !$category) {
-            $products = [];
-            $priceRangeMin = 0;
-            $priceRangeMax = 0;
-        }
-
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
                 'price_range' => [ 'min' => $priceRangeMin , 'max' => $priceRangeMax ] ,
                 'brands' => $searchBrands ,
                 'categories' => $searchCategories ,
-                'products' => $products
+                'products' => $searchResults
             ]
         ], 200);
-        
     }
 
+    /**
+     * Join sql tables
+     *
+     * @param qbuilder  query builder object
+     * 
+     * @return Product
+     */ 
+    private function joinTables($qbuilder)
+    {
+        // favorites table sub sql
+        $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
+                             ->groupBy('product_id');
+
+        // join with favorites sub sql to get each product favorite count
+        $qbuilder = $qbuilder->leftJoinSub($favorites, 'product_favorites', function ($join) {
+            $join->on('products.id', 'product_favorites.product_id');
+        });
+        
+        // offers table sub sql
+        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
+                       ->where('is_available', true)
+                       ->groupBy('product_id');
+        
+        // join with offers sub sql to get each available product least price
+        $qbuilder = $qbuilder->leftJoinSub($offers, 'product_prices', function ($join) {
+            $join->on('products.id', 'product_prices.product_id');
+        });
+
+        return $qbuilder;
+    }
+
+    /**
+     * Process the searched text
+     *
+     * @param qbuilder query builder object
+     * @param queries  suggested search queries
+     * 
+     * @return Product
+     */ 
+    private function processTextQuery($qbuilder, $queries)
+    {
+        $qbuilder = SearchFunctions::LimitProductsWithQueries($queries, $qbuilder);
+
+        return $qbuilder;
+    }
+
+    /**
+     * Process the searched text
+     *
+     * @param qbuilder  query builder object
+     * @param category  category name
+     * @param q  searched text
+     * @param queries  suggested search queries
+     * 
+     * @return Array
+     */ 
+    private function processCategory($qbuilder, $category, $q, $queries)
+    {
+        $category = CategoryFunctions::Exists($category); // validate category name
+        $searchCategories = [];
+        $searchBrands = [];
+
+        if($category) { // category name is valid
+
+            // product categories table sub sql
+            $categoryIDs = ProductCategory::where('category_id', $category->id)->select('product_id','category_id');
+
+            // join with product categories sub sql to give each product its category id
+            $qbuilder = $qbuilder->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
+                $join->on('products.id', 'product_category_ids.product_id');
+            });
+
+            $qbuilder = $qbuilder->where('category_id', $category->id); // filter by category
+
+            $searchCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
+            $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
+        }
+        else if($q)
+            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($queries, clone $qbuilder);
+
+        return [ $qbuilder , $searchCategories , $searchBrands ];
+    }
+
+    /**
+     * Process the searched text
+     *
+     * @param qbuilder  query builder object
+     * @param category  category name
+     * @param q  searched text
+     * @param queries  suggested search queries
+     * 
+     * @return Array
+     */ 
+    private function processBrand($qbuilder, $brand, $searchCategories, $searchBrands)
+    {
+        $brand = SearchFunctions::BrandExists($brand);
+        $searchBrands = [];
+
+        if( $brand ) {
+            $qbuilder = $qbuilder->where('brand_id', $brand->id); // filter by brand
+
+            if( !$searchBrands ) { // if no category found in search
+                $c = CategoryBrand::where('brand_id', $brand->id)->get()->first();
+                $c = Category::find($c->category_id);
+                $searchBrands = CategoryFunctions::GetBrandsInCategory($c->id);
+
+                if( !$searchCategories ) // if no category found in search
+                    $searchCategories = CategoryFunctions::GetSubCategoriesByName($c->name);
+            }
+        }
+        else
+            $searchBrands = SearchFunctions::GetBrandsInSearch(clone $qbuilder);
+        
+        return [ $qbuilder , $searchCategories , $searchBrands ];
+    }
+
+    /**
+     * Process the searched text
+     *
+     * @param qbuilder  query builder object
+     * @param category  category name
+     * @param q  searched text
+     * @param queries  suggested search queries
+     * 
+     * @return Array
+     */ 
+    private function filterResults($qbuilder, $urlQueries, $fromPrice, $toPrice)
+    {
+        // just show available results
+        if( isset( $urlQueries['available'] ) )
+            $qbuilder = $qbuilder->where('price_start', '!=', null);
+
+
+        // filter by price range 
+        if(  isset( $urlQueries['fromPrice'] ) || 
+             isset( $urlQueries['toPrice'] ) ) {
+            $qbuilder = $qbuilder->where('price_start', '>=', $fromPrice)
+                                 ->where('price_start', '<=', $toPrice);
+        }
+        
+        return $qbuilder;
+    }
+
+    /**
+     * Process the searched text
+     *
+     * @param qbuilder  query builder object
+     * @param category  category name
+     * @param q  searched text
+     * @param queries  suggested search queries
+     * 
+     * @return Array
+     */ 
+    private function sortResults($qbuilder, $sortBy)
+    {
+        switch($sortBy) {
+
+            case 'priceMin':
+            case 'priceMax':
+                    $order = 'asc';
+                    if($sortBy == 'priceMax')
+                        $order = 'desc';
+
+                    $qbuilder = $qbuilder->orderBy('price_start', $order)->where('price_start', '!=', null);
+                break;
+
+            case 'dateRecent':
+                $qbuilder = $qbuilder->orderBy('id', 'desc');
+                break;
+
+            case 'mostFavorite':
+                $qbuilder = $qbuilder->orderBy('favorites_count', 'desc');
+                break;
+        }
+        
+        return $qbuilder;
+    }
+
+    private function processResults($searchResults) 
+    {
+        $i = 0;
+        foreach($searchResults as $p) { // loop through products
+            if( $p->price_start == null ) { // if product not available in any shop
+                $searchResults[$i]["price_start"] = 0;
+                $searchResults[$i]["is_available"] = false;
+            }
+            else
+                $searchResults[$i]["is_available"] = true;
+
+            if( $p->shops_count == null ) { // if product is not available in any shop
+                $shops = Offer::where('product_id', $p->id)->get();
+                $searchResults[$i]["shops_count"] = count($shops); // get shops count
+            }
+
+            if($p->shops_count == 1) { // if product available in single shop
+                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id;
+                $searchResults[$i]["shop_name"] = Shop::find($shopId)->title; // set shop name for product
+            }
+            else
+                $searchResults[$i]["shop_name"] = "(Multiple)";
+
+            $i++;
+        }
+
+        return $searchResults;
+    }
 
 }
