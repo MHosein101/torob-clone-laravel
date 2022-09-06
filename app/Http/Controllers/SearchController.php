@@ -47,8 +47,8 @@ class SearchController extends Controller
         'category' => null ,
         'brand' => null ,
         'sort' => 'mostFavorite' , // dateRecent , priceMin , priceMax , mostFavorite
-        'fromPrice' => 0 ,
-        'toPrice' => 10000000000 ,
+        'priceMin' => 0 ,
+        'priceMax' => 10000000000 ,
         'available' => false ,
         'page' => 1 ,
         'perPage' => 20
@@ -156,10 +156,10 @@ class SearchController extends Controller
         }
 
         // filter by price range 
-        if(  isset( $request->query()['fromPrice'] ) || 
-             isset( $request->query()['toPrice'] ) ) {
-            $products = $products->where('price_start', '>=', $sp['fromPrice'])
-                                 ->where('price_start', '<=', $sp['toPrice']);
+        if(  isset( $request->query()['priceMin'] ) || 
+             isset( $request->query()['priceMax'] ) ) {
+            $products = $products->where('price_start', '>=', $sp['priceMin'])
+                                 ->where('price_start', '<=', $sp['priceMax']);
         }
 
         // make pagination from results
