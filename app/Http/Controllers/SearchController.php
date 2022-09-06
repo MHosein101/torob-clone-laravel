@@ -64,7 +64,7 @@ class SearchController extends Controller
      */ 
     public function search(Request $request)
     {
-        // sleep(random_int(2,4)); // FOR DEBUG
+        sleep(random_int(2,4)); // FOR DEBUG
 
         // get url queries and fill parameters with default config if not set
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
