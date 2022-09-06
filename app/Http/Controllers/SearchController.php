@@ -27,7 +27,7 @@ class SearchController extends Controller
     public function suggestion(Request $request, $text)
     {
         $queries = SearchFunctions::SuggestSearchQuery($text);
-        $categories = SearchFunctions::SuggestCategoriesInSearch($queries, true);
+        $categories = SearchFunctions::SuggestCategoriesInSearch($queries);
 
         return response()->json([
             'message' => 'Ok' ,
@@ -51,7 +51,7 @@ class SearchController extends Controller
         'priceMax' => 10000000000 ,
         'available' => false ,
         'page' => 1 ,
-        'perPage' => 20
+        'perPage' => 24
     ];
 
     /**
@@ -64,15 +64,20 @@ class SearchController extends Controller
     public function search(Request $request) 
     {
         // add default value to parameters that not included
-        $sp = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
+        $params = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
 
         // search cant continue if none of these three exists in query
-        if( $sp["q"] == '' && $sp["category"] == null && $sp["brand"] == null )
+        if( $params["q"] == '' && $params["category"] == null && $params["brand"] == null )
             return response()->json([
                 'message' => 'Define at least one of this : search query or category or brand'
             ], 400);
 
-        $products = Product::where('products.title','LIKE', "%{$sp["q"]}%");
+        // start sql with all products columns
+        $products = null;
+        $queries = null;
+        $category = false;
+        $take = $params["perPage"];
+        $skip = ( $params["page"] - 1 ) * $params["perPage"];
 
         $searchCategories = [];
         $searchBrands = [];
@@ -82,7 +87,7 @@ class SearchController extends Controller
         ->groupBy('product_id');
 
         // join with favorites sub sql to get each product favorite count
-        $products = $products->leftJoinSub($favorites, 'product_favorites', function ($join) {
+        $products = Product::leftJoinSub($favorites, 'product_favorites', function ($join) {
             $join->on('products.id', 'product_favorites.product_id');
         });
 
@@ -94,11 +99,58 @@ class SearchController extends Controller
         $products = $products->leftJoinSub($offers, 'product_prices', function ($join) {
             $join->on('products.id', 'product_prices.product_id');
         });
+        
+        if($params["q"] != '') { // if search query included
+            $queries = SearchFunctions::SuggestSearchQuery($params["q"], $take, $skip); // suggest similar queries
+            $products = SearchFunctions::LimitProductsWithQueries($queries, $products);
+        }
+
+        // clone current sql query to get min and max product prices
+        $productsPriceMin = clone $products;
+        $productsPriceMax = clone $products;
+        
+        // just show available results
+        if( isset( $request->query()['available'] ) )
+            $products = $products->where('price_start', '!=', null);
+
+
+        if( isset( $request->query()['sort'] ) ) { // if sort filter value included
+
+            // filter by date
+            if( $params['sort'] == 'priceMin' || 
+                $params['sort'] == 'priceMax' ) {
+
+                // sort by price
+                $priceOrder = 'asc';
+                if($params['sort'] == 'priceMax')
+                    $priceOrder = 'desc';
+
+                $products = $products->orderBy('price_start', $priceOrder)
+                                     ->where('price_start', '!=', null);
+            }
+
+            // filter by date
+            if(  $params['sort'] == 'dateRecent' )
+                $products = $products->orderBy('id', 'desc');
+
+            // filter by favorites count of each product
+            if(  $params['sort'] == 'mostFavorite' )
+                $products = $products->orderBy('favorites_count', 'desc');
+        }
+        else { // use default sort
+            $products = $products->orderBy('favorites_count', 'desc');
+        }
+
+        // filter by price range 
+        if(  isset( $request->query()['fromPrice'] ) || 
+             isset( $request->query()['toPrice'] ) ) {
+            $products = $products->where('price_start', '>=', $params['fromPrice'])
+                                 ->where('price_start', '<=', $params['toPrice']);
+        }
 
         // check category name
-        $category = false;
-        if( $sp["category"] != null )
-            $category = CategoryFunctions::Exists($sp["category"]);
+        if( $params["category"] != null )
+            $category = CategoryFunctions::Exists($params["category"]);
         
         if($category) { // if category name included in search
             // product categories table sub sql
@@ -114,67 +166,30 @@ class SearchController extends Controller
             $searchCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
             $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
         }
-        else { // just query available in search request
-            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($sp["q"]); 
-            $searchBrands = SearchFunctions::GetBrandsInSearch($sp["q"]);
+        else if($params["q"] != '') { // just query available in search request
+            // only suggest categories if search query included 
+            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($queries, $products);
         }
 
-        // if category and brand name included in search
-        if( $sp["brand"] ) {
-            $bid = Brand::where('name', $sp["brand"] )->get('id'); // find brand
+        // if brand name included in search
+        if( $params["brand"] ) { 
+            // find and check brand
+            $bid = Brand::where('name', $params["brand"] )->get('id');
             if( count($bid) == 1 ) {
                 $bid = $bid[0]->id;
                 $products = $products->where('brand_id', $bid); // filter by brand
+                
+                if( count($searchBrands) == 0 ) { // if no brand found in category
+                    $c = CategoryBrand::where('brand_id', $bid)->get()->first()->category_id;
+                    $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
+                }
             }
         }
-        
-        // clone current sql query to get min and max product prices
-        $productsPriceMin = clone $products;
-        $productsPriceMax = clone $products;
-        
-        // just show available results
-        if( isset( $request->query()['available'] ) )
-            $products = $products->where('price_start', '!=', null);
-
-
-        if( isset( $request->query()['sort'] ) ) { // if sort filter value included
-
-            // filter by date
-            if( $sp['sort'] == 'priceMin' || 
-                $sp['sort'] == 'priceMax' ) {
-
-                // sort by price
-                $priceOrder = 'asc';
-                if($sp['sort'] == 'priceMax')
-                    $priceOrder = 'desc';
-
-                $products = $products->orderBy('price_start', $priceOrder)
-                                     ->where('price_start', '!=', null);
-            }
-
-            // filter by date
-            if(  $sp['sort'] == 'dateRecent' )
-                $products = $products->orderBy('id', 'desc');
-
-            // filter by favorites count of each product
-            if(  $sp['sort'] == 'mostFavorite' )
-                $products = $products->orderBy('favorites_count', 'desc');
-        }
-        else { // use default sort
-            $products = $products->orderBy('favorites_count', 'desc');
-        }
-
-        // filter by price range 
-        if(  isset( $request->query()['priceMin'] ) || 
-             isset( $request->query()['priceMax'] ) ) {
-            $products = $products->where('price_start', '>=', $sp['priceMin'])
-                                 ->where('price_start', '<=', $sp['priceMax']);
-        }
+        else
+            $searchBrands = SearchFunctions::GetBrandsInSearch($products);
 
         // make pagination from results
-        $products = $products
-            ->skip( ( $sp["page"] - 1 ) * $sp["perPage"] )
-            ->take( $sp["perPage"] );
+        $products = $products->skip($skip)->take($take);
 
         $products = $products
         ->get(['id', 'title','image_url', 'price_start', 'shops_count']); // get selected values
@@ -222,7 +237,7 @@ class SearchController extends Controller
         }
 
         // if category name searched but was invalid
-        if($sp["category"] != null && !$category) {
+        if($params["category"] != null && !$category) {
             $products = [];
             $priceRangeMin = 0;
             $priceRangeMax = 0;

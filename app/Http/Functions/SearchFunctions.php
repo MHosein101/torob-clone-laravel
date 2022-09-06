@@ -32,10 +32,12 @@ class SearchFunctions {
      * Suggest search queries by text
      *
      * @param text text that user typed
+     * @param take number of products to get
+     * @param skip number of products to skip and ignore
      * 
      * @return StringArray
      */ 
-    public static function SuggestSearchQuery($text) {
+    public static function SuggestSearchQuery($text, $take = 24, $skip = 0) {
 
         if( $text == '' ) return []; // if no search text entered
 
@@ -48,7 +50,7 @@ class SearchFunctions {
         $productsTitle = [];
         // get title of products that matched the $searchedWords items
         foreach($searchedWords as $s) {
-            $matchedProducts = Product::where('title','LIKE', "%$s%")->take(20)->get('title');
+            $matchedProducts = Product::where('title','LIKE', "%$s%")->take($take)->skip($skip)->get('title');
             foreach($matchedProducts as $p)
                 $productsTitle[] = $p->title;
         }
@@ -71,30 +73,38 @@ class SearchFunctions {
     }
 
     /**
-     * Suggest search queries by text
+     * Limit the result of products sql query results with queries
      *
-     * @param textOrData text that user typed OR the queries data
-     * @param useData to use queries data if already processed
+     * @param queries suggested search queries
+     * @param product product sql query object
      * 
-     * @return CategoryArray
+     * @return Product
      */ 
-    public static function SuggestCategoriesInSearch($textOrData, $useData = false) {
-        $queries = null;
-
-        if($useData)
-            $queries = $textOrData;
-        else {
-            $queries = SearchFunctions::SuggestSearchQuery($textOrData);
-            $queries[] = $textOrData;
-        }
-
-        // find products if they title matched one of queries
-        $products = Product::select('id')->where('title','LIKE', "%{$queries[0]}%");//->take(24);
+    public static function LimitProductsWithQueries($queries, $product) {
+        $products = $product->where('title','LIKE', "%{$queries[0]}%");
         $skipFirst = true;
         foreach($queries as $q) {
             if($skipFirst) { $skipFirst = false; continue; }
             $products = $products->orWhere('title','LIKE', "%$q%");
         }
+        return $product;
+    }
+
+    /**
+     * Suggest search queries by text
+     *
+     * @param queries suggested search queries
+     * @param sqlQuery if already have sql query to use
+     * 
+     * @return CategoryArray
+     */ 
+    public static function SuggestCategoriesInSearch($queries, $sqlQuery = null) {
+
+        $products = null;
+        if($sqlQuery == null) // make new sql search query
+            $product = SearchFunctions::LimitProductsWithQueries($queries, Product::select('id'));
+        else
+            $products = $sqlQuery; // use ready query
 
         $products = $products->get();
         $foundProductsIDs = [];
@@ -130,6 +140,11 @@ class SearchFunctions {
         // get first category children's sub categories
         foreach($topCategories as $category) {
             $subCategories = Category::where('parent_id', $category->id)->get();
+
+            // if category has no child , add it to suggestion
+            if( count($subCategories) == 0 ) 
+                $suggestedCategories[] = $category;
+
             foreach($subCategories as $sc)
                 $suggestedCategories[] = $sc;
         }
@@ -141,19 +156,19 @@ class SearchFunctions {
     /**
      * Get brands of products that first matched in search
      *
-     * @param text text that user typed
+     * @param product product sql query object
      * 
      * @return BrandArray
      */ 
-    public static function GetBrandsInSearch($text) {
-        $firstProduct = Product::where('title','LIKE', "%$text%")->take(1)->get(); // first matched product
+    public static function GetBrandsInSearch($products) {
+        $firstProduct = $products->take(1)->get();
 
         // if no result matched OR product has no brand
         if( count($firstProduct) == 0 || $firstProduct[0]->brand_id == null ) return [];
         
         $productBrand = Brand::find($firstProduct[0]->brand_id)->first(); // find brand
-        $brandCategory = CategoryBrand::where('brand_id', $productBrand->id)->take(1)->get(); // find brand category
-        $brandsIDs = CategoryBrand::where('category_id', $brandCategory[0]->category_id)->get('brand_id'); // get category brands ids
+        $brandCategory = CategoryBrand::where('brand_id', $productBrand->id)->get()->first(); // find brand category
+        $brandsIDs = CategoryBrand::where('category_id', $brandCategory->category_id)->get('brand_id'); // get category brands ids
 
         $brands = [];
         // get brands
