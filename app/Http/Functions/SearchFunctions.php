@@ -75,21 +75,27 @@ class SearchFunctions {
 
     /**
      * Limit the result of products sql query results with queries
+     * set condition if product titles contains search query items (texts) 
      *
      * @param queries suggested search queries
-     * @param product product sql query object
+     * @param product product query builder object
      * 
      * @return Product
      */ 
     public static function LimitProductsWithQueries($queries, $products) {
+
        $products = $products->where(function($query) use ($queries) {
+
             $query->where('products.title','LIKE', "%{$queries[0]}%");
             $skipFirst = true;
+
             foreach($queries as $q) {
                 if($skipFirst) { $skipFirst = false; continue; }
                 $query->orWhere('products.title','LIKE', "%$q%");
             }
+
        });
+
        return $products;
     }
 
@@ -156,11 +162,11 @@ class SearchFunctions {
     }
 
     /**
-     * Get brands of products that first matched in search
+     * Check if brand name is valid and exists
      *
-     * @param product product sql query object
+     * @param brandName brand name
      * 
-     * @return BrandArray
+     * @return Brand
      */ 
     public static function BrandExists($brandName) {
         if( $brandName == null ) return false;

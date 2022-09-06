@@ -19,7 +19,7 @@ class SearchController extends Controller
 {
 
     /**
-     * Suggest some search queries and categories by using a text that typed
+     * Suggest some search queries and categories by using a text that user typed
      *
      * @param text  text that user typed
      * 
@@ -64,40 +64,48 @@ class SearchController extends Controller
      */ 
     public function search(Request $request)
     {
+        // sleep(random_int(2,4)); // FOR DEBUG
+
+        // get url queries and fill parameters with default config if not set
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
 
-        if( $params["q"] == null && $params["category"] == null && $params["brand"] == null )
+        if( $params["q"] == null && $params["category"] == null && $params["brand"] == null ) // check url params
             return response()->json([
                 'message' => 'Define at least one of this : search query or category or brand'
             ], 400);
 
         $searchQueryBuilder = null;
-        $take = $params["perPage"];
-        $skip = ( $params["page"] - 1 ) * $params["perPage"];
+        $take = $params["perPage"]; // pagination limit
+        $skip = ( $params["page"] - 1 ) * $params["perPage"]; // pagination offset
 
         $suggestedQueries = [];
         $searchCategories = [];
         $searchBrands = [];
         
-        $searchQueryBuilder = $this->joinTables( Product::select('*') );
+        $searchQueryBuilder = $this->joinTables( new Product );
 
-        if($params["q"] != null) { // if search query included 
-            $suggestedQueries = SearchFunctions::SuggestSearchQuery($params["q"], $take, $skip); // suggest similar queries
-            $searchQueryBuilder = $this->processTextQuery( $searchQueryBuilder, $suggestedQueries );
+        if($params["q"] != null) { // if search query included  
+            // suggest similar queries
+            $suggestedQueries = SearchFunctions::SuggestSearchQuery($params["q"], $take, $skip);
+            // filter products by search texts
+            $searchQueryBuilder = SearchFunctions::LimitProductsWithQueries($suggestedQueries, clone $searchQueryBuilder);
         }
 
+        // check category and filter
         $data = $this->processCategory( $searchQueryBuilder , $params["category"] , $params["q"], $suggestedQueries );
         
         $searchQueryBuilder = $data[0];
         $searchCategories = $data[1];
         $searchBrands = $data[2];
 
+        // check brand and filter
         $data = $this->processBrand( $searchQueryBuilder , $params["brand"] , $searchCategories , $searchBrands );
         
         $searchQueryBuilder = $data[0];
         $searchCategories = $data[1];
         $searchBrands = $data[2];
 
+        // filter by price and availability
         $searchQueryBuilder = $this->filterResults( $searchQueryBuilder , $request->query() , $params["fromPrice"] , $params["toPrice"] );
 
         // clone current sql query to get min and max product prices
@@ -142,7 +150,7 @@ class SearchController extends Controller
     }
 
     /**
-     * Join sql tables
+     * Join sql queries of favorites and offers tables with products table
      *
      * @param qbuilder  query builder object
      * 
@@ -168,21 +176,6 @@ class SearchController extends Controller
         $qbuilder = $qbuilder->leftJoinSub($offers, 'product_prices', function ($join) {
             $join->on('products.id', 'product_prices.product_id');
         });
-
-        return $qbuilder;
-    }
-
-    /**
-     * Process the searched text
-     *
-     * @param qbuilder query builder object
-     * @param queries  suggested search queries
-     * 
-     * @return Product
-     */ 
-    private function processTextQuery($qbuilder, $queries)
-    {
-        $qbuilder = SearchFunctions::LimitProductsWithQueries($queries, $qbuilder);
 
         return $qbuilder;
     }
@@ -228,9 +221,9 @@ class SearchController extends Controller
      * Process the searched text
      *
      * @param qbuilder  query builder object
-     * @param category  category name
-     * @param q  searched text
-     * @param queries  suggested search queries
+     * @param brand  brand name
+     * @param searchCategories  array of categories related to search
+     * @param searchBrands  array of brands related to search category
      * 
      * @return Array
      */ 
@@ -242,30 +235,31 @@ class SearchController extends Controller
         if( $brand ) {
             $qbuilder = $qbuilder->where('brand_id', $brand->id); // filter by brand
 
-            if( !$searchBrands ) { // if no category found in search
-                $c = CategoryBrand::where('brand_id', $brand->id)->get()->first();
+            if( !$searchBrands ) { // if no brand found in search
+
+                $c = CategoryBrand::where('brand_id', $brand->id)->get()->first(); // find brand category
                 $c = Category::find($c->category_id);
-                $searchBrands = CategoryFunctions::GetBrandsInCategory($c->id);
+                $searchBrands = CategoryFunctions::GetBrandsInCategory($c->id); // get brands under category
 
                 if( !$searchCategories ) // if no category found in search
                     $searchCategories = CategoryFunctions::GetSubCategoriesByName($c->name);
             }
         }
-        else
+        else // if brand name not included in search then find them by matched product brand id
             $searchBrands = SearchFunctions::GetBrandsInSearch(clone $qbuilder);
         
         return [ $qbuilder , $searchCategories , $searchBrands ];
     }
 
     /**
-     * Process the searched text
+     * Filter search results
      *
      * @param qbuilder  query builder object
-     * @param category  category name
-     * @param q  searched text
-     * @param queries  suggested search queries
+     * @param urlQueries  url query string array
+     * @param fromPrice  the least price
+     * @param toPrice  the most price
      * 
-     * @return Array
+     * @return Product
      */ 
     private function filterResults($qbuilder, $urlQueries, $fromPrice, $toPrice)
     {
@@ -285,14 +279,12 @@ class SearchController extends Controller
     }
 
     /**
-     * Process the searched text
+     * Sort search results
      *
      * @param qbuilder  query builder object
-     * @param category  category name
-     * @param q  searched text
-     * @param queries  suggested search queries
+     * @param sortBy  sort type
      * 
-     * @return Array
+     * @return Product
      */ 
     private function sortResults($qbuilder, $sortBy)
     {
@@ -319,25 +311,36 @@ class SearchController extends Controller
         return $qbuilder;
     }
 
+    /**
+     * Add some data to found products
+     *
+     * @param results  array of products
+     * 
+     * @return Array of Product
+     */ 
     private function processResults($searchResults) 
     {
         $i = 0;
         foreach($searchResults as $p) { // loop through products
-            if( $p->price_start == null ) { // if product not available in any shop
+
+            // if product not available in any shop
+            if( $p->price_start == null ) { 
                 $searchResults[$i]["price_start"] = 0;
                 $searchResults[$i]["is_available"] = false;
             }
             else
                 $searchResults[$i]["is_available"] = true;
 
-            if( $p->shops_count == null ) { // if product is not available in any shop
+            // get shops count of unavailable products
+            if( $p->shops_count == null ) {
                 $shops = Offer::where('product_id', $p->id)->get();
-                $searchResults[$i]["shops_count"] = count($shops); // get shops count
+                $searchResults[$i]["shops_count"] = count($shops);
             }
 
-            if($p->shops_count == 1) { // if product available in single shop
-                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id;
-                $searchResults[$i]["shop_name"] = Shop::find($shopId)->title; // set shop name for product
+            // if product available in single shop get the shop name
+            if($p->shops_count == 1) { 
+                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id; // find shop id
+                $searchResults[$i]["shop_name"] = Shop::find($shopId)->title;
             }
             else
                 $searchResults[$i]["shop_name"] = "(Multiple)";
@@ -348,4 +351,4 @@ class SearchController extends Controller
         return $searchResults;
     }
 
-}
+} // end of controller
