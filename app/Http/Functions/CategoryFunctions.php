@@ -114,6 +114,27 @@ class CategoryFunctions {
     }
 
     /**
+     * Get category path to top parent
+     *
+     * @param category current category
+     * 
+     * @return CategoryArray
+     */ 
+    public static function GetCategoryPath($category) {
+        $path = [];
+
+        $path[] = $category;
+        if($category->level != 1 ) { // if its not the first level parent
+            while( $category->level != 1 ) { // until its not the first level parent do these
+                $category = Category::where('id', $category->parent_id)->get()->first(); // get parent category
+                $path[] = $category; // add to path
+            }
+        }
+
+        return array_reverse($path);
+    }
+
+    /**
      * Get brands in a category
      *
      * @param categoryID brands category id

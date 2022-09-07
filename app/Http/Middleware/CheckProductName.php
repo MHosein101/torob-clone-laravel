@@ -3,10 +3,10 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Models\Product;
 use Illuminate\Http\Request;
-use App\Http\Functions\CategoryFunctions;
 
-class CheckCategoryName
+class CheckProductName
 {
     /**
      * Handle an incoming request.
@@ -17,16 +17,15 @@ class CheckCategoryName
      */
     public function handle(Request $request, Closure $next)
     {
-        $cname = $request->route('name'); // get route parameter
-        $category = CategoryFunctions::Exists($cname); // check if exists
+        $ptitle = $request->route('name'); // get route parameter
+        $product = Product::where('title', $ptitle)->get()->first(); // check if exists
 
-        if( !$category ) 
+        if($product == null)
             return response()->json([
-                'message' => 'Category not found.'
+                'message' => 'Product not found.'
             ], 404);
         
-        // $request->merge([ 'category' => $category ]);
-        $request->merge(compact('category')); // send to controller
+        $request->merge(compact('product')); // send to controller
         return $next($request);
     }
 }

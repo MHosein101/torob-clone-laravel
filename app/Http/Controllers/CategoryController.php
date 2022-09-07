@@ -80,19 +80,12 @@ class CategoryController extends Controller
     public function getPath(Request $request)
     {
         $category = $request->category; // returned by middleware
-        $path = [];
 
-        $path[] = $category;
-        if($category->level != 1 ) { // if its not the first level parent
-            while( $category->level != 1 ) { // until its not the first level parent do these
-                $category = Category::where('id', $category->parent_id)->get()->first(); // get parent category
-                $path[] = $category; // add to path
-            }
-        }
+        $path = CategoryFunctions::GetCategoryPath($category);
         
         return response()->json([
             'message' => 'Ok' ,
-            'data' => array_reverse($path)
+            'data' => $path
         ], 200);
 
     }

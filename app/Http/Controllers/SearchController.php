@@ -64,7 +64,7 @@ class SearchController extends Controller
      */ 
     public function search(Request $request)
     {
-        sleep(random_int(2,4)); // FOR DEBUG
+        // sleep(random_int(1,3)); // FOR DEBUG
 
         // get url queries and fill parameters with default config if not set
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
@@ -141,6 +141,7 @@ class SearchController extends Controller
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
+                'pproducts_count' => count($searchResults) ,
                 'price_range' => [ 'min' => $priceRangeMin , 'max' => $priceRangeMax ] ,
                 'brands' => $searchBrands ,
                 'categories' => $searchCategories ,
