@@ -19,13 +19,17 @@ class CreateShopsTable extends Migration
             $table->string("title");
             
             $table->string("province")->default("");
+            $table->string("city")->default("");
             $table->string("address")->default("");
 
             $table->string("owner")->default("");
             $table->string("status")->default("");
+            $table->string("rate")->default("");
 
             $table->string("site_url")->default("");
             $table->string("logo_url")->default("");
+
+            $table->unsignedBigInteger("started_time")->default(0);
 
             $table->timestamps();
         });

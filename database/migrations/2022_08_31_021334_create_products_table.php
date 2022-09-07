@@ -19,11 +19,11 @@ class CreateProductsTable extends Migration
             $table->string("title");
             $table->string("image_url")->default("");
 
+            $table->string("model_trait")->default("");
             $table->longText("specs")->nullable();
             
+            $table->unsignedBigInteger('model_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();
-
-            $table->timestamps();
         });
     }
 

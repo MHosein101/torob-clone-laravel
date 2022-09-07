@@ -16,8 +16,12 @@ class CreateOffersTable extends Migration
         Schema::create('offers', function (Blueprint $table) {
             $table->id();
             
+            // $table->string("title");
+
             $table->unsignedBigInteger("price")->default(0);
             $table->boolean("is_available")->default(true);
+            
+            $table->unsignedBigInteger("last_change_time")->default(0);
         });
     }
 
