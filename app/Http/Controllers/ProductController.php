@@ -32,11 +32,14 @@ class ProductController extends Controller
 
         $pricesRange = ProductFunctions::GetPricesRange($product->id);
 
+        $otherModels = ProductFunctions::GetOtherModels($product->model_id, $product->model_trait);
+
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
                 'prices_range' => $pricesRange ,
                 'product' => $product ,
+                'models' => $otherModels ,
                 'brand' => $brand ,
                 'categories' => $categories
             ]
@@ -44,7 +47,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Get shops offers related to product
+     * Get shops offers related to product >>>>>> TODO : filter by province and city
      *
      * @param ptitle  product title
      * 

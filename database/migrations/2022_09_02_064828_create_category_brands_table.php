@@ -15,6 +15,9 @@ class CreateCategoryBrandsTable extends Migration
     {
         Schema::create('category_brands', function (Blueprint $table) {
             $table->id();
+
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->unsignedBigInteger('brand_id')->nullable();
         });
     }
 

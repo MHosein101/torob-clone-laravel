@@ -22,6 +22,9 @@ class CreateOffersTable extends Migration
             $table->boolean("is_available")->default(true);
             
             $table->unsignedBigInteger("last_change_time")->default(0);
+
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedBigInteger('shop_id')->nullable();
         });
     }
 

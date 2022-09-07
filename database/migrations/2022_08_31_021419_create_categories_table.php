@@ -18,6 +18,7 @@ class CreateCategoriesTable extends Migration
             
             $table->string("name");
             $table->tinyInteger("level");
+            
             $table->unsignedBigInteger('parent_id')->nullable();
         });
     }

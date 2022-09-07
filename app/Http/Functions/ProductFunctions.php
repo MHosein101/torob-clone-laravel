@@ -5,6 +5,7 @@ namespace App\Http\Functions;
 use App\Models\Shop;
 use App\Models\Brand;
 use App\Models\Offer;
+use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductCategory;
 use App\Http\Functions\CategoryFunctions;
@@ -25,6 +26,52 @@ class ProductFunctions {
         ->groupBy('product_id')->get()->first();
 
         return $range;
+    }
+
+    /**
+     *  Get other products in same model as current product
+     *
+     * @param mid product model id
+     * @param trait product model trait
+     * 
+     * @return Array of Products
+     */ 
+    public static function GetOtherModels($mid, $trait)
+    {
+        if($mid == null) return [];
+
+        $products = Product::where('model_id', $mid); // find products with same model
+        
+        // offers table sub sql
+        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
+                       ->where('is_available', true)->groupBy('product_id');
+            
+        // join with offers sub sql to get each available product least price
+        $products = $products->leftJoinSub($offers, 'product_prices', function ($join) {
+            $join->on('products.id', 'product_prices.product_id');
+        })
+        ->get(['title', 'model_trait', 'price_start']);
+
+        $i = 0;
+        foreach($products as $p) { 
+            // fix null price and add is_available
+            if($p->price_start == null) {
+                $products[$i]['price_start'] = 0;
+                $products[$i]['is_available'] = false;
+            }
+            else
+                $products[$i]['is_available'] = true;
+
+            
+            if($p->model_trait == $trait)
+                $products[$i]['current_product'] = true;
+            else
+                $products[$i]['current_product'] = false;
+
+            $i++;
+        }
+        
+        return $products;
     }
 
     /**

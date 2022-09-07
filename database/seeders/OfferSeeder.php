@@ -15,20 +15,31 @@ class OfferSeeder extends Seeder
     public function run()
     {
         
-        for($i = 1; $i < 121; $i+=4) {
-            Offer::create([ 'product_id' => ($i+2) , 'shop_id' => 1 , 'is_available' => false , 'price' => 21000 ]);
-            Offer::create([ 'product_id' => ($i+2) , 'shop_id' => 2 , 'is_available' => false , 'price' => 19000 ]);
+        // for($i = 1; $i < 121; $i+=4) {
+        //     Offer::create([ 'product_id' => ($i+2) , 'shop_id' => 1 , 'is_available' => false , 'price' => 21000 ]);
+        //     Offer::create([ 'product_id' => ($i+2) , 'shop_id' => 2 , 'is_available' => false , 'price' => 19000 ]);
 
-            Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 1 , 'is_available' => true , 'price' => 5000 ]);
-            Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 2 , 'is_available' => false , 'price' => 4000 ]);
-            Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 3 , 'is_available' => true , 'price' => 4500 ]);
+        //     Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 1 , 'is_available' => true , 'price' => 5000 ]);
+        //     Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 2 , 'is_available' => false , 'price' => 4000 ]);
+        //     Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 3 , 'is_available' => true , 'price' => 4500 ]);
 
-            Offer::create([ 'product_id' => ($i+1) , 'shop_id' => 1 , 'is_available' => true , 'price' => 8000 ]);
-            Offer::create([ 'product_id' => ($i+1) , 'shop_id' => 3 , 'is_available' => true , 'price' => 7000 ]);
+        //     Offer::create([ 'product_id' => ($i+1) , 'shop_id' => 1 , 'is_available' => true , 'price' => 8000 ]);
+        //     Offer::create([ 'product_id' => ($i+1) , 'shop_id' => 3 , 'is_available' => true , 'price' => 7000 ]);
 
-            Offer::create([ 'product_id' => ($i) , 'shop_id' => 3 , 'is_available' => true , 'price' => 9000 ]);
-        }
+        //     Offer::create([ 'product_id' => ($i) , 'shop_id' => 3 , 'is_available' => true , 'price' => 9000 ]);
+        // }
         
+        Offer::create([ 'product_id' => 1 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3000 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        Offer::create([ 'product_id' => 1 , 'shop_id' => 2 , 'is_available' => true , 'price' => 3200 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        Offer::create([ 'product_id' => 1 , 'shop_id' => 3 , 'is_available' => true , 'price' => 2900 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        
+        Offer::create([ 'product_id' => 2 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3900 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        Offer::create([ 'product_id' => 2 , 'shop_id' => 2 , 'is_available' => false , 'price' => 3700 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        Offer::create([ 'product_id' => 2 , 'shop_id' => 3 , 'is_available' => true , 'price' => 3800 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        
+        Offer::create([ 'product_id' => 3 , 'shop_id' => 1 , 'is_available' => false , 'price' => 4300 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        Offer::create([ 'product_id' => 3 , 'shop_id' => 2 , 'is_available' => false , 'price' => 4500 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
+        Offer::create([ 'product_id' => 3 , 'shop_id' => 3 , 'is_available' => false , 'price' => 4100 , 'last_change_time' => (time() - random_int(10000, 999999)) ]);
 
         // Offer::create([ 'product_id' => 5 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3000 ]);
         // Offer::create([ 'product_id' => 5 , 'shop_id' => 2 , 'is_available' => true , 'price' => 3200 ]);
