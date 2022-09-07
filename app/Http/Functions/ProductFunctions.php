@@ -23,7 +23,7 @@ class ProductFunctions {
     {
         $range = Offer::where('product_id', $pid)
         ->selectRaw('MIN(price) as min, MAX(price) as max')
-        ->groupBy('product_id')->get()->first();
+        ->groupBy('product_id')->where('is_available', true)->get()->first();
 
         return $range;
     }
