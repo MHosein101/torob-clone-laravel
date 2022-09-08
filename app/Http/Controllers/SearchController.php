@@ -41,13 +41,13 @@ class SearchController extends Controller
 
     /**
      * Default search parameters if not included in search request
-     * @var Object
+     * @var Array
      */
     private $defaultQueryParams = [
         'q' => null ,
         'category' => null ,
         'brand' => null ,
-        'sort' => 'mostFavorite' , // dateRecent , priceMin , priceMax , mostFavorite
+        'sort' => 'dateRecent' , // dateRecent , priceMin , priceMax , mostFavorite
         'fromPrice' => 0 ,
         'toPrice' => 10000000000 ,
         'available' => false ,
@@ -82,7 +82,7 @@ class SearchController extends Controller
         $searchCategories = [];
         $searchBrands = [];
         
-        $searchQueryBuilder = $this->joinTables( new Product );
+        $searchQueryBuilder =  SearchFunctions::joinTables( new Product );
 
         if($params["q"] != null) { // if search query included  
             // suggest similar queries
@@ -121,7 +121,7 @@ class SearchController extends Controller
         ->get(['hash_id', 'title','image_url', 'price_start', 'shops_count']); // get selected values
         // ->get();
 
-        $searchResults = $this->processResults( $searchResults );
+        $searchResults =  SearchFunctions::processResults( $searchResults );
         
         // get min and max product prices
         $productsPriceMin = $productsPriceMin->where('price_start', '!=', null)
@@ -148,37 +148,6 @@ class SearchController extends Controller
                 'products' => $searchResults
             ]
         ], 200);
-    }
-
-    /**
-     * Join sql queries of favorites and offers tables with products table
-     *
-     * @param qbuilder  query builder object
-     * 
-     * @return Product
-     */ 
-    private function joinTables($qbuilder)
-    {
-        // favorites table sub sql
-        $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
-                             ->groupBy('product_id');
-
-        // join with favorites sub sql to get each product favorite count
-        $qbuilder = $qbuilder->leftJoinSub($favorites, 'product_favorites', function ($join) {
-            $join->on('products.id', 'product_favorites.product_id');
-        });
-        
-        // offers table sub sql
-        $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
-                       ->where('is_available', true)
-                       ->groupBy('product_id');
-        
-        // join with offers sub sql to get each available product least price
-        $qbuilder = $qbuilder->leftJoinSub($offers, 'product_prices', function ($join) {
-            $join->on('products.id', 'product_prices.product_id');
-        });
-
-        return $qbuilder;
     }
 
     /**
@@ -310,46 +279,6 @@ class SearchController extends Controller
         }
         
         return $qbuilder;
-    }
-
-    /**
-     * Add some data to found products
-     *
-     * @param results  array of products
-     * 
-     * @return Array of Product
-     */ 
-    private function processResults($searchResults) 
-    {
-        $i = 0;
-        foreach($searchResults as $p) { // loop through products
-
-            // if product not available in any shop
-            if( $p->price_start == null ) { 
-                $searchResults[$i]["price_start"] = 0;
-                $searchResults[$i]["is_available"] = false;
-            }
-            else
-                $searchResults[$i]["is_available"] = true;
-
-            // get shops count of unavailable products
-            if( $p->shops_count == null ) {
-                $shops = Offer::where('product_id', $p->id)->get();
-                $searchResults[$i]["shops_count"] = count($shops);
-            }
-
-            // if product available in single shop get the shop name
-            if($p->shops_count == 1) { 
-                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id; // find shop id
-                $searchResults[$i]["shop_name"] = Shop::find($shopId)->title;
-            }
-            else
-                $searchResults[$i]["shop_name"] = "(Multiple)";
-
-            $i++;
-        }
-
-        return $searchResults;
     }
 
 } // end of controller

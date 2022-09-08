@@ -108,7 +108,7 @@ class ProductFunctions {
      */ 
     public static function GetChartPricesData($pid)
     {
-        return ProductPricesChart::where('product_id', $pid)->get();
+        return ProductPricesChart::where('product_id', $pid)->get(['date', 'price', 'average_price']);
     }
 
     /**
