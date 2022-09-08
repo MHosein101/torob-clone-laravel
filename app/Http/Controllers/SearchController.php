@@ -97,13 +97,13 @@ class SearchController extends Controller
         $searchQueryBuilder = $data[0];
         $searchCategories = $data[1];
         $searchBrands = $data[2];
+        $categoryType = $data[3]; // suggested , similar , detailed
 
         // check brand and filter
-        $data = $this->processBrand( $searchQueryBuilder , $params["brand"] , $searchCategories , $searchBrands );
+        $data = $this->processBrand( $searchQueryBuilder , $params["brand"] , $searchBrands );
         
         $searchQueryBuilder = $data[0];
-        $searchCategories = $data[1];
-        $searchBrands = $data[2];
+        $searchBrands = $data[1];
 
         // filter by price and availability
         $searchQueryBuilder = $this->filterResults( $searchQueryBuilder , $request->query() , $params["fromPrice"] , $params["toPrice"] );
@@ -144,6 +144,7 @@ class SearchController extends Controller
                 'pproducts_count' => count($searchResults) ,
                 'price_range' => [ 'min' => $priceRangeMin , 'max' => $priceRangeMax ] ,
                 'brands' => $searchBrands ,
+                'category_type' => $categoryType ,
                 'categories' => $searchCategories ,
                 'products' => $searchResults
             ]
@@ -159,12 +160,13 @@ class SearchController extends Controller
      * @param queries  suggested search queries
      * 
      * @return Array
-     */ 
+     */
     private function processCategory($qbuilder, $category, $q, $queries)
     {
         $category = CategoryFunctions::Exists($category); // validate category name
         $searchCategories = [];
         $searchBrands = [];
+        $categoryType = '';
 
         if($category) { // category name is valid
 
@@ -180,11 +182,21 @@ class SearchController extends Controller
 
             $searchCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
             $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
-        }
-        else if($q)
-            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($queries, clone $qbuilder);
 
-        return [ $qbuilder , $searchCategories , $searchBrands ];
+            // find out what type of categories front should render
+            $countSubs = count( Category::where('parent_id', $category->id)->get('id') );
+
+            if($countSubs > 0)
+                $categoryType = 'detailed';
+            else
+                $categoryType = 'similar';
+        }
+        else if($q) {
+            $categoryType = 'suggested';
+            $searchCategories = SearchFunctions::SuggestCategoriesInSearch($queries, clone $qbuilder);
+        }
+
+        return [ $qbuilder , $searchCategories , $searchBrands , $categoryType ];
     }
 
     /**
@@ -197,7 +209,7 @@ class SearchController extends Controller
      * 
      * @return Array
      */ 
-    private function processBrand($qbuilder, $brand, $searchCategories, $searchBrands)
+    private function processBrand($qbuilder, $brand, $searchBrands)
     {
         $brand = SearchFunctions::BrandExists($brand);
         $searchBrands = [];
@@ -210,15 +222,12 @@ class SearchController extends Controller
                 $c = CategoryBrand::where('brand_id', $brand->id)->get()->first(); // find brand category
                 $c = Category::find($c->category_id);
                 $searchBrands = CategoryFunctions::GetBrandsInCategory($c->id); // get brands under category
-
-                if( !$searchCategories ) // if no category found in search
-                    $searchCategories = CategoryFunctions::GetSubCategoriesByName($c->name);
             }
         }
         else // if brand name not included in search then find them by matched product brand id
             $searchBrands = SearchFunctions::GetBrandsInSearch(clone $qbuilder);
         
-        return [ $qbuilder , $searchCategories , $searchBrands ];
+        return [ $qbuilder , $searchBrands ];
     }
 
     /**
