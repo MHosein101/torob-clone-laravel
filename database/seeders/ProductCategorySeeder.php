@@ -14,6 +14,19 @@ class ProductCategorySeeder extends Seeder
      */
     public function run()
     {
+        $data = [
+            [ 'product_id' => 1 , 'category_id' => 1 ] ,
+            [ 'product_id' => 1 , 'category_id' => 2 ] ,
+
+            [ 'product_id' => 2 , 'category_id' => 1 ] ,
+            [ 'product_id' => 2 , 'category_id' => 2 ] ,
+            
+            [ 'product_id' => 3 , 'category_id' => 1 ] ,
+            [ 'product_id' => 3 , 'category_id' => 2 ] ,
+        ];
+
+        foreach($data as $set)
+            ProductCategory::create($set);
         
         // for($i = 1; $i < 121; $i+=4) {
         //     ProductCategory::create([ 'product_id' => ($i) , 'category_id' => 1 ]);
@@ -28,16 +41,6 @@ class ProductCategorySeeder extends Seeder
         //     ProductCategory::create([ 'product_id' => ($i+3) , 'category_id' => 1 ]);
         //     ProductCategory::create([ 'product_id' => ($i+3) , 'category_id' => 2 ]);
         // }
-
-
-        ProductCategory::create([ 'product_id' => 1 , 'category_id' => 1 ]);
-        ProductCategory::create([ 'product_id' => 1 , 'category_id' => 2 ]);
-        
-        ProductCategory::create([ 'product_id' => 2 , 'category_id' => 1 ]);
-        ProductCategory::create([ 'product_id' => 2 , 'category_id' => 2 ]);
-        
-        ProductCategory::create([ 'product_id' => 3 , 'category_id' => 1 ]);
-        ProductCategory::create([ 'product_id' => 3 , 'category_id' => 2 ]);
 
         // ProductCategory::create([ 'product_id' => 1 , 'category_id' => 1 ]);
         // ProductCategory::create([ 'product_id' => 1 , 'category_id' => 2 ]);

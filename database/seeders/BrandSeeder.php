@@ -14,21 +14,23 @@ class BrandSeeder extends Seeder
      */
     public function run()
     {
+        $data = [
+            [ 'name' => 'سامسونگ' , 'name_english' => 'Samsung' ] ,
+            [ 'name' => 'شیاعومی' , 'name_english' => 'Xiaomi' ] ,
+            [ 'name' => 'اپل' , 'name_english' => 'Apple' ] ,
+            [ 'name' => 'هوآوی' , 'name_english' => 'Huawei' ] ,
+            [ 'name' => 'توکیا' , 'name_english' => 'Nokia' ] ,
 
-        Brand::create([ 'name' => 'سامسونگ' , 'name_english' => 'Samsung' ]); // 1
-        Brand::create([ 'name' => 'شیاعومی' , 'name_english' => 'Xiaomi' ]); // 2
-        Brand::create([ 'name' => 'اپل' , 'name_english' => 'Apple' ]); // 3
-        Brand::create([ 'name' => 'هوآوی' , 'name_english' => 'Huawei' ]); // 4
-        Brand::create([ 'name' => 'توکیا' , 'name_english' => 'Nokia' ]); // 5
+            [ 'name' => 'اینتل' , 'name_english' => 'Intel' ] ,
+            [ 'name' => 'ای ام دی' , 'name_english' => 'AMD' ] ,
 
-        Brand::create([ 'name' => 'اینتل' , 'name_english' => 'Intel' ]); // 6
-        Brand::create([ 'name' => 'ای ام دی' , 'name_english' => 'AMD' ]); // 7
-        
-        Brand::create([ 'name' => 'ایسوس' , 'name_english' => 'ASUS' ]); // 8
-        Brand::create([ 'name' => 'گیکابایت' , 'name_english' => 'GIGABYTE' ]); // 9
-        Brand::create([ 'name' => 'انویدیا' , 'name_english' => 'NVIDIA' ]); // 10
-        Brand::create([ 'name' => 'زوتک' , 'name_english' => 'ZOTAC' ]); // 11
+            [ 'name' => 'ایسوس' , 'name_english' => 'ASUS' ] ,
+            [ 'name' => 'گیکابایت' , 'name_english' => 'GIGABYTE' ] ,
+            [ 'name' => 'انویدیا' , 'name_english' => 'NVIDIA' ] ,
+            [ 'name' => 'زوتک' , 'name_english' => 'ZOTAC' ] ,
+        ];
 
-        // Brand::create([ 'name' => '' , 'category_id' => 1 ]);
+        foreach($data as $set)
+            Brand::create($set);
     }
 }

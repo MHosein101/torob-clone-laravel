@@ -16,7 +16,7 @@ class CreateShopsTable extends Migration
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
             
-            $table->string("title");
+            $table->string("title")->unique();
             
             $table->string("province")->default("");
             $table->string("city")->default("");

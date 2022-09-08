@@ -35,6 +35,8 @@ class ProductController extends Controller
 
         $otherModels = ProductFunctions::GetOtherModels($product->model_id, $product->model_trait);
 
+        $chartData = ProductFunctions::GetChartPricesData($product->id);
+
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
@@ -44,6 +46,7 @@ class ProductController extends Controller
                 'models' => $otherModels ,
                 'brand' => $brand ,
                 'categories' => $categories ,
+                'chart' => $chartData
             ]
         ], 200);
     }

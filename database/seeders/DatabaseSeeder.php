@@ -15,9 +15,10 @@ class DatabaseSeeder extends Seeder
             ProductModelSeeder::class ,
             ProductSeeder::class ,
             ProductCategorySeeder::class ,
-            UserSeeder::class ,
+            ProductPricesChartSeeder::class ,
+            // UserSeeder::class ,
             ShopSeeder::class ,
-            FavoriteSeeder::class ,
+            // FavoriteSeeder::class ,
             OfferSeeder::class ,
         ]);
         

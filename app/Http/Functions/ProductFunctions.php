@@ -8,6 +8,7 @@ use App\Models\Offer;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\ProductCategory;
+use App\Models\ProductPricesChart;
 use App\Http\Functions\CategoryFunctions;
 
 class ProductFunctions {
@@ -96,6 +97,18 @@ class ProductFunctions {
         })->get();
 
         return $offers;
+    }
+
+    /**
+     *  Get product prices changes data for chart
+     *
+     * @param pid product id
+     * 
+     * @return ProductPricesChart
+     */ 
+    public static function GetChartPricesData($pid)
+    {
+        return ProductPricesChart::where('product_id', $pid)->get();
     }
 
     /**

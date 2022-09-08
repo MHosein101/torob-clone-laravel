@@ -16,13 +16,16 @@ class UserSeeder extends Seeder
     public function run()
     {
         
-        User::create([ 'email_or_number' => '09223334444' ]); // 1
-        User::create([ 'email_or_number' => 'example@mail.com' ]);
-        User::create([ 'email_or_number' => '989118886666' ]);
-        User::create([ 'email_or_number' => 'foo@bar.com' ]);
-        User::create([ 'email_or_number' => '09887773333' ]);
-        User::create([ 'email_or_number' => '09442229999' ]); // 6
+        $data = [ 
+            [ 'email_or_number' => '09223334444' ] ,
+            [ 'email_or_number' => 'example@mail.com' ] ,
+            [ 'email_or_number' => '989118886666' ] ,
+            [ 'email_or_number' => 'foo@bar.com' ] ,
+            [ 'email_or_number' => '09887773333' ] ,
+            [ 'email_or_number' => '09442229999' ]
+        ];
 
-        // User::create([ 'email_or_number' => '' ]);
+        foreach($data as $set)
+            User::create($set);
     }
 }
