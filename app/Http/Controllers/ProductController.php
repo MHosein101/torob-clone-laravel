@@ -27,8 +27,9 @@ class ProductController extends Controller
         $product = $request->product;
 
         $data = ProductFunctions::GetBrandAndCategories($product->id, $product->brand_id);
-        $brand = $data[0];
-        $categories = $data[1];
+        $brand = $data[0]; $categories = $data[1];
+        
+        $productPath = ProductFunctions::MakeProductPath($brand, $categories);
 
         $pricesRange = ProductFunctions::GetPricesRange($product->id);
 
@@ -38,10 +39,11 @@ class ProductController extends Controller
             'message' => 'Ok' ,
             'data' => [
                 'prices_range' => $pricesRange ,
+                'path' => $productPath ,
                 'product' => $product ,
                 'models' => $otherModels ,
                 'brand' => $brand ,
-                'categories' => $categories
+                'categories' => $categories ,
             ]
         ], 200);
     }

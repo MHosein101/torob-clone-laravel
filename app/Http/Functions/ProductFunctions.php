@@ -118,4 +118,25 @@ class ProductFunctions {
         return [ $brand , $categories ];
     }
 
+    /**
+     *  Get product brand and all categories to the top
+     *
+     * @param brand product brand
+     * @param categories product categories to top
+     * 
+     * @return Array of String
+     */ 
+    public static function MakeProductPath($brand, $categories)
+    {
+        $path = [];
+        $brandName = "{$brand->name} ({$brand->name_english})";
+
+        foreach($categories as $c)
+            $path[] = $c->name;
+
+        $path[] = $brandName;
+
+        return $path;
+    }
+
 }
