@@ -50,7 +50,7 @@ class ProductFunctions {
         $products = $products->leftJoinSub($offers, 'product_prices', function ($join) {
             $join->on('products.id', 'product_prices.product_id');
         })
-        ->get(['title', 'model_trait', 'price_start']);
+        ->get(['hash_id', 'title', 'model_trait', 'price_start']);
 
         $i = 0;
         foreach($products as $p) { 

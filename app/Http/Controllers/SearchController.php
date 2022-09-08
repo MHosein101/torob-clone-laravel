@@ -118,7 +118,7 @@ class SearchController extends Controller
         $searchQueryBuilder = $searchQueryBuilder->skip($skip)->take($take);
 
         $searchResults = $searchQueryBuilder
-        ->get(['id', 'title','image_url', 'price_start', 'shops_count']); // get selected values
+        ->get(['hash_id', 'title','image_url', 'price_start', 'shops_count']); // get selected values
         // ->get();
 
         $searchResults = $this->processResults( $searchResults );

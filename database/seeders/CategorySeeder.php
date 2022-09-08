@@ -19,6 +19,7 @@ class CategorySeeder extends Seeder
                     Category::create([ "name" => "کابل USB Type A" , "level" => 4, "parent_id" => $c13->id ]); // 7
                     Category::create([ "name" => "کابل USB Type C" , "level" => 4, "parent_id" => $c13->id ]); // 8
                     Category::create([ "name" => "کابل USB Micro" , "level" => 4, "parent_id" => $c13->id ]); // 9
+                    
         $c2 = Category::create([ "name" => "لپ‌تاپ کامپیوتر اداری" , "level" => 1 ]); // 10
             $c21 = Category::create([ "name" => "قطعات داخلی کامپیوتر و لپ تاپ" , "level" => 2, "parent_id" => $c2->id ]); // 11
                 $c211 = Category::create([ "name" => "پردازنده" , "level" => 3, "parent_id" => $c21->id ]); // 12
@@ -33,6 +34,7 @@ class CategorySeeder extends Seeder
                     Category::create([ "name" => "شارژر لپتاپ" , "level" => 4, "parent_id" => $c23->id ]); // 21
                     Category::create([ "name" => "کابل پاور مانیتور" , "level" => 4, "parent_id" => $c23->id ]); // 22
                     Category::create([ "name" => "کابل پاور کیس" , "level" => 4, "parent_id" => $c23->id ]); // 23
+
         $c3 = Category::create([ "name" => "مد و پوشاک" , "level" => 1 ]);
             $c31 = Category::create([ "name" => "پوشاک و کفش مردانه" , "level" => 2, "parent_id" => $c3->id ]);
                 Category::create([ "name" => "ژاکت و پلیور مردانه" , "level" => 3, "parent_id" => $c31->id ]);

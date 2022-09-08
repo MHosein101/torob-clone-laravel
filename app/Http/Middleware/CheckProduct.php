@@ -6,7 +6,7 @@ use Closure;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
-class CheckProductName
+class CheckProduct
 {
     /**
      * Handle an incoming request.
@@ -17,8 +17,8 @@ class CheckProductName
      */
     public function handle(Request $request, Closure $next)
     {
-        $ptitle = $request->route('name'); // get route parameter
-        $product = Product::where('title', $ptitle)->get()->first(); // check if exists
+        $hid = $request->route('hash'); // get route parameter
+        $product = Product::where('hash_id', $hid)->get()->first(); // check if exists
 
         if($product == null)
             return response()->json([

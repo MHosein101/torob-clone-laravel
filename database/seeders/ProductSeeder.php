@@ -24,7 +24,7 @@ class ProductSeeder extends Seeder
 
         $testSpecs = '[{"title":"مشخصات کلی","details":[{"name":"تاریخ ساخت","value":"Dec 2021"},{"name":"ابعاد","value":"164x77x9 mm"},{"name":"وزن","value":"197 g"},{"name":"قطر صفحه نمایش","value":"6.63 inch"},{"name":"دقت صفحه نمایش","value":"2400x1080 pixel"},{"name":"ظرفیت باتری","value":"4300 mAh"},{"name":"سیستم عامل","value":"Android 10 with EMUI 10"}]},{"title":"مشخصات فنی","details":[{"name":"پردازنده مرکزی","value":"Mediatek Helio G80 8core"},{"name":"پردازنده گرافیکی","value":"Mali-G52 MC2"},{"name":"حافظه داخلی","value":"128/256 GB"},{"name":"رم","value":"6/8 GB"},{"name":"نوع پورت","value":"USB Type C"},{"name":"دوربین","value":"64/16 MP"},{"name":"بلوتوث","value":"5.1"},{"name":"شبکه بی سیم","value":"GSM/HSPA/LTE"}]}]';
 
-        Product::create([ 
+        Product::customCreate([ 
             'title' => 'گوشی هوآوی Y9a | حافظه 128 رم 6 | Huawei Y9a' , 
             'model_id' => 1 ,
             'model_trait' => "128 GB - 6 GB" ,
@@ -33,7 +33,7 @@ class ProductSeeder extends Seeder
             'image_url' => 'https://storage.torob.com/backend-api/base/images/F8/gR/F8gRPsWAz0G7n4Ae.jpg_/216x216.jpg' 
         ]);
 
-        Product::create([ 
+        Product::customCreate([ 
             'title' => 'گوشی هوآوی Y9a | حافظه 128 رم 8 | Huawei Y9a' , 
             'model_id' => 1 ,
             'model_trait' => "128 GB - 8 GB" ,
@@ -42,7 +42,7 @@ class ProductSeeder extends Seeder
             'image_url' => 'https://storage.torob.com/backend-api/base/images/Ye/rr/YerrJKWonvOCYlnt.jpg_/216x216.jpg' 
         ]);
 
-        Product::create([ 
+        Product::customCreate([ 
             'title' => 'گوشی هوآوی Y9a | حافظه 265 رم 8 | Huawei Y9a' , 
             'model_id' => 1 ,
             'model_trait' => "256 GB - 8 GB" ,
