@@ -16,22 +16,33 @@ class CreateShopsTable extends Migration
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
             
-            $table->string("title")->unique();
-            
-            $table->string("province")->default("");
-            $table->string("city")->default("");
-            $table->string("address")->default("");
+            $table->string("title");
+            $table->string("province");
+            $table->string("city")->default('');
+            // $table->string("address")->default('');
+            // $table->string("site_url")->default('');
+            // $table->string("logo_url")->default('');
+            $table->integer("rate");
 
-            $table->string("owner")->default("");
-            $table->string("status")->default("");
-            $table->string("rate")->default("");
+            // $table->string("license_owner")->default('');
+            // $table->string("license_status")->default('');
+            // $table->integer("license_star")->default(1);
+            // $table->string("license_obtain_date")->default('');
+            // $table->string("license_expire_date")->default('');
 
-            $table->string("site_url")->default("");
-            $table->string("logo_url")->default("");
+            // $table->string("cooperation_join")->default('');
+            // $table->string("cooperation_status")->default('');
+            $table->unsignedBigInteger("cooperation_activity");
 
-            $table->unsignedBigInteger("started_time")->default(0);
+            $table->string("payment_detail");
 
-            $table->timestamps();
+            $table->string("posting_detail");
+            $table->string("posting_methods");
+            // $table->string("posting_link")->default('');
+
+            $table->string("advantage_inplace_pay");
+            $table->string("advantage_day_delivery");
+            $table->string("advantage_free_post");
         });
     }
 

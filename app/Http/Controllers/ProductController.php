@@ -92,7 +92,7 @@ class ProductController extends Controller
     ];
 
     /**
-     * Get shops offers related to product >>>>>> TODO : filter by province and city
+     * Get similar products in brand and category of one product
      *
      * @param ptitle  product title
      * 
@@ -110,19 +110,34 @@ class ProductController extends Controller
         $take = $params["perPage"];
         $skip = ( $params["page"] - 1 ) * $params["perPage"];
 
-        $qbuilder = SearchFunctions::joinTables( new Product )
-        ->where('products.id', '!=', $product->id)
-        ->where('products.brand_id', $brand->id);
+        $qbuilder = SearchFunctions::joinTables( new Product );
 
         $categoryIDs = ProductCategory::where('category_id', $category->id)->select('product_id','category_id');
 
         $qbuilder = $qbuilder->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
             $join->on('products.id', 'product_category_ids.product_id');
-        });
-        
-        $similarProducts = $qbuilder->where('category_id', $category->id)
-        ->orderBy('id', 'desc')
-        ->take($take)->skip($skip)
+        })
+        ->where('products.id', '!=', $product->id);
+
+        $qbuilderSameBrand = clone $qbuilder;
+        $qbuilderSameCategory = clone $qbuilder;
+
+        $qbuilderSameBrand = $qbuilderSameBrand->where('products.brand_id', $brand->id);
+        $qbuilderSameCategory = $qbuilderSameCategory->where('category_id', $category->id);
+
+        $qbuilderSameBrandCount = clone $qbuilderSameBrand;
+        $sameBrandCount = count($qbuilderSameBrandCount->get('id'));
+        $sameBrandUntilPage = ceil( $sameBrandCount / $take );
+
+        $similarProducts = [];
+        $qbuilder = null;
+
+        if( $sameBrandUntilPage >= (int)$params["page"] )
+            $qbuilder = $qbuilderSameBrand;
+        else
+            $qbuilder = $qbuilderSameCategory;
+
+        $similarProducts = $qbuilder->take($take)->skip($skip)
         ->get(['hash_id', 'title', 'image_url', 'price_start', 'shops_count']);
         
         $similarProducts = SearchFunctions::processResults($similarProducts);

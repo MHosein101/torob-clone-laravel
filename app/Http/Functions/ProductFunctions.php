@@ -85,7 +85,7 @@ class ProductFunctions {
     public static  function GetShopsOffers($pid)
     {
         // shops details
-        $shops = Shop::select('shops.id', 'shops.title', 'shops.province');
+        $shops = Shop::selectRaw('id, title as shop_title, province, city, rate as shop_rate, cooperation_activity, payment_detail, posting_detail, posting_methods, advantage_inplace_pay, advantage_day_delivery, advantage_free_post');
 
         // product offers
         $offers = Offer::where('product_id', $pid)->orderBy('is_available', 'desc')->orderBy('price', 'asc');

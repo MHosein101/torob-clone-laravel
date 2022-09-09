@@ -80,13 +80,13 @@ class SearchFunctions {
      * set condition if product titles contains search query items (texts) 
      *
      * @param queries suggested search queries
-     * @param product product query builder object
+     * @param qbuilder product query builder object
      * 
      * @return Product
      */ 
-    public static function LimitProductsWithQueries($queries, $products) {
+    public static function LimitProductsWithQueries($queries, $qbuilder) {
 
-       $products = $products->where(function($query) use ($queries) {
+       $qbuilder = $qbuilder->where(function($query) use ($queries) {
 
             $query->where('products.title','LIKE', "%{$queries[0]}%");
             $skipFirst = true;
@@ -98,7 +98,7 @@ class SearchFunctions {
 
        });
 
-       return $products;
+       return $qbuilder;
     }
 
     /**

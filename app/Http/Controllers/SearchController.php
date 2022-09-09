@@ -97,7 +97,6 @@ class SearchController extends Controller
         $searchQueryBuilder = $data[0];
         $searchCategories = $data[1];
         $searchBrands = $data[2];
-        $categoryType = $data[3]; // suggested , similar , detailed
 
         // check brand and filter
         $data = $this->processBrand( $searchQueryBuilder , $params["brand"] , $searchBrands );
@@ -118,7 +117,7 @@ class SearchController extends Controller
         $searchQueryBuilder = $searchQueryBuilder->skip($skip)->take($take);
 
         $searchResults = $searchQueryBuilder
-        ->get(['hash_id', 'title','image_url', 'price_start', 'shops_count']); // get selected values
+        ->get(['hash_id', 'products.title','image_url', 'price_start', 'shops_count']); // get selected values
         // ->get();
 
         $searchResults =  SearchFunctions::processResults( $searchResults );
@@ -144,7 +143,6 @@ class SearchController extends Controller
                 'pproducts_count' => count($searchResults) ,
                 'price_range' => [ 'min' => $priceRangeMin , 'max' => $priceRangeMax ] ,
                 'brands' => $searchBrands ,
-                'category_type' => $categoryType ,
                 'categories' => $searchCategories ,
                 'products' => $searchResults
             ]
@@ -182,21 +180,13 @@ class SearchController extends Controller
 
             $searchCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
             $searchBrands = CategoryFunctions::GetBrandsInCategory($category->id);
-
-            // find out what type of categories front should render
-            $countSubs = count( Category::where('parent_id', $category->id)->get('id') );
-
-            if($countSubs > 0)
-                $categoryType = 'detailed';
-            else
-                $categoryType = 'similar';
+            
         }
         else if($q) {
-            $categoryType = 'suggested';
             $searchCategories = SearchFunctions::SuggestCategoriesInSearch($queries, clone $qbuilder);
         }
 
-        return [ $qbuilder , $searchCategories , $searchBrands , $categoryType ];
+        return [ $qbuilder , $searchCategories , $searchBrands ];
     }
 
     /**

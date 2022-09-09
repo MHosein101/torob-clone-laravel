@@ -47,6 +47,26 @@ class ProductSeeder extends Seeder
                 'brand_id' => 4 , 
                 'specs' => $testSpecs ,
                 'image_url' => 'https://storage.torob.com/backend-api/base/images/RO/Yp/ROYpbXL9AKDSrR9i.jpg_/216x216.jpg' 
+            ] ,
+            [ 
+                'title' => 'گوشی سامسونگ A13' , 
+                'brand_id' => 1 , 
+                'image_url' => 'https://storage.torob.com/backend-api/base/images/YN/eE/YNeE9lEi7HLnRidI.png_/0x145.jpg' 
+            ] ,
+            [ 
+                'title' => 'گوشی سامسونگ A53 5G'  , 
+                'brand_id' => 1 , 
+                'image_url' => 'https://storage.torob.com/backend-api/base/images/fj/js/fjjsB-fYMvuvDlZx.png_/0x145.jpg' 
+            ] ,
+            [ 
+                'title' => 'گوشی اپل iPhone 13 Pro' , 
+                'brand_id' => 3 , 
+                'image_url' => 'https://storage.torob.com/backend-api/base/images/Np/T-/NpT-mU7_pyaDS9BX.jpg_/0x145.jpg' 
+            ] ,
+            [ 
+                'title' => 'گوشی شیاعومی Redmi Note 11' , 
+                'brand_id' => 2 , 
+                'image_url' => 'https://storage.torob.com/backend-api/base/images/FP/Ca/FPCaA-ZEqqnyNFsh.png_/0x145.jpg' 
             ]
         ];
 

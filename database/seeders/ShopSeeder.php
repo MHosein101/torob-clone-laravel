@@ -14,33 +14,46 @@ class ShopSeeder extends Seeder
      */
     public function run()
     {
+
         $data = [
             [
                 'title' => 'بلوباکس' ,
                 'province' => 'فارس' ,
-                'address' => 'بخش مرکزی ، شهر شیراز، محله عادل آباد ، خیابان فتح المبین ، بلوار پاسارگادشرقی ، پلاک 23 ، طبقه همکف' ,
-                'owner' => 'شاهین والای تجارت' ,
-                'status' => 'فعال' ,
-                'site_url' => 'https://bluebox.ir/' ,
-                'logo_url' => 'https://storage3.torob.com/backend-api/internet_shop/logos/6f8c326eb0a0.png' ,
+                'city' => 'فارس' ,
+                'rate' => 4 ,
+                'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
+                'payment_detail' => 'امکان خرید اقساطی' ,
+                'posting_detail' => '' ,
+                'posting_methods' => 'پیک|پست پیشتاز' ,
+                'advantage_inplace_pay' => 'امکان پرداخت در محل در فارس تا سقف مبلغ ۲۰٫۰۰۰٫۰۰۰ تومان' ,
+                'advantage_day_delivery' => '' ,
+                'advantage_free_post' => ''
             ] ,
             [
                 'title' => 'رونیکا' ,
                 'province' => 'آذربایجان غربی' ,
-                'address' => 'شهرستان : پیرانشهر، بخش : مرکزی، شهر: پیرانشهر، محله: مسجد امام خمینی، کوچه شیلان، بن بست شیلان، پلاک: 1282.0، طبقه: اول،' ,
-                'owner' => 'محبت حسني راد' ,
-                'status' => 'فعال' ,
-                'site_url' => 'https://ronica.shop/' ,
-                'logo_url' => 'https://storage3.torob.com/backend-api/internet_shop/logos/e7958b92869e.png' ,
+                'city' => 'آذربایجان غربی' ,
+                'rate' => 4.5 ,
+                'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
+                'payment_detail' => '' ,
+                'posting_detail' => 'امکان ارسال رایگان در روش ارسال فوری فراهم نیست.' ,
+                'posting_methods' => 'پیک|شرکتهای پست خصوصی نظیر تیپاکس|پست پیشتاز' ,
+                'advantage_inplace_pay' => '' ,
+                'advantage_day_delivery' => 'امکان تحویل در همان روز برای آذربایجان غربی با هماهنگی' ,
+                'advantage_free_post' => 'امکان ارسال رایگان برای خریدهای بالای ۳۰۰٫۰۰۰ تومان'
             ] ,
             [
                 'title' => 'شایان کامپیوتر' ,
                 'province' => 'اصفهان' ,
-                'address' => 'استان: اصفهان، شهرستان : اصفهان، بخش : مرکزی، شهر: اصفهان، محله: رحیم آباد، خیابان غرضی، بن بست بهاران 2[6]، پلاک: 7.0، طبقه: اول،' ,
-                'owner' => 'شايان زاهدي دهوئي' ,
-                'status' => 'فعال' ,
-                'site_url' => 'https://shayancomputer.com/' ,
-                'logo_url' => 'https://storage3.torob.com/backend-api/internet_shop/logos/78440c5a0883.png' ,
+                'city' => 'اصفهان' ,
+                'rate' => 5 ,
+                'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
+                'payment_detail' => 'امکان خرید اقساطی' ,
+                'posting_detail' => '' ,
+                'posting_methods' => 'پیک|شرکتهای پست خصوصی نظیر تیپاکس|پست پیشتاز' ,
+                'advantage_inplace_pay' => 'امکان پرداخت در محل در اصفهان تا سقف مبلغ ۲۰٫۰۰۰٫۰۰۰ تومان' ,
+                'advantage_day_delivery' => 'امکان تحویل در همان روز برای اصفهان با هماهنگی' ,
+                'advantage_free_post' => ''
             ]
         ];
         

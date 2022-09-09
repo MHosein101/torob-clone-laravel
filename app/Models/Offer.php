@@ -15,4 +15,9 @@ class Offer extends Model
     {
         return (boolean)$value;
     }
+
+    public function getIsMobileRegisteredAttribute($value)
+    {
+        return (boolean)$value;
+    }
 }

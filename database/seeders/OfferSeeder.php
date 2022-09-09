@@ -16,17 +16,17 @@ class OfferSeeder extends Seeder
     {
         
         $data = [
-            [ 'product_id' => 1 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3000 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 1 , 'shop_id' => 2 , 'is_available' => true , 'price' => 3200 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 1 , 'shop_id' => 3 , 'is_available' => true , 'price' => 2900 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 1 , 'shop_id' => 1 , 'title' => '' , 'is_available' => true , 'price' => 3000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 1 , 'shop_id' => 2 , 'title' => '' , 'is_available' => true , 'price' => 3200 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 1 , 'shop_id' => 3 , 'title' => '' , 'is_available' => true , 'price' => 2900 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
             
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3900 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'is_available' => false , 'price' => 3700 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'is_available' => true , 'price' => 3800 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900 , 'guarantee' => 'گارانتی 18 ماهه' , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800 , 'is_mobile_registered' => false , 'last_update' => (time() - random_int(10000, 999999)) ] ,
             
-            [ 'product_id' => 3 , 'shop_id' => 1 , 'is_available' => false , 'price' => 4300 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 3 , 'shop_id' => 2 , 'is_available' => false , 'price' => 4500 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 3 , 'shop_id' => 3 , 'is_available' => false , 'price' => 4100 , 'last_change_time' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 3 , 'shop_id' => 1 , 'title' => '' , 'is_available' => false , 'price' => 4300 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 3 , 'shop_id' => 2 , 'title' => '' , 'is_available' => false , 'price' => 4500 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+            [ 'product_id' => 3 , 'shop_id' => 3 , 'title' => '' , 'is_available' => false , 'price' => 4100 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
         ];
 
         foreach($data as $set)
