@@ -7,11 +7,6 @@ use App\Models\Offer;
 
 class OfferSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
         
@@ -32,7 +27,7 @@ class OfferSeeder extends Seeder
                     'title' => $title[random_int(0, 4)] , 
                     'is_available' => $av[random_int(0, $avc)] , 
                     'is_mobile_registered' => $av[random_int(0, $avc)]  ,
-                    'guarantee' => $av[random_int(0, 6)] , 
+                    'guarantee' => $gr[random_int(0, 6)] , 
                     'price' => random_int($pm, $pm+8000000) , 
                     'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
                     'last_update' => (time() - random_int(1999999, 8999999)) 
@@ -52,7 +47,7 @@ class OfferSeeder extends Seeder
                     'title' => $title[random_int(0, 4)] , 
                     'is_available' => $av[random_int(0, $avc)] , 
                     'is_mobile_registered' => $av[random_int(0, $avc)]  ,
-                    'guarantee' => $av[random_int(0, 6)] , 
+                    'guarantee' => $gr[random_int(0, 6)] , 
                     'price' => random_int($pm, $pm+8000000) , 
                     'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
                     'last_update' => (time() - random_int(1999999, 8999999)) 
@@ -72,7 +67,7 @@ class OfferSeeder extends Seeder
                     'title' => $title[random_int(0, 4)] , 
                     'is_available' => $av[random_int(0, $avc)] , 
                     'is_mobile_registered' => $av[random_int(0, $avc)]  ,
-                    'guarantee' => $av[random_int(0, 6)] , 
+                    'guarantee' => $gr[random_int(0, 6)] , 
                     'price' => random_int($pm, $pm+8000000) , 
                     'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
                     'last_update' => (time() - random_int(1999999, 8999999)) 

@@ -15,13 +15,13 @@ class CreateProductsTable extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string("hash_id");
+            $table->string('hash_id');
             
-            $table->string("title");
-            $table->string("image_url")->default("");
+            $table->string('title');
+            // $table->string('image_url')->default('');
 
-            $table->string("model_trait")->default("");
-            $table->longText("specs")->nullable();
+            $table->string('model_trait')->default('');
+            $table->longText('specs')->nullable();
             
             $table->unsignedBigInteger('model_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();

@@ -7,11 +7,6 @@ use App\Models\Product;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
 
@@ -97,16 +92,6 @@ class ProductSeeder extends Seeder
 
         foreach($data as $set)
             Product::customCreate($set);
-
-        // Product::create([ 'title' => 'پردازنده Core i5-12400F Alder Lake' , 'brand_id' => 6 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/KE/rG/KErGQXp4DEhcwi0x.jpg_/0x145.jpg' ]); // 5
-        // Product::create([ 'title' => 'پردازنده Core i3-11300K'  , 'brand_id' => 6 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/RX/e8/RXe8ZCsHzl9w6Hg-.jpeg_/0x145.jpg' ]); // 6
-        // Product::create([ 'title' => 'پردازنده Ryzen 9 5900X' , 'brand_id' => 7 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/FP/Wn/FPWn3CzZgxSaZZLu.jpg_/0x145.jpg' ]); // 7
-        
-        // Product::create([ 'title' => 'کارت گرافیک Nvidia GTX1060 3GB' , 'brand_id' => 10 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/BV/C_/BVC_FQYE_XshX_0Z_/0x145.jpg' ]); // 8
-        // Product::create([ 'title' => 'کارت گرافیک RTX 2060 6GB' , 'brand_id' => 11 , 'image_url' => 'https://storage.torob.com/backend-api/base/images/_8/CL/_8CLqDxw-fAyzyGp.jpg_/0x145.jpg' ]); // 9
-
-        // Product::create([ 'title' => 'کیبورد گیمینگ تسکو TSCO TK8124GA Gaming' , 'image_url' => 'https://storage.torob.com/backend-api/base/images/6f/uZ/6fuZlT_rW4CPGH6d.jpg_/0x145.jpg' ]); // 10
-        // Product::create([ 'title' => 'ماوس گیمینگ لاجیتک G502 HERO' , 'image_url' => 'https://storage.torob.com/backend-api/base/images/xn/gh/xnghPNRl-yapJlfD.jpg_/0x145.jpg' ]); // 11
 
     }
 }

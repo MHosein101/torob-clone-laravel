@@ -7,11 +7,6 @@ use App\Models\CategoryBrand;
 
 class CategoryBrandSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
         $data = [

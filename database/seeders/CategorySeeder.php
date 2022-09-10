@@ -7,9 +7,26 @@ use App\Models\Category;
 
 class CategorySeeder extends Seeder
 {
+
+
     public function run()
     {
-        
+        $data = [
+            [
+                'level' => 1 , 'name' => '' ,
+                'sub' => [
+                    [ 'level' => 2 , 'name' => '' ] ,
+                    [ 
+                        'level' => 2 , 'name' => '' ,
+                        'sub' => [
+                            [ 'level' => 3 , 'name' => '' ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+
         $c1 = Category::create([ "name" => "موبایل و کالای دیجیتال" , "level" => 1 ]); // 1
             Category::create([ "name" => "گوشی موبایل" , "level" => 2, "parent_id" => $c1->id ]); // 2
             $c12 = Category::create([ "name" => "لوازم جانبی موبایل و تبلت" , "level" => 2, "parent_id" => $c1->id ]); // 3

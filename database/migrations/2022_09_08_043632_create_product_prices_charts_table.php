@@ -16,7 +16,7 @@ class CreateProductPricesChartsTable extends Migration
         Schema::create('product_prices_charts', function (Blueprint $table) {
             $table->id();
             
-            $table->string("date");
+            $table->string('date');
             $table->unsignedBigInteger('price');
             $table->unsignedBigInteger('average_price');
             

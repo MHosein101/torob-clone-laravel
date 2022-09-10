@@ -15,11 +15,8 @@ class CreateShopOrderTrackingsTable extends Migration
     {
         Schema::create('shop_order_trackings', function (Blueprint $table) {
             $table->id();
-            
-            // $table->string("state");
-            // $table->unsignedBigInteger("submit_date");
-            
-            // $table->unsignedBigInteger('offer_id');
+
+            // $table->string('state');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('shop_id');
         });

@@ -7,17 +7,12 @@ use App\Models\ProductPricesChart;
 
 class ProductPricesChartSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-
         $month = ['تیر', 'مرداد', 'مهر', 'آذر', 'دی', 'بهمن'];
 
         for($i = 1; $i <= 15; $i++) {
+
             $ri = random_int(7, 40);
             $m = $month[ random_int(0, 5) ];
             $mp = random_int(2000000, 8000000);
@@ -26,6 +21,7 @@ class ProductPricesChartSeeder extends Seeder
             for($w = 0; $w < $ri; $w++) {
 
                 $d = random_int(1, 30);
+
                 ProductPricesChart::create([ 
                     'product_id' => $i , 
                     'date' => "$d $m 1401" , 
@@ -33,6 +29,7 @@ class ProductPricesChartSeeder extends Seeder
                     'average_price' => random_int($ma, $ma+20000000)  
                 ]);
             }
+
         }
             
     }

@@ -7,11 +7,6 @@ use App\Models\Shop;
 
 class ShopSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
 

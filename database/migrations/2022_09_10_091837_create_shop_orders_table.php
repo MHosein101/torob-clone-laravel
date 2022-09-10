@@ -16,8 +16,6 @@ class CreateShopOrdersTable extends Migration
         Schema::create('shop_orders', function (Blueprint $table) {
             $table->id();
             
-            // $table->unsignedBigInteger('submit_date');
-
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('shop_id');
         });
