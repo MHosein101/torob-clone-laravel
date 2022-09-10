@@ -28,6 +28,9 @@ class ProductFunctions {
         ->selectRaw('MIN(price) as min, MAX(price) as max')
         ->groupBy('product_id')->where('is_available', true)->get()->first();
 
+        if($range == null)
+            return ['min' => 0, 'max' => 0];
+            
         return $range;
     }
 

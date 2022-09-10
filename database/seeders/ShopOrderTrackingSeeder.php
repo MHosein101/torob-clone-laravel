@@ -14,21 +14,10 @@ class ShopOrderTrackingSeeder extends Seeder
      */
     public function run()
     {
-        $data = [];
-
-        $ri = random_int(11,50);
-        for($i = 1; $i < $ri; $i++)
-            $data[] = [ 'user_id' => $i, 'shop_id' => 3 ];
-
-        $ri = random_int(11,50);
-        for($i = 1; $i < $ri; $i++)
-            $data[] = [ 'user_id' => $i, 'shop_id' => 1 ];
-
-        $ri = random_int(11,50);
-        for($i = 1; $i < $ri; $i++)
-            $data[] = [ 'user_id' => $i, 'shop_id' => 2 ];
-            
-        foreach($data as $set)
-            ShopOrderTracking::create($set);
+        for($i = 0; $i < 16; $i++) {
+            $ri = random_int(11,100);
+            for($a = 1; $a < $ri; $a++)
+                ShopOrderTracking::create([ 'user_id' => random_int(1,1000), 'shop_id' => $i ]);
+        }
     }
 }

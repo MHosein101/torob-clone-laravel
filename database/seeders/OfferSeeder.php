@@ -15,80 +15,70 @@ class OfferSeeder extends Seeder
     public function run()
     {
         
-        $data = [
-            [ 'product_id' => 1 , 'shop_id' => 1 , 'title' => '' , 'is_available' => true , 'price' => 3000000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 1 , 'shop_id' => 2 , 'title' => '' , 'is_available' => true , 'price' => 3200000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 1 , 'shop_id' => 3 , 'title' => '' , 'is_available' => true , 'price' => 2900000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
+        $title = ['خرید این محصول', 'خرید محصول با تخفیف', 'خرید ارزان قیمت', 'خرید با گارانتی معتبر', 'ارزان و گارانتی معتبر'];
+        $av = [0,0,1,1,0,1,0,1,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,1,1,0,0,0,1,1,1,1,1,0,1,0,1,0,0,1,1,1];
+        $avc = count($av) - 1;
+        $gr = ['', 'گارانتی 12 ماهه', 'گارانتی 24 ماهه', 'گارانتی 5 ساله', 'گارانتی شرکتی', 'گارانتی اصل', 'گارانتی تعویض فروشگاهی'];
 
-            [ 'product_id' => 3 , 'shop_id' => 1 , 'title' => '' , 'is_available' => false , 'price' => 4300000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 3 , 'shop_id' => 2 , 'title' => '' , 'is_available' => false , 'price' => 4500000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 3 , 'shop_id' => 3 , 'title' => '' , 'is_available' => false , 'price' => 4100000 , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900000 , 'redirect_url' => 'https://ahwaztel.ir/product-33' , 'guarantee' => 'گارانتی 18 ماهه' , 'is_mobile_registered' => true  , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700000 , 'redirect_url' => 'https://meghdadit.com/product/114914/huawei-y9a-128gb-8gb-ram/' , 'guarantee' => 'گارانتی 10 ماهه' ,'is_mobile_registered' => true , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800000 , 'redirect_url' => 'https://www.pcnovin.com/product/SPK-1306/huawei-y9a-128gb-8gb-mobile-phone/' ,'is_mobile_registered' => true  , 'guarantee' => 'گارانتی 1 ساله', 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900000 , 'redirect_url' => 'https://ahwaztel.ir/product-33' , 'guarantee' => 'گارانتی 18 ماهه' , 'is_mobile_registered' => true  , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700000 , 'redirect_url' => 'https://meghdadit.com/product/114914/huawei-y9a-128gb-8gb-ram/' , 'guarantee' => 'گارانتی 10 ماهه' ,'is_mobile_registered' => true , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800000 , 'redirect_url' => 'https://www.pcnovin.com/product/SPK-1306/huawei-y9a-128gb-8gb-mobile-phone/' ,'is_mobile_registered' => true  , 'guarantee' => 'گارانتی 1 ساله', 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900000 , 'redirect_url' => 'https://ahwaztel.ir/product-33' , 'guarantee' => 'گارانتی 18 ماهه' , 'is_mobile_registered' => true  , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700000 , 'redirect_url' => 'https://meghdadit.com/product/114914/huawei-y9a-128gb-8gb-ram/' , 'guarantee' => 'گارانتی 10 ماهه' ,'is_mobile_registered' => true , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800000 , 'redirect_url' => 'https://www.pcnovin.com/product/SPK-1306/huawei-y9a-128gb-8gb-mobile-phone/' ,'is_mobile_registered' => true  , 'guarantee' => 'گارانتی 1 ساله', 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900000 , 'redirect_url' => 'https://ahwaztel.ir/product-33' , 'guarantee' => 'گارانتی 18 ماهه' , 'is_mobile_registered' => true  , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700000 , 'redirect_url' => 'https://meghdadit.com/product/114914/huawei-y9a-128gb-8gb-ram/' , 'guarantee' => 'گارانتی 10 ماهه' ,'is_mobile_registered' => true , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800000 , 'redirect_url' => 'https://www.pcnovin.com/product/SPK-1306/huawei-y9a-128gb-8gb-mobile-phone/' ,'is_mobile_registered' => true  , 'guarantee' => 'گارانتی 1 ساله', 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900000 , 'redirect_url' => 'https://ahwaztel.ir/product-33' , 'guarantee' => 'گارانتی 18 ماهه' , 'is_mobile_registered' => true  , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700000 , 'redirect_url' => 'https://meghdadit.com/product/114914/huawei-y9a-128gb-8gb-ram/' , 'guarantee' => 'گارانتی 10 ماهه' ,'is_mobile_registered' => true , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800000 , 'redirect_url' => 'https://www.pcnovin.com/product/SPK-1306/huawei-y9a-128gb-8gb-mobile-phone/' ,'is_mobile_registered' => true  , 'guarantee' => 'گارانتی 1 ساله', 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 1 , 'title' => 'گوشی هوآوی Y9a 2022' , 'is_available' => true , 'price' => 3900000 , 'redirect_url' => 'https://ahwaztel.ir/product-33' , 'guarantee' => 'گارانتی 18 ماهه' , 'is_mobile_registered' => true  , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 2 , 'title' => 'هوآوی Y9a رم 8 حافظه 128' , 'is_available' => false , 'price' => 3700000 , 'redirect_url' => 'https://meghdadit.com/product/114914/huawei-y9a-128gb-8gb-ram/' , 'guarantee' => 'گارانتی 10 ماهه' ,'is_mobile_registered' => true , 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            [ 'product_id' => 2 , 'shop_id' => 3 , 'title' => 'گوشی موبایل برند هوآوی Y9a' , 'is_available' => true , 'price' => 3800000 , 'redirect_url' => 'https://www.pcnovin.com/product/SPK-1306/huawei-y9a-128gb-8gb-mobile-phone/' ,'is_mobile_registered' => true  , 'guarantee' => 'گارانتی 1 ساله', 'last_update' => (time() - random_int(10000, 999999)) ] ,
-            
-        ];
+        for($i = 1; $i <= 15; $i++) {
+            $rsh = random_int(3, 16);
 
-        foreach($data as $set)
-            Offer::create($set);
+            for($d = 1; $d <= $rsh; $d++) {
+                $pm = floor( random_int(2500000, 5000000) );
+
+                Offer::create([ 
+                    'product_id' => $i , 
+                    'shop_id' => $d , 
+                    'title' => $title[random_int(0, 4)] , 
+                    'is_available' => $av[random_int(0, $avc)] , 
+                    'is_mobile_registered' => $av[random_int(0, $avc)]  ,
+                    'guarantee' => $av[random_int(0, 6)] , 
+                    'price' => random_int($pm, $pm+8000000) , 
+                    'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
+                    'last_update' => (time() - random_int(1999999, 8999999)) 
+                ]);
+            }
+        }
         
-        // for($i = 1; $i < 121; $i+=4) {
-        //     Offer::create([ 'product_id' => ($i+2) , 'shop_id' => 1 , 'is_available' => false , 'price' => 21000 ]);
-        //     Offer::create([ 'product_id' => ($i+2) , 'shop_id' => 2 , 'is_available' => false , 'price' => 19000 ]);
+        for($i = 1; $i <= 15; $i++) {
+            $rsh = random_int(3, 16);
 
-        //     Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 1 , 'is_available' => true , 'price' => 5000 ]);
-        //     Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 2 , 'is_available' => false , 'price' => 4000 ]);
-        //     Offer::create([ 'product_id' => ($i+3) , 'shop_id' => 3 , 'is_available' => true , 'price' => 4500 ]);
+            for($d = 1; $d <= $rsh; $d++) {
+                $pm = floor( random_int(2500000, 5000000) );
 
-        //     Offer::create([ 'product_id' => ($i+1) , 'shop_id' => 1 , 'is_available' => true , 'price' => 8000 ]);
-        //     Offer::create([ 'product_id' => ($i+1) , 'shop_id' => 3 , 'is_available' => true , 'price' => 7000 ]);
+                Offer::create([ 
+                    'product_id' => $i , 
+                    'shop_id' => $d , 
+                    'title' => $title[random_int(0, 4)] , 
+                    'is_available' => $av[random_int(0, $avc)] , 
+                    'is_mobile_registered' => $av[random_int(0, $avc)]  ,
+                    'guarantee' => $av[random_int(0, 6)] , 
+                    'price' => random_int($pm, $pm+8000000) , 
+                    'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
+                    'last_update' => (time() - random_int(1999999, 8999999)) 
+                ]);
+            }
+        }
+        
+        for($i = 1; $i <= 15; $i++) {
+            $rsh = random_int(3, 16);
 
-        //     Offer::create([ 'product_id' => ($i) , 'shop_id' => 3 , 'is_available' => true , 'price' => 9000 ]);
-        // }
+            for($d = 1; $d <= $rsh; $d++) {
+                $pm = floor( random_int(2500000, 5000000) );
 
-        // Offer::create([ 'product_id' => 5 , 'shop_id' => 1 , 'is_available' => true , 'price' => 3000 ]);
-        // Offer::create([ 'product_id' => 5 , 'shop_id' => 2 , 'is_available' => true , 'price' => 3200 ]);
-        // Offer::create([ 'product_id' => 5 , 'shop_id' => 3 , 'is_available' => false , 'price' => 2900 ]);
+                Offer::create([ 
+                    'product_id' => $i , 
+                    'shop_id' => $d , 
+                    'title' => $title[random_int(0, 4)] , 
+                    'is_available' => $av[random_int(0, $avc)] , 
+                    'is_mobile_registered' => $av[random_int(0, $avc)]  ,
+                    'guarantee' => $av[random_int(0, 6)] , 
+                    'price' => random_int($pm, $pm+8000000) , 
+                    'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
+                    'last_update' => (time() - random_int(1999999, 8999999)) 
+                ]);
+            }
+        }
 
-        // Offer::create([ 'product_id' => 6 , 'shop_id' => 1 , 'is_available' => false , 'price' => 2500 ]);
-        // Offer::create([ 'product_id' => 6 , 'shop_id' => 2 , 'is_available' => false , 'price' => 1900 ]);
-        // Offer::create([ 'product_id' => 6 , 'shop_id' => 3 , 'is_available' => false , 'price' => 1900 ]);
-
-        // Offer::create([ 'product_id' => 7 , 'shop_id' => 1 , 'is_available' => true , 'price' => 4000 ]);
-        // Offer::create([ 'product_id' => 7 , 'shop_id' => 3 , 'is_available' => true , 'price' => 3900 ]);
-
-        // Offer::create([ 'product_id' => 8 , 'shop_id' => 1 , 'is_available' => true , 'price' => 15000 ]);
-        // Offer::create([ 'product_id' => 8 , 'shop_id' => 2 , 'is_available' => true , 'price' => 11000 ]);
-        // Offer::create([ 'product_id' => 8 , 'shop_id' => 3 , 'is_available' => true , 'price' => 17000 ]);
-
-        // Offer::create([ 'product_id' => 9 , 'shop_id' => 1 , 'is_available' => true , 'price' => 21000 ]);
-        // Offer::create([ 'product_id' => 9 , 'shop_id' => 2 , 'is_available' => true , 'price' => 22000 ]);
-        // Offer::create([ 'product_id' => 9 , 'shop_id' => 3 , 'is_available' => true , 'price' => 19000 ]);
-
-        // Offer::create([ 'product_id' => 10 , 'shop_id' => 2 , 'is_available' => false , 'price' => 150 ]);
-        // Offer::create([ 'product_id' => 10 , 'shop_id' => 3 , 'is_available' => true , 'price' => 200 ]);
-
-        // Offer::create([ 'product_id' => 11 , 'shop_id' => 1 , 'is_available' => false , 'price' => 90 ]);
-        // Offer::create([ 'product_id' => 11 , 'shop_id' => 2 , 'is_available' => false , 'price' => 120 ]);
-        // Offer::create([ 'product_id' => 11 , 'shop_id' => 3 , 'is_available' => true , 'price' => 100 ]);
-
-
-        // Offer::create([ 'product_id' => 1 , 'shop_id' => 1 , 'is_available' => true , 'price' => 1000 ]);
     }
 }

@@ -263,6 +263,7 @@ class SearchFunctions {
             }
 
             // if product available in single shop get the shop name
+            // dd($p);
             if($p->shops_count == 1) { 
                 $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id; // find shop id
                 $searchResults[$i]["shop_name"] = Shop::find($shopId)->title;

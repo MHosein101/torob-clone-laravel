@@ -14,32 +14,26 @@ class ProductPricesChartSeeder extends Seeder
      */
     public function run()
     {
-        $data = [
-            [ 'product_id' => 2 , 'date' => '22 خرداد 1401' , 'price' => 34800000 , 'average_price' => 4800000 ] ,
-            [ 'product_id' => 2 , 'date' => '25 خرداد 1401' , 'price' => 3400000 , 'average_price' => 5200000 ] ,
-            [ 'product_id' => 2 , 'date' => '28 خرداد 1401' , 'price' => 3500000 , 'average_price' => 4900000 ] ,
-            [ 'product_id' => 2 , 'date' => '31 خرداد 1401' , 'price' => 4000000 , 'average_price' => 5300000 ] ,
-            [ 'product_id' => 2 , 'date' => '3 تیر 1401' , 'price' => 3910000 , 'average_price' => 4700000 ] ,
-            [ 'product_id' => 2 , 'date' => '6 تیر 1401' , 'price' => 3900000 , 'average_price' => 4800000 ] ,
-            [ 'product_id' => 2 , 'date' => '9 تیر 1401' , 'price' => 3950000 , 'average_price' => 5000000 ] ,
-            [ 'product_id' => 2 , 'date' => '12 تیر 1401' , 'price' => 387000 , 'average_price' => 3730000 ] ,
-            [ 'product_id' => 2 , 'date' => '15 تیر 1401' , 'price' => 4300000 , 'average_price' => 6800000 ] ,
-            [ 'product_id' => 2 , 'date' => '18 تیر 1401' , 'price' => 4700000 , 'average_price' => 3000000 ] ,
-            [ 'product_id' => 2 , 'date' => '21 تیر 1401' , 'price' => 5000000 , 'average_price' => 3500000 ] ,
-            [ 'product_id' => 2 , 'date' => '24 تیر 1401' , 'price' => 5200000 , 'average_price' => 4500000 ] ,
-            [ 'product_id' => 2 , 'date' => '27 تیر 1401' , 'price' => 5300000 , 'average_price' => 4700000 ] ,
-            [ 'product_id' => 2 , 'date' => '30 تیر 1401' , 'price' => 4800000 , 'average_price' => 5800000 ] ,
-            [ 'product_id' => 2 , 'date' => '2 مرداد 1401' , 'price' => 5500000 , 'average_price' => 4600000 ] ,
-            [ 'product_id' => 2 , 'date' => '5 مرداد 1401' , 'price' => 4800000 , 'average_price' => 4400000 ] ,
-            [ 'product_id' => 2 , 'date' => '8 مرداد 1401' , 'price' => 4200000 , 'average_price' => 4700000 ] ,
-            [ 'product_id' => 2 , 'date' => '11 مرداد 1401' , 'price' => 3900000 , 'average_price' => 3300000 ] ,
-            [ 'product_id' => 2 , 'date' => '14 مرداد 1401' , 'price' => 4000000 , 'average_price' => 3300000 ] ,
-            [ 'product_id' => 2 , 'date' => '17 مرداد 1401' , 'price' => 3800000 , 'average_price' => 3700000 ] ,
-        ];
 
+        $month = ['تیر', 'مرداد', 'مهر', 'آذر', 'دی', 'بهمن'];
 
-        foreach($data as $set)
-            ProductPricesChart::create($set);
+        for($i = 1; $i <= 15; $i++) {
+            $ri = random_int(7, 40);
+            $m = $month[ random_int(0, 5) ];
+            $mp = random_int(2000000, 8000000);
+            $ma = random_int(2000000, 8000000);
+
+            for($w = 0; $w < $ri; $w++) {
+
+                $d = random_int(1, 30);
+                ProductPricesChart::create([ 
+                    'product_id' => $i , 
+                    'date' => "$d $m 1401" , 
+                    'price' => random_int($mp, $mp+20000000) , 
+                    'average_price' => random_int($ma, $ma+20000000)  
+                ]);
+            }
+        }
             
     }
 }

@@ -14,31 +14,36 @@ class ProductCategorySeeder extends Seeder
      */
     public function run()
     {
-        $data = [
-            [ 'product_id' => 1 , 'category_id' => 1 ] ,
-            [ 'product_id' => 1 , 'category_id' => 2 ] ,
+        for($i = 1; $i <= 15; $i++) {
+            ProductCategory::create([ 'product_id' => $i , 'category_id' => 1 ]);
+            ProductCategory::create([ 'product_id' => $i , 'category_id' => 2 ]);
+        }
 
-            [ 'product_id' => 2 , 'category_id' => 1 ] ,
-            [ 'product_id' => 2 , 'category_id' => 2 ] ,
-            
-            [ 'product_id' => 3 , 'category_id' => 1 ] ,
-            [ 'product_id' => 3 , 'category_id' => 2 ] ,
-            
-            [ 'product_id' => 4 , 'category_id' => 1 ] ,
-            [ 'product_id' => 4 , 'category_id' => 2 ] ,
-            
-            [ 'product_id' => 5 , 'category_id' => 1 ] ,
-            [ 'product_id' => 5 , 'category_id' => 2 ] ,
-            
-            [ 'product_id' => 6 , 'category_id' => 1 ] ,
-            [ 'product_id' => 6 , 'category_id' => 2 ] ,
-            
-            [ 'product_id' => 7 , 'category_id' => 1 ] ,
-            [ 'product_id' => 7 , 'category_id' => 2 ] ,
-        ];
+        // $data = [
+        //     [ 'product_id' => 1 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 1 , 'category_id' => 2 ] ,
 
-        foreach($data as $set)
-            ProductCategory::create($set);
+        //     [ 'product_id' => 2 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 2 , 'category_id' => 2 ] ,
+            
+        //     [ 'product_id' => 3 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 3 , 'category_id' => 2 ] ,
+            
+        //     [ 'product_id' => 4 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 4 , 'category_id' => 2 ] ,
+            
+        //     [ 'product_id' => 5 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 5 , 'category_id' => 2 ] ,
+            
+        //     [ 'product_id' => 6 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 6 , 'category_id' => 2 ] ,
+            
+        //     [ 'product_id' => 7 , 'category_id' => 1 ] ,
+        //     [ 'product_id' => 7 , 'category_id' => 2 ] ,
+        // ];
+
+        // foreach($data as $set)
+        //     ProductCategory::create($set);
         
         // for($i = 1; $i < 121; $i+=4) {
         //     ProductCategory::create([ 'product_id' => ($i) , 'category_id' => 1 ]);
