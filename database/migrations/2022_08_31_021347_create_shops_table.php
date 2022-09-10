@@ -22,7 +22,7 @@ class CreateShopsTable extends Migration
             // $table->string("address")->default('');
             // $table->string("site_url")->default('');
             // $table->string("logo_url")->default('');
-            $table->integer("rate");
+            $table->tinyInteger("rate");
 
             // $table->string("license_owner")->default('');
             // $table->string("license_status")->default('');
@@ -34,15 +34,16 @@ class CreateShopsTable extends Migration
             // $table->string("cooperation_status")->default('');
             $table->unsignedBigInteger("cooperation_activity");
 
-            $table->string("payment_detail");
+            // $table->string("payment_detail");
 
-            $table->string("posting_detail");
-            $table->string("posting_methods");
-            // $table->string("posting_link")->default('');
+            $table->string("delivery_methods");
+            $table->string("delivery_attention");
+            // $table->string("delivery_detail");
+            // $table->string("delivery_link")->default('');
 
             $table->string("advantage_inplace_pay");
-            $table->string("advantage_day_delivery");
-            $table->string("advantage_free_post");
+            $table->string("advantage_instant_delivery");
+            $table->string("advantage_free_delivery");
         });
     }
 

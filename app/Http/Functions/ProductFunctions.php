@@ -30,6 +30,25 @@ class ProductFunctions {
     }
 
     /**
+     *  Check if product is mobile
+     *
+     * @param ptitle product title
+     * 
+     * @return Array
+     */ 
+    public static function IsMobile($ptitle)
+    {
+        $search = ['گوشی', 'موبایل'];
+
+        foreach($search as $s) {
+            if( strpos($ptitle, $s) !== false )
+                return true;
+        }
+
+        return false;
+    }
+
+    /**
      *  Get other products in same model as current product
      *
      * @param mid product model id
@@ -82,13 +101,19 @@ class ProductFunctions {
      * 
      * @return Array Shops Offers
      */ 
-    public static  function GetShopsOffers($pid)
+    public static  function GetShopsOffers($pid, $limitByRegistery, $provinces = null, $cities = null)
     {
         // shops details
-        $shops = Shop::selectRaw('id, title as shop_title, province, city, rate as shop_rate, cooperation_activity, payment_detail, posting_detail, posting_methods, advantage_inplace_pay, advantage_day_delivery, advantage_free_post');
+        $shops = Shop::selectRaw('id, title as shop_title, province, city, rate as shop_rate, cooperation_activity, delivery_attention ,delivery_methods, advantage_inplace_pay, advantage_instant_delivery, advantage_free_delivery');
 
         // product offers
-        $offers = Offer::where('product_id', $pid)->orderBy('is_available', 'desc')->orderBy('price', 'asc');
+        $offers = Offer::where('product_id', $pid)
+        ->orderBy('is_available', 'desc')
+        ->orderBy('price', 'asc');
+
+        if($limitByRegistery)
+            $offers = $offers->where('is_mobile_registered', true);
+
         $qMinMaxPrices = clone $offers;
 
         // join tables and get each offer shop data
@@ -96,7 +121,73 @@ class ProductFunctions {
             $join->on('offers.shop_id', 'shops.id');
         })->get();
 
+
+        $offers = ProductFunctions::ReOrderShopsOffersData($offers);
+
         return $offers;
+    }
+
+    /**
+     *  re order and clean up the data
+     *
+     * @param data shops offers
+     * 
+     * @return Array Shops Offers
+     */ 
+    public static  function ReOrderShopsOffersData($offers)
+    {
+        $data = [];
+
+        foreach($offers as $f) {
+
+            $offer = [
+                'title' => $f->title ,
+                'price' => $f->price ,
+                'is_available' => $f->is_available ,
+                'is_mobile_registered' => $f->is_mobile_registered ,
+                'guarantee' => $f->guarantee ,
+                'redirect_url' => $f->redirect_url ,
+                'last_update' => $f->last_update ,
+            ];
+
+            $shop = [
+                'title' => $f->shop_title ,
+                'province' => $f->province ,
+                'city' => $f->city ,
+                'rate' => $f->shop_rate ,
+                'activity_time' => $f->cooperation_activity ,
+                'delivery_attention' => $f->delivery_attention ,
+                'delivery_methods' => explode('|', $f->delivery_methods) ,
+                'advantage' => [] 
+            ];
+
+            if( $f->advantage_inplace_pay != '' ) {
+                $shop['advantage'][] = [
+                    'type' => 'inplace_pay' ,
+                    'title' => $f->advantage_inplace_pay
+                ];
+            }
+            if( $f->advantage_instant_delivery != '' ) {
+                $shop['advantage'][] = [
+                    'type' => 'instant_delivery' ,
+                    'title' => $f->advantage_instant_delivery
+                ];
+            }
+            if( $f->advantage_free_delivery != '' ) {
+                $shop['advantage'][] = [
+                    'type' => 'free_delivery' ,
+                    'title' => $f->advantage_free_delivery
+                ];
+            }
+
+            $data[] = [
+                'shop' => $shop ,
+                'offer' => $offer
+            ];
+
+        }
+
+        return $data;
     }
 
     /**

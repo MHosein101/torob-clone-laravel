@@ -22,12 +22,11 @@ class ShopSeeder extends Seeder
                 'city' => 'فارس' ,
                 'rate' => 4 ,
                 'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
-                'payment_detail' => 'امکان خرید اقساطی' ,
-                'posting_detail' => '' ,
-                'posting_methods' => 'پیک|پست پیشتاز' ,
+                'delivery_attention' => '' ,
+                'delivery_methods' => 'پیک|پست پیشتاز' ,
                 'advantage_inplace_pay' => 'امکان پرداخت در محل در فارس تا سقف مبلغ ۲۰٫۰۰۰٫۰۰۰ تومان' ,
-                'advantage_day_delivery' => '' ,
-                'advantage_free_post' => ''
+                'advantage_instant_delivery' => '' ,
+                'advantage_free_delivery' => ''
             ] ,
             [
                 'title' => 'رونیکا' ,
@@ -35,12 +34,11 @@ class ShopSeeder extends Seeder
                 'city' => 'آذربایجان غربی' ,
                 'rate' => 4.5 ,
                 'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
-                'payment_detail' => '' ,
-                'posting_detail' => 'امکان ارسال رایگان در روش ارسال فوری فراهم نیست.' ,
-                'posting_methods' => 'پیک|شرکتهای پست خصوصی نظیر تیپاکس|پست پیشتاز' ,
+                'delivery_attention' => 'امکان ارسال رایگان در روش ارسال فوری فراهم نیست.' ,
+                'delivery_methods' => 'پیک|شرکتهای پست خصوصی نظیر تیپاکس|پست پیشتاز' ,
                 'advantage_inplace_pay' => '' ,
-                'advantage_day_delivery' => 'امکان تحویل در همان روز برای آذربایجان غربی با هماهنگی' ,
-                'advantage_free_post' => 'امکان ارسال رایگان برای خریدهای بالای ۳۰۰٫۰۰۰ تومان'
+                'advantage_instant_delivery' => 'امکان تحویل در همان روز برای آذربایجان غربی با هماهنگی' ,
+                'advantage_free_delivery' => 'امکان ارسال رایگان برای خریدهای بالای ۳۰۰٫۰۰۰ تومان'
             ] ,
             [
                 'title' => 'شایان کامپیوتر' ,
@@ -48,12 +46,11 @@ class ShopSeeder extends Seeder
                 'city' => 'اصفهان' ,
                 'rate' => 5 ,
                 'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
-                'payment_detail' => 'امکان خرید اقساطی' ,
-                'posting_detail' => '' ,
-                'posting_methods' => 'پیک|شرکتهای پست خصوصی نظیر تیپاکس|پست پیشتاز' ,
+                'delivery_attention' => '' ,
+                'delivery_methods' => 'پیک|شرکتهای پست خصوصی نظیر تیپاکس|پست پیشتاز' ,
                 'advantage_inplace_pay' => 'امکان پرداخت در محل در اصفهان تا سقف مبلغ ۲۰٫۰۰۰٫۰۰۰ تومان' ,
-                'advantage_day_delivery' => 'امکان تحویل در همان روز برای اصفهان با هماهنگی' ,
-                'advantage_free_post' => ''
+                'advantage_instant_delivery' => 'امکان تحویل در همان روز برای اصفهان با هماهنگی' ,
+                'advantage_free_delivery' => 'امکان ارسال رایگان برای خریدهای بالای ۳۰۰٫۰۰۰ تومان'
             ]
         ];
         

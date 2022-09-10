@@ -19,7 +19,7 @@ class ProductController extends Controller
     /**
      * Show detail of requested product
      *
-     * @param ptitle  product title
+     * @param product  product object from middleware
      * 
      * @return Json (Array of String , Product)
      */ 
@@ -37,6 +37,9 @@ class ProductController extends Controller
         $otherModels = ProductFunctions::GetOtherModels($product->model_id, $product->model_trait);
 
         $chartData = ProductFunctions::GetChartPricesData($product->id);
+        
+        $isMobile = ProductFunctions::IsMobile($product->title);
+        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, $isMobile);
 
         return response()->json([
             'message' => 'Ok' ,
@@ -45,6 +48,7 @@ class ProductController extends Controller
                 'path' => $productPath ,
                 'product' => $product ,
                 'models' => $otherModels ,
+                'offers' => $shopsOffers ,
                 'brand' => $brand ,
                 'categories' => $categories ,
                 'chart' => $chartData
@@ -65,7 +69,7 @@ class ProductController extends Controller
     /**
      * Get shops offers related to product >>>>>> TODO : filter by province and city
      *
-     * @param ptitle  product title
+     * @param product  product object from middleware
      * 
      * @return Json (Array of String , Product)
      */ 
@@ -74,7 +78,18 @@ class ProductController extends Controller
         $product = $request->product;
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->soDefaultParams);
 
-        $shopsOffers = ProductFunctions::GetShopsOffers($product->id);
+        $isMobile = ProductFunctions::IsMobile($product->title);
+
+        $provinces = null;
+        $cities = null;
+
+        if($params['provinces'] != null)
+            $provinces = explode('|', $params['provinces']);
+            
+        if($params['cities'] != null)
+            $cities = explode('|', $params['cities']);
+
+        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, $isMobile, $provinces, $cities);
         
         return response()->json([
             'message' => 'Ok' ,
@@ -94,7 +109,7 @@ class ProductController extends Controller
     /**
      * Get similar products in brand and category of one product
      *
-     * @param ptitle  product title
+     * @param product  product object from middleware
      * 
      * @return Json (Array of String , Product)
      */ 
