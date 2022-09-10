@@ -7,7 +7,9 @@ use App\Models\Brand;
 use App\Models\Offer;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ShopOrder;
 use App\Models\ProductCategory;
+use App\Models\ShopOrderTracking;
 use App\Models\ProductPricesChart;
 use App\Http\Functions\CategoryFunctions;
 
@@ -122,7 +124,7 @@ class ProductFunctions {
         })->get();
 
 
-        $offers = ProductFunctions::ReOrderShopsOffersData($offers);
+        $offers = ProductFunctions::LoopShopsOffersData($offers);
 
         return $offers;
     }
@@ -134,12 +136,13 @@ class ProductFunctions {
      * 
      * @return Array Shops Offers
      */ 
-    public static  function ReOrderShopsOffersData($offers)
+    public static  function LoopShopsOffersData($offers)
     {
         $data = [];
-
         foreach($offers as $f) {
-
+            $trackings = count( ShopOrderTracking::where('shop_id', $f->id)->get('id') );
+            $orders = count( ShopOrder::where('shop_id', $f->id)->get('id') );
+            
             $offer = [
                 'title' => $f->title ,
                 'price' => $f->price ,
@@ -149,7 +152,6 @@ class ProductFunctions {
                 'redirect_url' => $f->redirect_url ,
                 'last_update' => $f->last_update ,
             ];
-
             $shop = [
                 'title' => $f->shop_title ,
                 'province' => $f->province ,
@@ -158,13 +160,21 @@ class ProductFunctions {
                 'activity_time' => $f->cooperation_activity ,
                 'delivery_attention' => $f->delivery_attention ,
                 'delivery_methods' => explode('|', $f->delivery_methods) ,
+                'stats' => [
+                    'trackings' => $trackings ,
+                    'orders' => $orders
+                ] ,
+                'badges' => [] ,
                 'advantage' => [] 
             ];
-
             if( $f->advantage_inplace_pay != '' ) {
                 $shop['advantage'][] = [
                     'type' => 'inplace_pay' ,
                     'title' => $f->advantage_inplace_pay
+                ];
+                $shop['badges'][] = [
+                    'type' => 'inplace_pay' ,
+                    'title' => 'پرداخت در محل'
                 ];
             }
             if( $f->advantage_instant_delivery != '' ) {
@@ -172,21 +182,26 @@ class ProductFunctions {
                     'type' => 'instant_delivery' ,
                     'title' => $f->advantage_instant_delivery
                 ];
+                $shop['badges'][] = [
+                    'type' => 'instant_delivery' ,
+                    'title' => 'تحویل فوری'
+                ];
             }
             if( $f->advantage_free_delivery != '' ) {
                 $shop['advantage'][] = [
                     'type' => 'free_delivery' ,
                     'title' => $f->advantage_free_delivery
                 ];
+                $shop['badges'][] = [
+                    'type' => 'free_delivery' ,
+                    'title' => 'ارسال رایگان'
+                ];
             }
-
             $data[] = [
                 'offer' => $offer ,
                 'shop' => $shop
             ];
-
         }
-
         return $data;
     }
 

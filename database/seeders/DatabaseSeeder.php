@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             ShopSeeder::class ,
             // FavoriteSeeder::class ,
             OfferSeeder::class ,
+            ShopOrderSeeder::class ,
+            ShopOrderTrackingSeeder::class ,
         ]);
         
     }
