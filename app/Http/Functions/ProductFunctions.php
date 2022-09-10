@@ -181,8 +181,8 @@ class ProductFunctions {
             }
 
             $data[] = [
-                'shop' => $shop ,
-                'offer' => $offer
+                'offer' => $offer ,
+                'shop' => $shop
             ];
 
         }

@@ -32,5 +32,5 @@ Route::get('search/{text}/suggestion',[SearchController::class,'suggestion']);
 Route::get('search',[SearchController::class,'search']);
 
 Route::get('product/{hash}',[ProductController::class,'showDetail'])->middleware('product');
-Route::get('product/{hash}/offers',[ProductController::class,'getShopsOffers'])->middleware('product');
+Route::get('product/{hash}/sales',[ProductController::class,'getShopsOffers'])->middleware('product');
 Route::get('product/{hash}/similars',[ProductController::class,'getSimilarProducts'])->middleware('product');

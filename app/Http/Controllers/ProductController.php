@@ -48,7 +48,7 @@ class ProductController extends Controller
                 'path' => $productPath ,
                 'product' => $product ,
                 'models' => $otherModels ,
-                'offers' => $shopsOffers ,
+                'sales' => $shopsOffers ,
                 'brand' => $brand ,
                 'categories' => $categories ,
                 'chart' => $chartData

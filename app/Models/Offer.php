@@ -18,6 +18,9 @@ class Offer extends Model
 
     public function getIsMobileRegisteredAttribute($value)
     {
+        if($value == null)
+            return null;
+        
         return (boolean)$value;
     }
 }
