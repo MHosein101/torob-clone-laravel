@@ -42,6 +42,10 @@ class ProductController extends Controller
         $shopsOffers = ProductFunctions::GetShopsOffers($product->id, false);
         $firstCheapShop = ProductFunctions::GetShopsOffers($product->id, $isMobile)[0];
 
+        unset($product["id"]);
+        unset($product["model_id"]);
+        unset($product["brand_id"]);
+
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
@@ -126,34 +130,20 @@ class ProductController extends Controller
         $skip = ( $params["page"] - 1 ) * $params["perPage"];
 
         $qbuilder = SearchFunctions::joinTables( new Product );
+        $suggestedQueries = SearchFunctions::SuggestSearchQuery($product->title, $take, $skip);
+        $suggestedQueries[0] = $suggestedQueries[1];
+        $qbuilder = SearchFunctions::LimitProductsWithQueries($suggestedQueries, clone $qbuilder);
 
         $categoryIDs = ProductCategory::where('category_id', $category->id)->select('product_id','category_id');
-
         $qbuilder = $qbuilder->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
             $join->on('products.id', 'product_category_ids.product_id');
         })
-        ->where('products.id', '!=', $product->id);
-
-        $qbuilderSameBrand = clone $qbuilder;
-        $qbuilderSameCategory = clone $qbuilder;
-
-        $qbuilderSameBrand = $qbuilderSameBrand->where('products.brand_id', $brand->id);
-        $qbuilderSameCategory = $qbuilderSameCategory->where('category_id', $category->id);
-
-        $qbuilderSameBrandCount = clone $qbuilderSameBrand;
-        $sameBrandCount = count($qbuilderSameBrandCount->get('id'));
-        $sameBrandUntilPage = ceil( $sameBrandCount / $take );
-
-        $similarProducts = [];
-        $qbuilder = null;
-
-        if( $sameBrandUntilPage >= (int)$params["page"] )
-            $qbuilder = $qbuilderSameBrand;
-        else
-            $qbuilder = $qbuilderSameCategory;
+        ->where('products.id', '!=', $product->id)
+        ->where('price_start', '!=', null)
+        ->orderBy('id', 'desc');
 
         $similarProducts = $qbuilder->take($take)->skip($skip)
-        ->get(['hash_id', 'title', 'image_url', 'price_start', 'shops_count']);
+        ->get(['id', 'hash_id', 'title', 'image_url', 'price_start', 'shops_count']);
         
         $similarProducts = SearchFunctions::processResults($similarProducts);
         

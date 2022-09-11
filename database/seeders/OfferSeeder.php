@@ -30,7 +30,7 @@ class OfferSeeder extends Seeder
                     'guarantee' => $gr[random_int(0, 6)] , 
                     'price' => random_int($pm, $pm+8000000) , 
                     'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
-                    'last_update' => (time() - random_int(1999999, 8999999)) 
+                    'last_update' => (time() - random_int(9999999, 9999999)) 
                 ]);
             }
         }
@@ -49,7 +49,7 @@ class OfferSeeder extends Seeder
                     'guarantee' => $gr[random_int(0, 6)] , 
                     'price' => random_int($pm, $pm+8000000) , 
                     'redirect_url' => 'https://www.google.com/search?q='.$title[random_int(0, 4)] ,
-                    'last_update' => (time() - random_int(1999999, 8999999)) 
+                    'last_update' => (time() - random_int(9999999, 9999999)) 
                 ]);
             }
         }
@@ -84,7 +84,7 @@ class OfferSeeder extends Seeder
                 'guarantee' => $gr[random_int(0, 6)] , 
                 'price' => random_int($pm, $pm+8000000) , 
                 'redirect_url' => $lastUrls[random_int(0, 5)] ,
-                'last_update' => (time() - random_int(1999999, 8999999)) 
+                'last_update' => (time() - random_int(9999999, 9999999)) 
             ]);
         }
 

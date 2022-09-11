@@ -11,20 +11,20 @@ class CategorySeeder extends Seeder
 
     public function run()
     {
-        $data = [
-            [
-                'level' => 1 , 'name' => '' ,
-                'sub' => [
-                    [ 'level' => 2 , 'name' => '' ] ,
-                    [ 
-                        'level' => 2 , 'name' => '' ,
-                        'sub' => [
-                            [ 'level' => 3 , 'name' => '' ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        // $data = [
+        //     [
+        //         'level' => 1 , 'name' => '' ,
+        //         'sub' => [
+        //             [ 'level' => 2 , 'name' => '' ] ,
+        //             [ 
+        //                 'level' => 2 , 'name' => '' ,
+        //                 'sub' => [
+        //                     [ 'level' => 3 , 'name' => '' ]
+        //                 ]
+        //             ]
+        //         ]
+        //     ]
+        // ];
 
 
         $c1 = Category::create([ "name" => "موبایل و کالای دیجیتال" , "level" => 1 ]); // 1

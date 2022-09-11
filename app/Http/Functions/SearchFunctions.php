@@ -2,6 +2,7 @@
 
 namespace App\Http\Functions;
 
+use App\Models\Shop;
 use App\Models\Brand;
 use App\Models\Offer;
 use App\Models\Product;
@@ -66,13 +67,22 @@ class SearchFunctions {
             
             foreach($words as $w) {
                 foreach($searchedWords as $s) {
+                    if($s == '') continue;
+
                     if( strpos( strtolower($w), strtolower($s) ) !== false )
                         $queries[] = $w; 
                 }
             }
         }
 
-        return array_unique($queries);
+        $queries = array_unique($queries);
+
+        $newQueries = []; // to fix array indexes
+        foreach($queries as $q)
+            $newQueries[] = $q;
+
+        
+        return $newQueries;
     }
 
     /**
@@ -265,12 +275,14 @@ class SearchFunctions {
             // if product available in single shop get the shop name
             // dd($p);
             if($p->shops_count == 1) { 
-                $shopId = Offer::where('product_id', $p->id)->get()->first()->shop_id; // find shop id
+                $shopId = Offer::where('product_id', $p->id)->where('is_available', true)->get()->first()->shop_id; // find shop id 
                 $searchResults[$i]["shop_name"] = Shop::find($shopId)->title;
             }
             else
                 $searchResults[$i]["shop_name"] = "(Multiple)";
 
+            unset($searchResults[$i]["id"]);
+            
             $i++;
         }
 

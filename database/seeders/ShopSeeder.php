@@ -26,7 +26,7 @@ class ShopSeeder extends Seeder
                 'province' => $prov ,
                 'city' => $prov ,
                 'rate' => random_int(1, 5) ,
-                'cooperation_activity' => (time() - random_int(100000, 9999999)) ,
+                'cooperation_activity' => (time() - random_int(99999999, 999999999)) ,
                 'delivery_attention' => $shnames[random_int(0, 2)] ,
                 'delivery_methods' => $shdelmeth[random_int(0, 3)] ,
                 'advantage_inplace_pay' => $shadvpay[random_int(0, 1)] ,

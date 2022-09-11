@@ -93,5 +93,6 @@ class ProductSeeder extends Seeder
         foreach($data as $set)
             Product::customCreate($set);
 
+        
     }
 }
