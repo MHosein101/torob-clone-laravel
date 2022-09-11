@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
             $table->string('hash_id');
             
             $table->string('title');
-            // $table->string('image_url')->default('');
+            $table->string('image_url')->default('');
 
             $table->string('model_trait')->default('');
             $table->longText('specs')->nullable();

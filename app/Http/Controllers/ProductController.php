@@ -26,7 +26,7 @@ class ProductController extends Controller
     public function showDetail(Request $request)
     {
         $product = $request->product;
-
+        
         $data = ProductFunctions::GetBrandAndCategories($product->id, $product->brand_id);
         $brand = $data[0]; $categories = $data[1];
         
@@ -39,13 +39,15 @@ class ProductController extends Controller
         $chartData = ProductFunctions::GetChartPricesData($product->id);
         
         $isMobile = ProductFunctions::IsMobile($product->title);
-        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, $isMobile);
+        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, false);
+        $firstCheapShop = ProductFunctions::GetShopsOffers($product->id, $isMobile)[0];
 
         return response()->json([
             'message' => 'Ok' ,
             'data' => [
                 'prices_range' => $pricesRange ,
                 'path' => $productPath ,
+                'cheapest_shop_url' => $firstCheapShop['offer']['redirect_url'] ,
                 'product' => $product ,
                 'models' => $otherModels ,
                 'sales' => $shopsOffers ,
@@ -78,8 +80,6 @@ class ProductController extends Controller
         $product = $request->product;
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->soDefaultParams);
 
-        $isMobile = ProductFunctions::IsMobile($product->title);
-
         $provinces = null;
         $cities = null;
 
@@ -89,7 +89,7 @@ class ProductController extends Controller
         if($params['cities'] != null)
             $cities = explode('|', $params['cities']);
 
-        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, $isMobile, $provinces, $cities);
+        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, false, $provinces, $cities);
         
         return response()->json([
             'message' => 'Ok' ,

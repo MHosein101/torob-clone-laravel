@@ -43,7 +43,7 @@ class ProductFunctions {
      */ 
     public static function IsMobile($ptitle)
     {
-        $search = ['گوشی', 'موبایل'];
+        $search = ['گوشی', 'موبایل', 'Mobile', 'Phone', 'mobile'];
 
         foreach($search as $s) {
             if( strpos($ptitle, $s) !== false )
@@ -106,7 +106,7 @@ class ProductFunctions {
      * 
      * @return Array Shops Offers
      */ 
-    public static  function GetShopsOffers($pid, $limitByRegistery, $provinces = null, $cities = null)
+    public static  function GetShopsOffers($pid, $firstRegisteredMobile, $provinces = null, $cities = null)
     {
         // shops details
         $shops = Shop::selectRaw('id, title as shop_title, province, city, rate as shop_rate, cooperation_activity, delivery_attention ,delivery_methods, advantage_inplace_pay, advantage_instant_delivery, advantage_free_delivery');
@@ -116,16 +116,13 @@ class ProductFunctions {
         ->orderBy('is_available', 'desc')
         ->orderBy('price', 'asc');
 
-        if($limitByRegistery)
+        if($firstRegisteredMobile)
             $offers = $offers->where('is_mobile_registered', true);
-
-        $qMinMaxPrices = clone $offers;
 
         // join tables and get each offer shop data
         $offers = $offers->leftJoinSub($shops, 'shops', function ($join) {
             $join->on('offers.shop_id', 'shops.id');
         })->get();
-
 
         $offers = ProductFunctions::LoopShopsOffersData($offers);
 
@@ -145,6 +142,10 @@ class ProductFunctions {
         foreach($offers as $f) {
             $trackings = count( ShopOrderTracking::where('shop_id', $f->id)->get('id') );
             $orders = count( ShopOrder::where('shop_id', $f->id)->get('id') );
+            $pows = [500, 100, 1000, 250];
+            $by = $pows[random_int(0, 3)];
+            $ordersMin = floor($orders / 100) * $by;
+            $ordersMax = ceil($orders / 100) * $by;
             
             $offer = [
                 'title' => $f->title ,
@@ -165,7 +166,7 @@ class ProductFunctions {
                 'delivery_methods' => explode('|', $f->delivery_methods) ,
                 'stats' => [
                     'trackings' => $trackings ,
-                    'orders' => $orders
+                    'orders' => [ 'min' => $ordersMin , 'max' => $ordersMax ]
                 ] ,
                 'badges' => [] ,
                 'advantage' => [] 
