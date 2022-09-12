@@ -61,11 +61,11 @@ class ProductFunctions {
      * 
      * @return Array of Products
      */ 
-    public static function GetOtherModels($mid, $trait)
+    public static function GetOtherModels($model, $trait)
     {
         if($mid == null) return [];
 
-        $products = Product::where('model_id', $mid); // find products with same model
+        $products = Product::where('model_name', $model); // find products with same model
         
         // offers table sub sql
         $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
@@ -76,6 +76,8 @@ class ProductFunctions {
             $join->on('products.id', 'product_prices.product_id');
         })
         ->get(['hash_id', 'title', 'model_trait', 'price_start']);
+
+        if( count($products) == 1 ) return [];
 
         $i = 0;
         foreach($products as $p) { 
@@ -119,12 +121,28 @@ class ProductFunctions {
         if($firstRegisteredMobile)
             $offers = $offers->where('is_mobile_registered', true);
 
+
         // join tables and get each offer shop data
         $offers = $offers->leftJoinSub($shops, 'shops', function ($join) {
             $join->on('offers.shop_id', 'shops.id');
-        })->get();
+        });
+        
+        $offers->where('province', $provinces);
+        $offers->where(function($query) use ($provinces, $cities) {
+            
+            if($provinces != null) {
+                $query->whereIn('province', $provinces);
+            }
 
-        $offers = ProductFunctions::LoopShopsOffersData($offers);
+            if($cities != null) {
+                $query->whereIn('city', $cities);
+            }
+       });
+        
+        
+        $offers = $offers->get(['product_id', 'shops.id', 'province', 'city']);
+
+        // $offers = ProductFunctions::LoopShopsOffersData($offers);
 
         return $offers;
     }

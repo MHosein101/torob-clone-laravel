@@ -10,22 +10,35 @@ class BrandSeeder extends Seeder
     public function run()
     {
         $data = [
-            [ 'name' => 'سامسونگ' , 'name_english' => 'Samsung' ] ,
-            [ 'name' => 'شیاعومی' , 'name_english' => 'Xiaomi' ] ,
-            [ 'name' => 'اپل' , 'name_english' => 'Apple' ] ,
-            [ 'name' => 'هوآوی' , 'name_english' => 'Huawei' ] ,
-            [ 'name' => 'توکیا' , 'name_english' => 'Nokia' ] ,
+            [
+                'category_ids' => [ 2 ] ,
+                'brands' => [
+                    [ 'name' => 'سامسونگ' , 'name_english' => 'Samsung' ] ,
+                    [ 'name' => 'شیاعومی' , 'name_english' => 'Xiaomi' ] ,
+                    [ 'name' => 'اپل' , 'name_english' => 'Apple' ] ,
+                    [ 'name' => 'هوآوی' , 'name_english' => 'Huawei' ] ,
+                ]
+            ] ,
 
-            [ 'name' => 'اینتل' , 'name_english' => 'Intel' ] ,
-            [ 'name' => 'ای ام دی' , 'name_english' => 'AMD' ] ,
-
-            [ 'name' => 'ایسوس' , 'name_english' => 'ASUS' ] ,
-            [ 'name' => 'گیکابایت' , 'name_english' => 'GIGABYTE' ] ,
-            [ 'name' => 'انویدیا' , 'name_english' => 'NVIDIA' ] ,
-            [ 'name' => 'زوتک' , 'name_english' => 'ZOTAC' ] ,
+            [
+                'category_ids' => [ 12 ] ,
+                'brands' => [
+                    [ 'name' => 'اینتل' , 'name_english' => 'Intel' ] ,
+                    [ 'name' => 'ای ام دی' , 'name_english' => 'AMD' ] ,
+                ]
+            ] ,
+            [
+                'category_ids' => [ 16 ] ,
+                'brands' => [
+                    [ 'name' => 'ایسوس' , 'name_english' => 'ASUS' ] ,
+                    [ 'name' => 'گیکابایت' , 'name_english' => 'GIGABYTE' ] ,
+                    [ 'name' => 'انویدیا' , 'name_english' => 'NVIDIA' ] ,
+                    [ 'name' => 'زوتک' , 'name_english' => 'ZOTAC' ] ,
+                ]
+            ] ,
         ];
 
         foreach($data as $set)
-            Brand::create($set);
+            Brand::customCreate($set);
     }
 }

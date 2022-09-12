@@ -34,7 +34,7 @@ class ProductController extends Controller
 
         $pricesRange = ProductFunctions::GetPricesRange($product->id);
 
-        $otherModels = ProductFunctions::GetOtherModels($product->model_id, $product->model_trait);
+        $otherModels = ProductFunctions::GetOtherModels($product->model_name, $product->model_trait);
 
         $chartData = ProductFunctions::GetChartPricesData($product->id);
         
@@ -43,7 +43,6 @@ class ProductController extends Controller
         $firstCheapShop = ProductFunctions::GetShopsOffers($product->id, $isMobile)[0];
 
         unset($product["id"]);
-        unset($product["model_id"]);
         unset($product["brand_id"]);
 
         return response()->json([
@@ -84,14 +83,20 @@ class ProductController extends Controller
         $product = $request->product;
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->soDefaultParams);
 
-        $provinces = null;
-        $cities = null;
+        // $provinces = null;
+        // $cities = null;
 
-        if($params['provinces'] != null)
-            $provinces = explode('|', $params['provinces']);
+        // if($params['provinces'] != null)
+        //     $provinces = explode('|', $params['provinces']);
             
-        if($params['cities'] != null)
-            $cities = explode('|', $params['cities']);
+        // if($params['cities'] != null)
+        //     $cities = explode('|', $params['cities']);
+
+
+        $provinces = ['تهران']; // ,'خراسان رضوی'
+        $cities = ['بیدخت', 'رباط سنگ']; // ملارد
+        // رباط سنگ 
+        // بیدخت
 
         $shopsOffers = ProductFunctions::GetShopsOffers($product->id, false, $provinces, $cities);
         
@@ -149,6 +154,7 @@ class ProductController extends Controller
         
         return response()->json([
             'message' => 'Ok' ,
+            'count' => count($similarProducts) ,
             'data' => $similarProducts
         ], 200);
     }

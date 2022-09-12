@@ -20,10 +20,10 @@ class CreateProductsTable extends Migration
             $table->string('title');
             $table->string('image_url')->default('');
 
-            $table->string('model_trait')->default('');
+            $table->string('model_name')->nullable();
+            $table->string('model_trait')->nullable();
             $table->longText('specs')->nullable();
             
-            $table->unsignedBigInteger('model_id')->nullable();
             $table->unsignedBigInteger('brand_id')->nullable();
         });
     }
