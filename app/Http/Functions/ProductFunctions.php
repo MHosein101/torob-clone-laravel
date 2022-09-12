@@ -63,7 +63,7 @@ class ProductFunctions {
      */ 
     public static function GetOtherModels($model, $trait)
     {
-        if($mid == null) return [];
+        if($model == null || $model == '') return [];
 
         $products = Product::where('model_name', $model); // find products with same model
         
@@ -108,10 +108,10 @@ class ProductFunctions {
      * 
      * @return Array Shops Offers
      */ 
-    public static  function GetShopsOffers($pid, $firstRegisteredMobile, $provinces = null, $cities = null)
+    public static  function GetShopsOffers($pid, $firstRegisteredMobile, $provinces = null, $cities = null, $ignores = null)
     {
         // shops details
-        $shops = Shop::selectRaw('id, title as shop_title, province, city, rate as shop_rate, cooperation_activity, delivery_attention ,delivery_methods, advantage_inplace_pay, advantage_instant_delivery, advantage_free_delivery');
+        $shops = Shop::selectRaw('shops.id as shop_id, title as shop_title, province, city, rate as shop_rate, cooperation_activity, delivery_attention ,delivery_methods, advantage_inplace_pay, advantage_instant_delivery, advantage_free_delivery');
 
         // product offers
         $offers = Offer::where('product_id', $pid)
@@ -121,28 +121,26 @@ class ProductFunctions {
         if($firstRegisteredMobile)
             $offers = $offers->where('is_mobile_registered', true);
 
-
         // join tables and get each offer shop data
         $offers = $offers->leftJoinSub($shops, 'shops', function ($join) {
-            $join->on('offers.shop_id', 'shops.id');
+            $join->on('offers.shop_id', 'shops.shop_id');
         });
         
-        $offers->where('province', $provinces);
-        $offers->where(function($query) use ($provinces, $cities) {
+        $offers->where(function($query) use ($provinces, $cities, $ignores) {
             
-            if($provinces != null) {
+            if($provinces != null)
                 $query->whereIn('province', $provinces);
-            }
 
-            if($cities != null) {
-                $query->whereIn('city', $cities);
-            }
+            if($cities != null)
+                $query->orWhereIn('city', $cities);
+
+            if($ignores != null)
+                $query->whereNotIn('offers.shop_id', $ignores);
        });
         
-        
-        $offers = $offers->get(['product_id', 'shops.id', 'province', 'city']);
+        $offers = $offers->get();
 
-        // $offers = ProductFunctions::LoopShopsOffersData($offers);
+        $offers = ProductFunctions::LoopShopsOffersData($offers);
 
         return $offers;
     }
@@ -175,6 +173,7 @@ class ProductFunctions {
                 'last_update' => $f->last_update ,
             ];
             $shop = [
+                'id' => $f->shop_id ,
                 'title' => $f->shop_title ,
                 'province' => $f->province ,
                 'city' => $f->city ,

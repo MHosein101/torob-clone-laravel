@@ -22,12 +22,12 @@ class ProductPricesChartSeeder extends Seeder
             $pr_min = floor(random_int(2000000, 8000000)/ 1000) * 1000;
             $avr_min = floor(random_int(2000000, 8000000)/ 1000) * 1000;
 
-            $price = floor(random_int($pr_min, $pr_min + 10000000)/ 1000) * 1000;
-            $average = floor(random_int($avr_min, $avr_min + 10000000)/ 1000) * 1000;
 
             for($w = 0; $w < $ri; $w++) {
 
                 $d = random_int(1, 30);
+                $price = floor(random_int($pr_min, $pr_min + 10000000)/ 1000) * 1000;
+                $average = floor(random_int($avr_min, $avr_min + 10000000)/ 1000) * 1000;
 
                 ProductPricesChart::create([ 
                     'product_id' => $p->id , 

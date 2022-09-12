@@ -41,7 +41,7 @@ class ProductController extends Controller
         $isMobile = ProductFunctions::IsMobile($product->title);
         $shopsOffers = ProductFunctions::GetShopsOffers($product->id, false);
         $firstCheapShop = ProductFunctions::GetShopsOffers($product->id, $isMobile)[0];
-
+        
         unset($product["id"]);
         unset($product["brand_id"]);
 
@@ -83,26 +83,31 @@ class ProductController extends Controller
         $product = $request->product;
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->soDefaultParams);
 
-        // $provinces = null;
-        // $cities = null;
+        $provinces = null;
+        $cities = null;
 
-        // if($params['provinces'] != null)
-        //     $provinces = explode('|', $params['provinces']);
+        if($params['provinces'] != null)
+            $provinces = explode('|', $params['provinces']);
             
-        // if($params['cities'] != null)
-        //     $cities = explode('|', $params['cities']);
+        if($params['cities'] != null)
+            $cities = explode('|', $params['cities']);
 
 
-        $provinces = ['تهران']; // ,'خراسان رضوی'
-        $cities = ['بیدخت', 'رباط سنگ']; // ملارد
-        // رباط سنگ 
-        // بیدخت
+        $filteredShopsOffers = ProductFunctions::GetShopsOffers($product->id, false, $provinces, $cities);
 
-        $shopsOffers = ProductFunctions::GetShopsOffers($product->id, false, $provinces, $cities);
+        $ignoreIDs = [];
+        foreach($filteredShopsOffers as $f)
+            $ignoreIDs[] = $f['shop']['id'];
+
+        $otherShopsOffers = ProductFunctions::GetShopsOffers($product->id, false, null, null, $ignoreIDs);
         
         return response()->json([
             'message' => 'Ok' ,
-            'data' => $shopsOffers
+            'counts' => [  'filtered' => count($filteredShopsOffers) , 'others' => count($otherShopsOffers)  ] ,
+            'data' => [
+                'filtered' => $filteredShopsOffers ,
+                'others' => $otherShopsOffers
+            ]
         ], 200);
     }
     
