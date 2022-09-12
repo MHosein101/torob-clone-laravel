@@ -16,7 +16,7 @@ use App\Http\Functions\CategoryFunctions;
 class ProductFunctions {
     
     /**
-     *  Get product min and max prices
+     *  Get product min and max prices in available shops
      *
      * @param pid product id
      * 
@@ -56,7 +56,7 @@ class ProductFunctions {
     /**
      *  Get other products in same model as current product
      *
-     * @param mid product model id
+     * @param model product model name
      * @param trait product model trait
      * 
      * @return Array of Products
@@ -102,9 +102,13 @@ class ProductFunctions {
     }
 
     /**
-     *  Join offers and shops table and get product related data
+     *  Join offers and shops table and get product related sales
      *
      * @param pid product id
+     * @param firstRegisteredMobile to get cheapest registered mobile  shop link
+     * @param provinces array of providence names to filter
+     * @param cities array of city names to filter
+     * @param ignores list of filtered results id to ignore in next request for others
      * 
      * @return Array Shops Offers
      */ 
@@ -146,22 +150,25 @@ class ProductFunctions {
     }
 
     /**
-     *  re order and clean up the data
+     *  reshape and clean up the data and add some new data
      *
-     * @param data shops offers
+     * @param offers shops offers
      * 
-     * @return Array Shops Offers
+     * @return Array
      */ 
     public static  function LoopShopsOffersData($offers)
     {
         $data = [];
+
         foreach($offers as $f) {
+            // get each shop user order tracking count and all orders count in last 3 month
             $trackings = count( ShopOrderTracking::where('shop_id', $f->id)->get('id') );
             $orders = count( ShopOrder::where('shop_id', $f->id)->get('id') );
-            $pows = [500, 100, 1000, 250];
-            $by = $pows[random_int(0, 3)];
-            $ordersMin = floor($orders / 100) * $by;
-            $ordersMax = ceil($orders / 100) * $by;
+
+            $pows = [500, 1000, 250];
+            $by = $pows[random_int(0, 2)];
+            $ordersMin = floor($orders / 100) * $by; // for test - multiply the value by random numbers
+            $ordersMax = ceil($orders / 100) * $by; // for test - multiply the value by random numbers
             
             $offer = [
                 'title' => $f->title ,
@@ -268,13 +275,17 @@ class ProductFunctions {
      */ 
     public static function MakeProductPath($brand, $categories)
     {
-        $path = [];
+        $path = $categories;
+
+        $lastCat = $categories[ count($categories) - 1 ];
         $brandName = "{$brand->name} ({$brand->name_english})";
 
-        foreach($categories as $c)
-            $path[] = $c->name;
-
-        $path[] = $brandName;
+        $path[] = [ 
+            'type' => 'brand' , 
+            'title' => $brandName , 
+            'brand' => $brand->name , 
+            'category' => $lastCat['title'] 
+        ];
 
         return $path;
     }

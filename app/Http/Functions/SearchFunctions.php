@@ -193,12 +193,12 @@ class SearchFunctions {
     /**
      * Get brands of products that first matched in search
      *
-     * @param product product sql query object
+     * @param qbuilder products query builder object
      * 
      * @return BrandArray
      */ 
-    public static function GetBrandsInSearch($products) {
-        $firstProduct = $products->take(1)->get();
+    public static function GetBrandsInSearch($qbuilder) {
+        $firstProduct = $qbuilder->take(1)->get();
 
         // if no result matched OR product has no brand
         if( count($firstProduct) == 0 || $firstProduct[0]->brand_id == null ) return [];
@@ -249,7 +249,7 @@ class SearchFunctions {
     /**
      * Add some data to found products
      *
-     * @param results  array of products
+     * @param searchResults  array of products
      * 
      * @return Array of Product
      */ 

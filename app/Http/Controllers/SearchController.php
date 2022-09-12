@@ -273,7 +273,7 @@ class SearchController extends Controller
                 break;
 
             case 'mostFavorite':
-                $qbuilder = $qbuilder->orderBy('favorites_count', 'desc');
+                // no idea how
                 break;
         }
         

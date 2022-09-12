@@ -21,7 +21,7 @@ class ProductController extends Controller
      *
      * @param product  product object from middleware
      * 
-     * @return Json (Array of String , Product)
+     * @return Json (Array of Product)
      */ 
     public function showDetail(Request $request)
     {
@@ -72,11 +72,11 @@ class ProductController extends Controller
     ];
 
     /**
-     * Get shops offers related to product >>>>>> TODO : filter by province and city
+     * Get shops offers related to product and filter by province and city
      *
      * @param product  product object from middleware
      * 
-     * @return Json (Array of String , Product)
+     * @return Json (Array of Offer and Shop)
      */ 
     public function getShopsOffers(Request $request)
     {
@@ -86,19 +86,21 @@ class ProductController extends Controller
         $provinces = null;
         $cities = null;
 
-        if($params['provinces'] != null)
+        if($params['provinces'] != null) // parse string as array
             $provinces = explode('|', $params['provinces']);
             
-        if($params['cities'] != null)
+        if($params['cities'] != null) // parse string as array
             $cities = explode('|', $params['cities']);
 
-
+        // get filtered shops
         $filteredShopsOffers = ProductFunctions::GetShopsOffers($product->id, false, $provinces, $cities);
 
+        // add filtered results shop id to ignore list
         $ignoreIDs = [];
         foreach($filteredShopsOffers as $f)
             $ignoreIDs[] = $f['shop']['id'];
 
+        // get shops that not in the filtered list
         $otherShopsOffers = ProductFunctions::GetShopsOffers($product->id, false, null, null, $ignoreIDs);
         
         return response()->json([
@@ -125,7 +127,7 @@ class ProductController extends Controller
      *
      * @param product  product object from middleware
      * 
-     * @return Json (Array of String , Product)
+     * @return Json (Array of Product)
      */ 
     public function getSimilarProducts(Request $request)
     {
@@ -133,23 +135,18 @@ class ProductController extends Controller
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->spDefaultParams);
 
         $data = ProductFunctions::GetBrandAndCategories($product->id, $product->brand_id);
-        $brand = $data[0]; 
-        $category = $data[1][ count($data[1]) - 1 ];
+        $brand = $data[0]; // get product brand
+        $category = $data[1][ count($data[1]) - 1 ]; // get product direct category title
+        $categoryId = Category::where('name', $category['title'])->first()->id; // find category id
 
         $take = $params["perPage"];
-        $skip = ( $params["page"] - 1 ) * $params["perPage"];
+        $skip = ( $params["page"] - 1 ) * $params["perPage"]; // for pagination
 
-        $qbuilder = SearchFunctions::joinTables( new Product );
-        $suggestedQueries = SearchFunctions::SuggestSearchQuery($product->title, $take, $skip);
-        $suggestedQueries[0] = $suggestedQueries[1];
-        $qbuilder = SearchFunctions::LimitProductsWithQueries($suggestedQueries, clone $qbuilder);
-
-        $categoryIDs = ProductCategory::where('category_id', $category->id)->select('product_id','category_id');
-        $qbuilder = $qbuilder->leftJoinSub($categoryIDs, 'product_category_ids', function ($join) {
-            $join->on('products.id', 'product_category_ids.product_id');
-        })
+        $qbuilder = SearchFunctions::joinTables( new Product ); // join tables for search
+        $suggestedQueries = SearchFunctions::SuggestSearchQuery($product->title, $take, $skip); // make search queries based on product title
+        $qbuilder = SearchFunctions::LimitProductsWithQueries($suggestedQueries, clone $qbuilder) // search in products 
         ->where('products.id', '!=', $product->id)
-        ->where('price_start', '!=', null)
+        ->where('price_start', '!=', null) // only get available products
         ->orderBy('id', 'desc');
 
         $similarProducts = $qbuilder->take($take)->skip($skip)

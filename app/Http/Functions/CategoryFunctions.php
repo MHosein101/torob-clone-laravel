@@ -123,11 +123,12 @@ class CategoryFunctions {
     public static function GetCategoryPath($category) {
         $path = [];
 
-        $path[] = $category;
+        $path[] = [ 'type' => 'category' , 'title' => $category->name ];
+
         if($category->level != 1 ) { // if its not the first level parent
             while( $category->level != 1 ) { // until its not the first level parent do these
                 $category = Category::where('id', $category->parent_id)->get()->first(); // get parent category
-                $path[] = $category; // add to path
+                $path[] = [ 'type' => 'category' , 'title' => $category->name ]; // add to path
             }
         }
 
