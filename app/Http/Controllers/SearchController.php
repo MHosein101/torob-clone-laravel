@@ -71,7 +71,7 @@ class SearchController extends Controller
 
         if( $params["q"] == null && $params["category"] == null && $params["brand"] == null ) // check url params
             return response()->json([
-                'message' => 'Define at least one of this : search query or category or brand'
+                'message' => 'Define at least one of these parameters : q (search query) , category , brand'
             ], 400);
 
         $searchQueryBuilder = null;
@@ -119,6 +119,7 @@ class SearchController extends Controller
         $searchResults = $searchQueryBuilder
         ->get(['id', 'hash_id', 'products.title','image_url', 'price_start', 'shops_count']); // get selected values
         // ->get();
+        // dd($searchResults);
 
         $searchResults =  SearchFunctions::processResults( $searchResults );
         

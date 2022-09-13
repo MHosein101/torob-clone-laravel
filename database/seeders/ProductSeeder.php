@@ -175,11 +175,11 @@ class ProductSeeder extends Seeder
                 'images' => ['https://storage.torob.com/backend-api/base/images/xH/ms/xHmsDRR8dUByiurL.gif_/216x216.jpg']
             ] ,
             [ 
-                'title' => 'گوشی اپل iPhone 13 Pro Max (Not Active) حافظه 1 ترابایت Apple iPhone 13 Pro Max (Not Active) 1 TB' , 
-                'model_name' => 'Apple iPhone 13 Pro max' , 'model_trait' => '1 TB' ,
+                'title' => 'گوشی اپل iPhone 13 Pro max (Not Active) حافظه 256 گیگابایت Apple iPhone 13 Pro max (Not Active) 256 GB' , 
+                'model_name' => 'Apple iPhone 13 Pro max' , 'model_trait' => '256 GB' ,
                 'brand_id' => 3 , 'category_ids' => [1, 2] ,
                 'specs' => $testSpecs ,
-                'images' => ['https://storage.torob.com/backend-api/base/images/7R/Ys/7RYsNFTK_HoYm_ov.png_/216x216.jpg']
+                'images' => ['https://storage.torob.com/backend-api/base/images/Np/T-/NpT-mU7_pyaDS9BX.jpg_/216x216.jpg']
             ] ,
             [ 
                 'title' => 'گوشی اپل iPhone SE 2022 (Active) حافظه 128 گیگابایت Apple iPhone SE 2022 (Active) 128 GB' , 
@@ -228,7 +228,7 @@ class ProductSeeder extends Seeder
                 'model_name' => 'Apple iPhone 12 Pro Max' , 'model_trait' => '512 GB' ,
                 'brand_id' => 3 , 'category_ids' => [1, 2] ,
                 'specs' => $testSpecs ,
-                'images' => ['https://storage.torob.com/backend-api/base/images/PH/yP/PHyPrknXiVDAnrAi.jpg_/216x216.jpg']
+                'images' => ['https://storage.torob.com/backend-api/base/images/19/u5/19u52NibQbI2noGU.png_/216x216.jpg']
             ] ,
             [ 
                 'title' => 'گوشی هوآوی Y9a حافظه 128 رم 8 Huawei Y9a' , 
@@ -238,11 +238,11 @@ class ProductSeeder extends Seeder
                 'images' => ['https://storage.torob.com/backend-api/base/images/Ye/rr/YerrJKWonvOCYlnt.jpg_/216x216.jpg']
             ] ,
             [ 
-                'title' => 'گوشی اپل iPhone 13 Pro max (Not Active) حافظه 256 گیگابایت Apple iPhone 13 Pro max (Not Active) 256 GB' , 
-                'model_name' => 'Apple iPhone 13 Pro max' , 'model_trait' => '256 GB' ,
+                'title' => 'گوشی اپل iPhone 13 Pro Max (Not Active) حافظه 1 ترابایت Apple iPhone 13 Pro Max (Not Active) 1 TB' , 
+                'model_name' => 'Apple iPhone 13 Pro max' , 'model_trait' => '1 TB' ,
                 'brand_id' => 3 , 'category_ids' => [1, 2] ,
                 'specs' => $testSpecs ,
-                'images' => ['https://storage.torob.com/backend-api/base/images/Np/T-/NpT-mU7_pyaDS9BX.jpg_/216x216.jpg']
+                'images' => ['https://storage.torob.com/backend-api/base/images/7R/Ys/7RYsNFTK_HoYm_ov.png_/216x216.jpg']
             ] ,
         ];
         

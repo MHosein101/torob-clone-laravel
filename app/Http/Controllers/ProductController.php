@@ -53,10 +53,10 @@ class ProductController extends Controller
                 'cheapest_shop_url' => $firstCheapShop['offer']['redirect_url'] ,
                 'product' => $product ,
                 'models' => $otherModels ,
-                'sales' => $shopsOffers ,
                 'brand' => $brand ,
                 'categories' => $categories ,
-                'chart' => $chartData
+                'chart' => $chartData ,
+                'sales' => $shopsOffers ,
             ]
         ], 200);
     }
@@ -91,6 +91,12 @@ class ProductController extends Controller
             
         if($params['cities'] != null) // parse string as array
             $cities = explode('|', $params['cities']);
+
+
+        if( $provinces == null && $cities == null ) 
+            return response()->json([
+                'message' => 'Define at least one of these parameters : provinces , cities'
+            ], 400);
 
         // get filtered shops
         $filteredShopsOffers = ProductFunctions::GetShopsOffers($product->id, false, $provinces, $cities);
