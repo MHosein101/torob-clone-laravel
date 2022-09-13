@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
             ProductPricesChartSeeder::class ,
             UserSeeder::class ,
             ShopSeeder::class ,
-            FavoriteSeeder::class ,
             OfferSeeder::class ,
             ShopOrderSeeder::class ,
             ShopOrderTrackingSeeder::class ,
+            ProductPricesHistorySeeder::class ,
         ]);
         
     }

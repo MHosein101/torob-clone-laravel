@@ -18,9 +18,9 @@ class OfferSeeder extends Seeder
         
         foreach($products as $p) {
             $random_offers = random_int(5, 39);
+            $pr_bottom = floor( random_int(2500000, 7000000) );
 
             for($k = 1; $k <= $random_offers; $k++) {
-                $pr_bottom = floor( random_int(2500000, 5000000) );
                 $offer_price = floor(random_int($pr_bottom, $pr_bottom + 8000000) / 1000) * 1000;
 
                 Offer::create([ 
@@ -35,6 +35,7 @@ class OfferSeeder extends Seeder
                     'last_update' => (time() - random_int(300, 10368000))
                 ]);
             }
+            
         }
 
         // $lastTitles = [

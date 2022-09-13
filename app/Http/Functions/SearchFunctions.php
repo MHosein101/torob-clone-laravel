@@ -216,23 +216,14 @@ class SearchFunctions {
     }
     
     /**
-     * Join sql queries of favorites and offers tables with products table
-     *
-     * @param qbuilder  query builder object
+     * Join sql queries of offers tables with products table
      * 
      * @return Product
      */ 
-    public static function joinTables($qbuilder)
+    public static function joinTables()
     {
-        // favorites table sub sql
-        $favorites = Favorite::selectRaw('product_id, COUNT(user_id) as favorites_count')
-                             ->groupBy('product_id');
+        $qbuilder = new Product;
 
-        // join with favorites sub sql to get each product favorite count
-        $qbuilder = $qbuilder->leftJoinSub($favorites, 'product_favorites', function ($join) {
-            $join->on('products.id', 'product_favorites.product_id');
-        });
-        
         // offers table sub sql
         $offers = Offer::selectRaw("product_id, MIN(price) as price_start, COUNT(shop_id) as shops_count")
                        ->where('is_available', true)

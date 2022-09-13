@@ -41,8 +41,8 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => $message ,
-            'is_signup' => $isSignUp ,
             'verification_code' => $verificationCode , // FOR DEBUG
+            'is_signup' => $isSignUp ,
         ], $code);
 
         // SEND EMAIL HERE
@@ -78,7 +78,6 @@ class AuthController extends Controller
         }
         else { // verification not ok
             return response()->json([
-                'code' => 401 ,
                 'message' => 'Login failed.'
             ], 401);
         }
@@ -127,5 +126,18 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Logged out successfully.'
         ], 200);
+    }
+
+
+    /**
+     * Redirect user here if they not authenticated
+     *
+     * @return Json
+     */ 
+    public function restricted(Request $request)
+    {
+        return response()->json([
+            'message' => 'You are Unauthorized.'
+        ], 401);
     }
 }

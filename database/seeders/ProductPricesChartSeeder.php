@@ -19,8 +19,8 @@ class ProductPricesChartSeeder extends Seeder
             $ri = random_int(7, 40);
             $m = $month[ random_int(0, 5) ];
 
-            $pr_min = floor(random_int(2000000, 8000000)/ 1000) * 1000;
-            $avr_min = floor(random_int(2000000, 8000000)/ 1000) * 1000;
+            $pr_min = random_int(2000000, 8000000);
+            $avr_min = random_int(2000000, 8000000);
 
 
             for($w = 0; $w < $ri; $w++) {

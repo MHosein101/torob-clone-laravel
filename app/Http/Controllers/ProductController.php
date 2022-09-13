@@ -148,7 +148,7 @@ class ProductController extends Controller
         $take = $params["perPage"];
         $skip = ( $params["page"] - 1 ) * $params["perPage"]; // for pagination
 
-        $qbuilder = SearchFunctions::joinTables( new Product ); // join tables for search
+        $qbuilder = SearchFunctions::joinTables(); // join tables for search
         $suggestedQueries = SearchFunctions::SuggestSearchQuery($product->title, $take, $skip); // make search queries based on product title
         $qbuilder = SearchFunctions::LimitProductsWithQueries($suggestedQueries, clone $qbuilder) // search in products 
         ->where('products.id', '!=', $product->id)

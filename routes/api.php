@@ -7,17 +7,22 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 
-// Route::post('login',[AuthController::class,'login']);
-
-// Route::post('verify',[AuthController::class,'verification']);
+Route::post('login',[AuthController::class,'login']);
+Route::post('verify',[AuthController::class,'verification']);
 // Route::post('cancel',[AuthController::class,'cancel']);
+Route::get('restricted',[AuthController::class,'restricted']);
 
-// Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['auth:api']], function () {
 
-//     Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('user/analytics',[UserController::class,'getAnalytics']);
+    Route::get('user/favorites',[UserController::class,'getFavorites']);
+    Route::get('user/history',[UserController::class,'getHistory']);
 
-// });
+    Route::post('logout', [AuthController::class, 'logout']);
+
+});
 
 
 Route::get('categories',[CategoryController::class,'getAll']);

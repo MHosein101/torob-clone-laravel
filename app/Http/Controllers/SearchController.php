@@ -7,7 +7,6 @@ use App\Models\Brand;
 use App\Models\Offer;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Favorite;
 use Illuminate\Http\Request;
 use App\Models\CategoryBrand;
 use App\Models\ProductCategory;
@@ -82,7 +81,7 @@ class SearchController extends Controller
         $searchCategories = [];
         $searchBrands = [];
         
-        $searchQueryBuilder =  SearchFunctions::joinTables( new Product );
+        $searchQueryBuilder =  SearchFunctions::joinTables();
 
         if($params["q"] != null) { // if search query included  
             // suggest similar queries
