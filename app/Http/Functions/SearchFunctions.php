@@ -244,7 +244,7 @@ class SearchFunctions {
      * 
      * @return Array of Product
      */ 
-    public static function processResults($searchResults) 
+    public static function processResults($searchResults, $unsetId = true) 
     {
         $i = 0;
         foreach($searchResults as $p) { // loop through products
@@ -272,7 +272,8 @@ class SearchFunctions {
             else
                 $searchResults[$i]["shop_name"] = "(Multiple)";
 
-            unset($searchResults[$i]["id"]);
+            if($unsetId)
+                unset($searchResults[$i]["id"]);
             
             $i++;
         }

@@ -25,12 +25,12 @@ class UserController extends Controller
     public function getAnalytics(Request $request)
     {
         $user = Auth::guard('api')->user();
-        $qbuilder = SearchFunctions::joinTables();
+        $qbuilder = SearchFunctions::joinTables(); // get products query builder
         
-        // user favorites table
+        // user marked for analytic products table
         $analytics = UserAnalytic::select('user_analytics.*');
         
-        // join with offers sub sql to get each available product least price
+        // join with analytic sub sql to get each product prices histories in diffrent shops
         $qbuilder = $qbuilder->leftJoinSub($analytics, 'user_products_analytics', function ($join) {
             $join->on('products.id', 'user_products_analytics.product_id');
         })
@@ -38,23 +38,21 @@ class UserController extends Controller
         ->orderBy('user_products_analytics.id', 'desc');
 
         $results = $qbuilder->get(['products.id', 'hash_id', 'products.title','image_url', 'price_start', 'shops_count']);
-        $analyticsProducts = SearchFunctions::processResults($results);
-        
+        $analyticsProducts = SearchFunctions::processResults($results, false);
 
         $i = 0;
-        foreach($analyticsProducts as $product) {
-            $pid = Product::where('hash_id', $product->hash_id)->get()->first()->id;
+        foreach($analyticsProducts as $p) {
 
-            $pricesChartData = ProductPricesChart::where('product_id', $pid)->get();
+            $pricesChartData = ProductPricesChart::where('product_id', $p->id)->get();
             $analyticsProducts[$i]['chart'] =  $pricesChartData;
 
-            $qbuilder = ProductPricesHistory::where('product_id', $pid)->take(4);
-            $offers = Offer::selectRaw('id as offer_id, price, shop_id');
+            $qbuilder = ProductPricesHistory::where('product_id', $p->id)->take(4);
+
+            $offers = Offer::selectRaw('id as offer_id, price, shop_id'); // get offers records related to product prices history
 
             $qbuilder = $qbuilder->leftJoinSub($offers, 'product_offers', function ($join) {
                 $join->on('product_prices_histories.offer_id', 'product_offers.offer_id');
             })
-            ->where('product_id', $pid)
             ->orderBy('product_prices_histories.id', 'desc');
 
             $pricesHistories = $qbuilder->get();
@@ -70,6 +68,7 @@ class UserController extends Controller
 
                 $k++;
             }
+
             $analyticsProducts[$i]['history'] =  $pricesHistories;
 
             $i++;
@@ -79,6 +78,43 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Ok' ,
             'data' => $analyticsProducts
+        ], 200);
+    }
+
+    /**
+     * marked product to user analytics
+     * 
+     * @return Json
+     */ 
+    public function createAnalytic(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        $product = $request->product;
+        
+        $a = new UserAnalytic;
+        $a->user_id = $user->id;
+        $a->product_id = $product->id;
+        $a->save();
+
+        return response()->json([
+            'message' => 'Created' ,
+        ], 201);
+    }
+
+    /**
+     * Delete product from user analytics
+     * 
+     * @return Json
+     */ 
+    public function deleteAnalytic(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        $product = $request->product;
+        
+        UserAnalytic::where('user_id', $user->id)->where('product_id', $product->id)->delete();
+
+        return response()->json([
+            'message' => 'Deleted' ,
         ], 200);
     }
 
@@ -95,7 +131,7 @@ class UserController extends Controller
         // user favorites table
         $favorites = UserFavorite::select('user_favorites.*');
         
-        // join with offers sub sql to get each available product least price
+        // join with favorites sub sql to get each user marked products
         $qbuilder = $qbuilder->leftJoinSub($favorites, 'user_favorite_products', function ($join) {
             $join->on('products.id', 'user_favorite_products.product_id');
         })
@@ -108,6 +144,43 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Ok' ,
             'data' => $favoriteProducts
+        ], 200);
+    }
+
+    /**
+     * Add product to user favorite
+     * 
+     * @return Json
+     */ 
+    public function createFavorite(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        $product = $request->product;
+        
+        $f = new UserFavorite;
+        $f->user_id = $user->id;
+        $f->product_id = $product->id;
+        $f->save();
+
+        return response()->json([
+            'message' => 'Created' ,
+        ], 201);
+    }
+
+    /**
+     * Delete product from user favorites
+     * 
+     * @return Json
+     */ 
+    public function deleteFavorite(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        $product = $request->product;
+        
+        UserFavorite::where('user_id', $user->id)->where('product_id', $product->id)->delete();
+
+        return response()->json([
+            'message' => 'Deleted' ,
         ], 200);
     }
 
@@ -131,6 +204,9 @@ class UserController extends Controller
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->uhDefaultParams);
         $qbuilder = SearchFunctions::joinTables();
 
+        $take = $params["perPage"];
+        $skip = ( $params["page"] - 1 ) * $params["perPage"]; // for pagination
+
         // user favorites table
         $history = UserHistory::select('user_histories.*');
         
@@ -139,7 +215,8 @@ class UserController extends Controller
             $join->on('products.id', 'user_products_view_history.product_id');
         })
         ->where('user_id', $user->id)
-        ->orderBy('user_products_view_history.id', 'desc');
+        ->orderBy('user_products_view_history.id', 'desc')
+        ->take($take)->skip($skip);
 
         $results = $qbuilder->get(['products.id', 'hash_id', 'products.title','image_url', 'price_start', 'shops_count']);
         $historyProducts = SearchFunctions::processResults($results);
@@ -147,6 +224,42 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Ok' ,
             'data' => $historyProducts
+        ], 200);
+    }
+
+    /**
+     * Add viewed product to user history
+     * 
+     * @return Json
+     */ 
+    public function createHistory(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        $product = $request->product;
+        
+        $h = new UserHistory;
+        $h->user_id = $user->id;
+        $h->product_id = $product->id;
+        $h->save();
+
+        return response()->json([
+            'message' => 'Created' ,
+        ], 201);
+    }
+
+    /**
+     * Clear all user product view history
+     * 
+     * @return Json
+     */ 
+    public function clearHistory(Request $request)
+    {
+        $user = Auth::guard('api')->user();
+        
+        UserHistory::where('user_id', $user->id)->delete();
+
+        return response()->json([
+            'message' => 'Cleared' ,
         ], 200);
     }
 
