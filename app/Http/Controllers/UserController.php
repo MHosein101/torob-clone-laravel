@@ -91,10 +91,14 @@ class UserController extends Controller
         $user = Auth::guard('api')->user();
         $product = $request->product;
         
-        $a = new UserAnalytic;
-        $a->user_id = $user->id;
-        $a->product_id = $product->id;
-        $a->save();
+        $check = UserAnalytic::where('user_id', $user->id)->where('product_id', $product->id)->get()->first();
+
+        if($check == null) {
+            $a = new UserAnalytic;
+            $a->user_id = $user->id;
+            $a->product_id = $product->id;
+            $a->save();
+        }
 
         return response()->json([
             'message' => 'Created' ,
@@ -157,10 +161,14 @@ class UserController extends Controller
         $user = Auth::guard('api')->user();
         $product = $request->product;
         
-        $f = new UserFavorite;
-        $f->user_id = $user->id;
-        $f->product_id = $product->id;
-        $f->save();
+        $check = UserFavorite::where('user_id', $user->id)->where('product_id', $product->id)->get()->first();
+
+        if($check == null) {
+            $f = new UserFavorite;
+            $f->user_id = $user->id;
+            $f->product_id = $product->id;
+            $f->save();
+        }
 
         return response()->json([
             'message' => 'Created' ,
@@ -237,10 +245,14 @@ class UserController extends Controller
         $user = Auth::guard('api')->user();
         $product = $request->product;
         
-        $h = new UserHistory;
-        $h->user_id = $user->id;
-        $h->product_id = $product->id;
-        $h->save();
+        $check = UserHistory::where('user_id', $user->id)->where('product_id', $product->id)->get()->first();
+
+        if($check == null) {
+            $h = new UserHistory;
+            $h->user_id = $user->id;
+            $h->product_id = $product->id;
+            $h->save();
+        }
 
         return response()->json([
             'message' => 'Created' ,
