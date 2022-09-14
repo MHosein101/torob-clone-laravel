@@ -33,7 +33,10 @@ class AuthController extends Controller
         }
 
         // user already have api token
-        if($user->api_token != '') return;
+        if($user->api_token != null)
+            return response()->json([
+                'message' => 'You already have API_TOKEN.'
+            ], 403);
 
         // user exists and give it a code
         $user->verification_code = $verificationCode;
@@ -63,22 +66,25 @@ class AuthController extends Controller
         $user = User::where('email_or_number', $request->input('email_or_number'))->first(); // get user
         
         // user already have api token
-        if($user->api_token != '') return;
+        if($user->api_token != null)
+            return response()->json([
+                'message' => 'You already have API_TOKEN.'
+            ], 403);
 
         if( $user->verification_code == $request->input('verification_code') ) { // verification ok
             
             $user->generateAuthToken(); // give user an api_token
-            $user->verification_code = "";
-            $user->save();
 
-            return response()->json([
-                'message' => 'Login successful.' ,
+            return response()
+            ->json([
+                'message' => 'با موفقیت وارد شدید' ,
                 'API_TOKEN' => $user->api_token
-            ], 200);
+            ], 200)
+            ->cookie('API_TOKEN', $user->api_token, 20160, '', '', false, true);
         }
         else { // verification not ok
             return response()->json([
-                'message' => 'Login failed.'
+                'message' => 'کد وارد شده اشتباه است'
             ], 401);
         }
     }
@@ -98,7 +104,7 @@ class AuthController extends Controller
             User::where('email_or_number', $request->input('email_or_number'))->delete(); // delete new user record
         else {
             User::where('email_or_number', $request->input('email_or_number'))->update([ // clear verification_code for user
-                'verification_code' => ''
+                'verification_code' => null
             ]);
         }
 
@@ -118,13 +124,11 @@ class AuthController extends Controller
     {
         $user = Auth::guard('api')->user(); // get loggedin user
 
-        if ($user) { // if there is any loggedin user , then clear its api_token
-            $user->api_token = null;
-            $user->save();
-        }
+        $user->api_token = null;
+        $user->save();
 
         return response()->json([
-            'message' => 'Logged out successfully.'
+            'message' => 'با موفقیت خارج شدید'
         ], 200);
     }
 
@@ -139,5 +143,31 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'You are Unauthorized.'
         ], 401);
+    }
+
+    /**
+     * Check user login cookie
+     *
+     * @return Json
+     */ 
+    public function checkCookie(Request $request)
+    {
+        if($request->hasCookie('cookie_name') != false) {
+            
+            $user = User::where('api_token', $request->cookie('API_TOKEN'));
+
+            return response()
+            ->json([
+                'message' => 'Ok' ,
+                'email_or_number' => $user->email_or_number ,
+                'API_TOKEN' => $user->api_token
+            ], 200)
+            ->cookie('API_TOKEN', $user->api_token, 20160, '', '', false, true);
+        }
+
+        return response()
+        ->json([
+            'message' => 'You are Unauthorized'
+        ], 403);
     }
 }

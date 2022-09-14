@@ -22,6 +22,6 @@ class UserVerification extends Mailable
     {
         return $this->from('sender@example.com')
                     ->subject('User Verification')
-                    ->view('user-login-validation');
+                    ->view('user-login-verification');
     }
 }

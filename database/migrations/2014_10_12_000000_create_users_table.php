@@ -19,8 +19,6 @@ class CreateUsersTable extends Migration
             $table->string('email_or_number')->unique();
             $table->string('verification_code')->nullable();
             $table->string('api_token')->nullable();
-
-            $table->rememberToken();
         });
     }
 

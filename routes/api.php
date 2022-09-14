@@ -14,6 +14,8 @@ Route::post('verify', [AuthController::class,'verification']);
 Route::post('cancel', [AuthController::class,'cancel']);
 Route::get('restricted', [AuthController::class,'restricted']);
 
+Route::get('check', [AuthController::class,'checkCookie']);
+
 Route::group([ 'middleware' => ['auth:api'] ], function () {
 
     Route::get('user/analytics', [UserController::class,'getAnalytics']);

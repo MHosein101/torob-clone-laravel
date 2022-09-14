@@ -5,36 +5,28 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use App\Models\UserAnalytic;
 use App\Models\UserFavorite;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    
     public $timestamps = false;
 
     protected $fillable = [
         'email_or_number' , 'verification_code'
     ];
-
-    protected $hidden = [
-        'remember_token',
-    ];
-
+    
     protected $casts = [];
 
     public function generateAuthToken()
     {
+        $this->verification_code = null;
         $this->api_token = Str::random(60);
+        $this->save();
         return $this;
     }
 
     
-    public function customCreate($data)
+    public static function customCreate($data)
     {
         $uid = User::create([ 'email_or_number' => $data['email_or_number'] ])->id;
 
