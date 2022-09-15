@@ -101,9 +101,17 @@ class AuthController extends Controller
      *
      * @return Response Json
      */ 
-    public function restricted(Request $request)
+    public function loadInfo(Request $request)
     {
-        return response()->json([ 'message' => 'You are Unauthorized.' ], 401);
+        $user = Auth::guard('api')->user(); // get loggedin user
+
+        return response()
+        ->json([ 
+            'message' => 'Ok' ,
+            'user' => [
+                'phone_number' =>  $user->phone_number
+            ]
+        ], 200);
     }
 
     /**
@@ -122,4 +130,15 @@ class AuthController extends Controller
 
         return response()->json([ 'message' => 'با موفقیت خارج شدید' ], 200);
     }
+    
+    /**
+     * Redirect user here if they not authenticated
+     *
+     * @return Response Json
+     */ 
+    public function restricted(Request $request)
+    {
+        return response()->json([ 'message' => 'You are Unauthorized.' ], 401);
+    }
+
 }

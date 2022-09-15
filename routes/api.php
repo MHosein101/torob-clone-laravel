@@ -15,6 +15,8 @@ Route::get('restricted', [AuthController::class,'restricted']);
 
 Route::group([ 'middleware' => ['auth:api'] ], function () {
 
+    Route::get('user/info', [AuthController::class,'loadInfo']);
+
     Route::get('user/analytics', [UserController::class,'getAnalytics']);
     Route::get('user/favorites', [UserController::class,'getFavorites']);
 
