@@ -20,7 +20,7 @@ class UserController extends Controller
     /**
      * Get user marked products price analytics
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function getAnalytics(Request $request)
     {
@@ -75,7 +75,8 @@ class UserController extends Controller
         }
 
 
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $analyticsProducts
         ], 200);
@@ -84,7 +85,7 @@ class UserController extends Controller
     /**
      * marked product to user analytics
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function createAnalytic(Request $request)
     {
@@ -100,15 +101,13 @@ class UserController extends Controller
             $a->save();
         }
 
-        return response()->json([
-            'message' => 'Created' ,
-        ], 201);
+        return response()->json([ 'message' => 'Created' , ], 201);
     }
 
     /**
      * Delete product from user analytics
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function deleteAnalytic(Request $request)
     {
@@ -117,15 +116,13 @@ class UserController extends Controller
         
         UserAnalytic::where('user_id', $user->id)->where('product_id', $product->id)->delete();
 
-        return response()->json([
-            'message' => 'Deleted' ,
-        ], 200);
+        return response()->json([ 'message' => 'Deleted' , ], 200);
     }
 
     /**
      * Get user marked favorites products
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function getFavorites(Request $request)
     {
@@ -145,7 +142,8 @@ class UserController extends Controller
         $results = $qbuilder->get(['products.id', 'hash_id', 'products.title','image_url', 'price_start', 'shops_count']);
         $favoriteProducts = SearchFunctions::processResults($results);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $favoriteProducts
         ], 200);
@@ -154,7 +152,7 @@ class UserController extends Controller
     /**
      * Add product to user favorite
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function createFavorite(Request $request)
     {
@@ -170,15 +168,13 @@ class UserController extends Controller
             $f->save();
         }
 
-        return response()->json([
-            'message' => 'Created' ,
-        ], 201);
+        return response()->json([ 'message' => 'Created' , ], 201);
     }
 
     /**
      * Delete product from user favorites
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function deleteFavorite(Request $request)
     {
@@ -187,9 +183,7 @@ class UserController extends Controller
         
         UserFavorite::where('user_id', $user->id)->where('product_id', $product->id)->delete();
 
-        return response()->json([
-            'message' => 'Deleted' ,
-        ], 200);
+        return response()->json([ 'message' => 'Deleted' , ], 200);
     }
 
     /**
@@ -204,7 +198,7 @@ class UserController extends Controller
     /**
      * Get user products view history
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function getHistory(Request $request)
     {
@@ -229,7 +223,8 @@ class UserController extends Controller
         $results = $qbuilder->get(['products.id', 'hash_id', 'products.title','image_url', 'price_start', 'shops_count']);
         $historyProducts = SearchFunctions::processResults($results);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $historyProducts
         ], 200);
@@ -238,7 +233,7 @@ class UserController extends Controller
     /**
      * Add viewed product to user history
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function createHistory(Request $request)
     {
@@ -254,15 +249,13 @@ class UserController extends Controller
             $h->save();
         }
 
-        return response()->json([
-            'message' => 'Created' ,
-        ], 201);
+        return response()->json([ 'message' => 'Created' , ], 201);
     }
 
     /**
      * Clear all user product view history
      * 
-     * @return Json
+     * @return Response Json
      */ 
     public function clearHistory(Request $request)
     {
@@ -270,9 +263,7 @@ class UserController extends Controller
         
         UserHistory::where('user_id', $user->id)->delete();
 
-        return response()->json([
-            'message' => 'Cleared' ,
-        ], 200);
+        return response()->json([ 'message' => 'Cleared' , ], 200);
     }
 
 }

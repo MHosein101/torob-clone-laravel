@@ -21,7 +21,7 @@ class ProductController extends Controller
      *
      * @param product  product object from middleware
      * 
-     * @return Json (Array of Product)
+     * @return Response Json
      */ 
     public function showDetail(Request $request)
     {
@@ -45,7 +45,8 @@ class ProductController extends Controller
         unset($product["id"]);
         unset($product["brand_id"]);
 
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => [
                 'prices_range' => $pricesRange ,
@@ -76,7 +77,7 @@ class ProductController extends Controller
      *
      * @param product  product object from middleware
      * 
-     * @return Json (Array of Offer and Shop)
+     * @return Response Json
      */ 
     public function getShopsOffers(Request $request)
     {
@@ -109,9 +110,13 @@ class ProductController extends Controller
         // get shops that not in the filtered list
         $otherShopsOffers = ProductFunctions::GetShopsOffers($product->id, false, null, null, $ignoreIDs);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
-            'counts' => [  'filtered' => count($filteredShopsOffers) , 'others' => count($otherShopsOffers)  ] ,
+            'counts' => [
+                'filtered' => count($filteredShopsOffers) , 
+                'others' => count($otherShopsOffers) 
+            ] ,
             'data' => [
                 'filtered' => $filteredShopsOffers ,
                 'others' => $otherShopsOffers
@@ -133,7 +138,7 @@ class ProductController extends Controller
      *
      * @param product  product object from middleware
      * 
-     * @return Json (Array of Product)
+     * @return Response Json
      */ 
     public function getSimilarProducts(Request $request)
     {
@@ -160,7 +165,8 @@ class ProductController extends Controller
         
         $similarProducts = SearchFunctions::processResults($similarProducts);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'count' => count($similarProducts) ,
             'data' => $similarProducts

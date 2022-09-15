@@ -22,14 +22,15 @@ class SearchController extends Controller
      *
      * @param text  text that user typed
      * 
-     * @return Json (Array of String , Array of Category)
+     * @return Response Json
      */ 
     public function suggestion(Request $request, $text)
     {
         $queries = SearchFunctions::SuggestSearchQuery($text);
         $categories = SearchFunctions::SuggestCategoriesInSearch($queries);
 
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => [
                 'suggested_queries' => $queries ,
@@ -59,7 +60,7 @@ class SearchController extends Controller
      *
      * @param query  query string data
      * 
-     * @return Json (Object , Array of Product , Array of Brand , Array of Category)
+     * @return Response Json
      */ 
     public function search(Request $request)
     {
@@ -69,9 +70,7 @@ class SearchController extends Controller
         $params = SearchFunctions::ConfigQueryParams($request->query(), $this->defaultQueryParams);
 
         if( $params["q"] == null && $params["category"] == null && $params["brand"] == null ) // check url params
-            return response()->json([
-                'message' => 'Define at least one of these parameters : q (search query) , category , brand'
-            ], 400);
+            return response()->json([ 'message' => 'Define at least one of these parameters : q (search query) , category , brand' ], 400);
 
         $searchQueryBuilder = null;
         $take = $params["perPage"]; // pagination limit
@@ -137,11 +136,15 @@ class SearchController extends Controller
             $priceRangeMax = $productsPriceMax[0]->price_start;
         }
 
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => [
                 'pproducts_count' => count($searchResults) ,
-                'price_range' => [ 'min' => $priceRangeMin , 'max' => $priceRangeMax ] ,
+                'price_range' => [ 
+                    'min' => $priceRangeMin , 
+                    'max' => $priceRangeMax 
+                ] ,
                 'brands' => $searchBrands ,
                 'categories' => $searchCategories ,
                 'products' => $searchResults
@@ -280,4 +283,4 @@ class SearchController extends Controller
         return $qbuilder;
     }
 
-} // end of controller
+}

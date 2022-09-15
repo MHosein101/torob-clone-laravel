@@ -13,7 +13,7 @@ class CategoryController extends Controller
     /**
      * Get a tree of all categories and their children
      * 
-     * @return Json (Array of Category)
+     * @return Response Json
      */ 
     public function getAll(Request $request)
     {
@@ -25,7 +25,8 @@ class CategoryController extends Controller
         foreach($topCategoriesIDs as $topc)
             $data[] = CategoryFunctions::GetCategoriesTree($topc->id);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $data
         ], 200);
@@ -37,14 +38,15 @@ class CategoryController extends Controller
      * @param name  name of category (checked in middleware)
      * @param category  category object (returned by middleware)
      * 
-     * @return Json (Array of Category)
+     * @return Response Json
      */ 
     public function getSubCategories(Request $request)
     {
         $category = $request->category; // returned by middleware
         $subCategories = CategoryFunctions::GetSubCategoriesByName($category->name);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $subCategories
         ], 200);
@@ -56,14 +58,15 @@ class CategoryController extends Controller
      * @param name  name of category (checked in middleware)
      * @param category  category object (returned by middleware)
      * 
-     * @return Json (Array of Brand)
+     * @return Response Json
      */ 
     public function getBrands(Request $request)
     {
         $category = $request->category; // returned by middleware
         $brands = CategoryFunctions::GetBrandsInCategory($category->id);
 
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $brands
         ], 200);
@@ -75,7 +78,7 @@ class CategoryController extends Controller
      * @param name  name of category (checked in middleware)
      * @param category  category object (returned by middleware)
      * 
-     * @return Json (Array of Category)
+     * @return Response Json
      */ 
     public function getPath(Request $request)
     {
@@ -83,7 +86,8 @@ class CategoryController extends Controller
 
         $path = CategoryFunctions::GetCategoryPath($category);
         
-        return response()->json([
+        return response()
+        ->json([
             'message' => 'Ok' ,
             'data' => $path
         ], 200);

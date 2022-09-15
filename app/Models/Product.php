@@ -14,9 +14,7 @@ class Product extends Model
 
     public static function customCreate($data) {
         $data['hash_id'] = sha1($data['title']);
-        // $hashTitle = str_replace(' ', random_int(0,999), $data['title']);
-        // $data['hash_id'] = sha1($hashTitle);
-
+        
         $categoriesID = $data['category_ids'];
         unset($data['category_ids']);
 
