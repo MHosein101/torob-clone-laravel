@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -13,112 +13,105 @@ class AuthController extends Controller
     /**
      * User try to login or signup
      *
-     * @param email_or_number  email or number of user tath tried ro login or signup
+     * @param phone_number  phone number of user that tried to login or signup
      * 
-     * @return Json (Object)
+     * @return Response Json
      */ 
     public function login(Request $request)
     {
-        $user = User::where('email_or_number', $request->input('email_or_number'))->first(); // get user record
-        $verificationCode = Str::random(5);
+        $validator = Validator::make($request->all(), [ 'phone_number' => 'required|digits_between:10,11|starts_with:09,9' ]);
+
+        if($validator->fails())
+            return response()->json([ 'message' => 'Invalid inputs.' , 'errors' => $validator->errors() ], 400);
+
+        $user = User::where('phone_number', $request->input('phone_number'))->first(); // get user record
+        
         $isSignUp = false;
         $code = 200;
-        $message = 'Ok , Waiting for verification.';
+        $message = 'کد تایید را وارد کنید';
 
         if ($user === null) { // user not exists
             $code = 201;
-            $message = 'New account created , Waiting for verification.';
+            $message = 'حساب شما ایجاد شد';
             $isSignUp = true;
-            $user = User::create([ 'email_or_number' => $request->input('email_or_number') ]); // create user record
+            $user = User::create([ 'phone_number' => $request->input('phone_number') ]); // create user record
         }
 
         // user already have api token
-        if($user->api_token != null)
-            return response()->json([
-                'message' => 'You already have API_TOKEN.'
-            ], 403);
+        // if($user->api_token != null)
+        //     return response()->json([ 'message' => 'You already have API_TOKEN.' ], 403);
 
         // user exists and give it a code
-        $user->verification_code = $verificationCode;
-        $user->save();
+        $verificationCode = $user->generateVerificatioCode();
 
-        return response()->json([
+        return response()
+        ->json([
             'message' => $message ,
             'verification_code' => $verificationCode , // FOR DEBUG
             'is_signup' => $isSignUp ,
         ], $code);
 
-        // SEND EMAIL HERE
-        // Mail::to($request->input('email_or_number'))->send(new UserVerification($verificationCode));
-
+        // SHOULD SEND VERIFICATION CODE HERE
     }
 
     /**
      * Verify user by verification_code
      *
-     * @param email_or_number  email or number of user tath tried ro login or signup
+     * @param phone_number  phone number of user tath tried ro login or signup
      * @param verification_code random code that we sent to user
      * 
-     * @return Json (Object)
+     * @return Response Json
      */ 
     public function verification(Request $request)
     {
-        $user = User::where('email_or_number', $request->input('email_or_number'))->first(); // get user
+        $validator = Validator::make($request->all(), 
+            [ 'phone_number' => 'required|digits_between:10,11|starts_with:09,9' ] ,
+            [ 'verification_code' => 'required|digits:4' ] );
+
+        if($validator->fails())
+            return response()->json([ 'message' => 'Invalid inputs.' , 'errors' => $validator->errors() ], 400);
+
         
+        $user = User::where('phone_number', $request->input('phone_number'))->first(); // get user
+        
+        if($user == null)
+            return response()->json([ 'message' => 'User not found.' ], 404);
+
         // user already have api token
-        if($user->api_token != null)
-            return response()->json([
-                'message' => 'You already have API_TOKEN.'
-            ], 403);
+        // if($user->api_token != null)
+        //     return response()->json([ 'message' => 'You already have API_TOKEN.' ], 403);
 
-        if( $user->verification_code == $request->input('verification_code') ) { // verification ok
+        // verification code invalid
+        if( $user->verification_code != $request->input('verification_code') )
+            return response()->json([ 'message' => 'کد وارد شده اشتباه است' ], 401); 
             
-            $user->generateAuthToken(); // give user an api_token
+        // verification code is valid
+        $apiToken = $user->generateApiToken(); // give user an api_token
 
-            return response()
-            ->json([
-                'message' => 'با موفقیت وارد شدید' ,
-                'API_TOKEN' => $user->api_token
-            ], 200)
-            ->cookie('API_TOKEN', $user->api_token, 20160, '', '', false, true);
-        }
-        else { // verification not ok
-            return response()->json([
-                'message' => 'کد وارد شده اشتباه است'
-            ], 401);
-        }
+        return response()
+        ->json([
+            'message' => 'با موفقیت وارد شدید' ,
+            'phone_number' => $user->phone_number ,
+            'API_TOKEN' => $apiToken
+        ], 200);
     }
 
-    
     /**
-     * Remove user record or just verification_code
+     * Redirect user here if they not authenticated
      *
-     * @param email_or_number  email or number of user to cancel its login or signup
-     * @param is_signup if new user didnt complete the sign up , check this to remove its record
-     * 
-     * @return Json (Object)
+     * @return Response Json
      */ 
-    public function cancel(Request $request)
+    public function restricted(Request $request)
     {
-        if($request->input('is_signup') == true)
-            User::where('email_or_number', $request->input('email_or_number'))->delete(); // delete new user record
-        else {
-            User::where('email_or_number', $request->input('email_or_number'))->update([ // clear verification_code for user
-                'verification_code' => null
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'Record removed.'
-        ], 200);
+        return response()->json([ 'message' => 'You are Unauthorized.' ], 401);
     }
 
     /**
      * Log user out from session
      *
-     * @param BearerToken user api_token in Authentication header
+     * @param BearerToken user api_token in Authorization header
      * 
-     * @return Json (Object)
+     * @return Response Json
      */ 
     public function logout(Request $request)
     {
@@ -127,47 +120,6 @@ class AuthController extends Controller
         $user->api_token = null;
         $user->save();
 
-        return response()->json([
-            'message' => 'با موفقیت خارج شدید'
-        ], 200);
-    }
-
-
-    /**
-     * Redirect user here if they not authenticated
-     *
-     * @return Json
-     */ 
-    public function restricted(Request $request)
-    {
-        return response()->json([
-            'message' => 'You are Unauthorized.'
-        ], 401);
-    }
-
-    /**
-     * Check user login cookie
-     *
-     * @return Json
-     */ 
-    public function checkCookie(Request $request)
-    {
-        if($request->hasCookie('cookie_name') != false) {
-            
-            $user = User::where('api_token', $request->cookie('API_TOKEN'));
-
-            return response()
-            ->json([
-                'message' => 'Ok' ,
-                'email_or_number' => $user->email_or_number ,
-                'API_TOKEN' => $user->api_token
-            ], 200)
-            ->cookie('API_TOKEN', $user->api_token, 20160, '', '', false, true);
-        }
-
-        return response()
-        ->json([
-            'message' => 'You are Unauthorized'
-        ], 403);
+        return response()->json([ 'message' => 'با موفقیت خارج شدید' ], 200);
     }
 }

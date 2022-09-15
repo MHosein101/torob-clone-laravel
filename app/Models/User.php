@@ -12,23 +12,39 @@ class User extends Authenticatable
     public $timestamps = false;
 
     protected $fillable = [
-        'email_or_number' , 'verification_code'
+        'phone_number' , 'verification_code'
     ];
     
     protected $casts = [];
 
-    public function generateAuthToken()
+    public function generateVerificatioCode()
     {
-        $this->verification_code = null;
-        $this->api_token = Str::random(60);
+        $nums = '0123456789';
+        $code = '';
+        foreach([0,1,2,3] as $i)
+            $code .= ( $nums[ random_int( 0, strlen($nums)-1 ) ] );
+
+        $this->verification_code = $code;
         $this->save();
-        return $this;
+
+        return $code;
+    }
+
+    public function generateApiToken()
+    {
+        $token = Str::random( random_int(50,70) );
+        
+        $this->verification_code = null;
+        $this->api_token = $token;
+        $this->save();
+
+        return $token;
     }
 
     
     public static function customCreate($data)
     {
-        $uid = User::create([ 'email_or_number' => $data['email_or_number'] ])->id;
+        $uid = User::create([ 'phone_number' => $data['phone_number'] ])->id;
 
         foreach($data['history'] as $h)
             UserHistory::create([ 'user_id' => $uid , 'product_id' => $h ]);

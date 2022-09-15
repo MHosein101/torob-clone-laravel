@@ -11,10 +11,7 @@ use App\Http\Controllers\UserController;
 
 Route::post('login', [AuthController::class,'login']);
 Route::post('verify', [AuthController::class,'verification']);
-Route::post('cancel', [AuthController::class,'cancel']);
 Route::get('restricted', [AuthController::class,'restricted']);
-
-Route::get('check', [AuthController::class,'checkCookie']);
 
 Route::group([ 'middleware' => ['auth:api'] ], function () {
 

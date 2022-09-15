@@ -21,9 +21,7 @@ class CheckCategoryName
         $category = CategoryFunctions::Exists($cname); // check if exists
 
         if( !$category ) 
-            return response()->json([
-                'message' => 'Category not found.'
-            ], 404);
+            return response()->json([ 'message' => 'Category not found.' ], 404);
         
         // $request->merge([ 'category' => $category ]);
         $request->merge(compact('category')); // send to controller

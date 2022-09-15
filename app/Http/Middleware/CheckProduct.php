@@ -21,9 +21,7 @@ class CheckProduct
         $product = Product::where('hash_id', $hid)->get()->first(); // check if exists
 
         if($product == null)
-            return response()->json([
-                'message' => 'Product not found.'
-            ], 404);
+            return response()->json([ 'message' => 'Product not found.' ], 404);
         
         $request->merge(compact('product')); // send to controller
         return $next($request);

@@ -12,13 +12,13 @@ class UserSeeder extends Seeder
     {
        $data = [
             [
-                'email_or_number' => 'example@mail.com' ,
+                'phone_number' => '01112223333' ,
                 'history' => [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20] ,
                 'favorites' => [1,2,3,4] ,
                 'analytics' => [1]
             ] ,
             [
-                'email_or_number' => '09998887777' ,
+                'phone_number' => '09998887777' ,
                 'history' => [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20] ,
                 'favorites' => [5,6,7,8,9,10] ,
                 'analytics' => [2]
